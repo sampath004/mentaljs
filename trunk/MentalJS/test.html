@@ -13,7 +13,6 @@
 	<body>
 		<script type="text/javascript">										
 !function(){
-
 		var rules = {		
 				ArrayComma:createRule('NewExpressions,Expression,Postfix'),
 				ArrayOpen:createRule('Statements,Operators,NewExpressions,Prefix'),		
@@ -61,7 +60,7 @@
 				ForStatementCurlyOpen:createRule('ForStatementParenClose'),
 				ForStatementCurlyClose:createRule('Statements,Expression,ForStatementCurlyOpen'),
 				ForSemi:createRule('ForSemi,Expression,Postfix,ForStatementParenOpen'),
-				FunctionCallOpen:createRule('Identifier,FunctionExpressionCurlyClose,ParenExpressionClose,AccessorClose'),
+				FunctionCallOpen:createRule('Identifier,FunctionExpressionCurlyClose,ParenExpressionClose,AccessorClose,FunctionCallClose,This'),
 				FunctionCallClose:createRule('Expression,FunctionCallOpen'),
 				FunctionArgumentIdentifier: createRule('FunctionParenOpen,FunctionArgumentComma'),
 				FunctionArgumentComma: createRule('FunctionArgumentIdentifier'),
@@ -252,13 +251,12 @@
 		}
 
 	window.sandbox = function(code) {			
-		var start = new Date(), end, elapsedTime;
-			
+		var start = new Date(), end, elapsedTime;		
 		var scoping = '$', pos = 0, chr, parentState, parentStates = {}, states, msg, state = 'Nothing', left = 0, output = '', outputLine = '', 
 		last, next, next2, next3, next4, next5, next6, next7, next8, next9, next10,
 		unicodeChr1, unicodeChr2, unicodeChr3, unicodeChr4,
 		previous, previous2, previous3, previous4,previous5,				
-		length = code.length, parseTree = 1, parseTreeOutput = '',
+		length = code.length, parseTree = 0, parseTreeOutput = '',
 		lookupSquare = 0, lookupCurly = 0, lookupParen = 0, ternaryCount = 0, isTernary = {}, caseCount = 0, isCase = {}, isVar = {},
 		isFor = {}, isForIn = {},  isIf = {}, isObjectLiteral = {},
 		asi = {
@@ -688,6 +686,7 @@
 					expected2 = 0;
 					expected3 = 0;
 					expected4 = 0;
+					expect = 0;
 					left = 0;	
 					pos+=2;
 					outputLine = outputLine + 'do';								
@@ -1961,16 +1960,13 @@
 			error("Syntax error unmatched {");
 		} else if(lookupParen) {
 			error("Syntax error unmatched (");
-		} else if(ternaryCount) {
-			error("Syntax error unmatched ?");
 		} else if(caseCount) {
 			error("Syntax error unmatched case");
 		}
 		
 		if(parseTree) {
 			document.getElementById('parseTree').value = parseTreeOutput;
-		}
-		
+		}		
 		var end = new Date();
 		elapsedTime = (end - start);
 		document.getElementById('time').innerHTML = elapsedTime + 'ms';						
