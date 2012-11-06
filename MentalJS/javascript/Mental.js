@@ -47,7 +47,7 @@
 			ForStatementCurlyClose:createRule('Statements,Expression,ForStatementCurlyOpen'),
 			ForSemi:createRule('ForSemi,Expression,Postfix,ForStatementParenOpen'),
 			FunctionCallOpen:createRule('Identifier,FunctionExpressionCurlyClose,ParenExpressionClose,AccessorClose,FunctionCallClose,This'),
-			FunctionCallClose:createRule('Expression,FunctionCallOpen'),
+			FunctionCallClose:createRule('Expression,FunctionCallOpen,Postfix'),
 			FunctionArgumentIdentifier: createRule('FunctionParenOpen,FunctionArgumentComma'),
 			FunctionArgumentComma: createRule('FunctionArgumentIdentifier'),
 			FunctionIdentifier: createRule('FunctionStatement'),					
