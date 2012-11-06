@@ -1201,7 +1201,27 @@
 								expected4 = 0;
 								left = 0;	
 								pos+=4;
-								outputLine = outputLine + 'void ';																																																									
+								outputLine = outputLine + 'void ';
+							// prototype keyword
+							} else if(lastState === 'IdentifierDot' && chr === LOWER_P && next === LOWER_R && next2 === LOWER_O && next3 === LOWER_T && next4 === LOWER_O && next5 === LOWER_T && next6 === LOWER_Y && next7 === LOWER_P && next8 === LOWER_E && !isValidVariablePart(next9) && next9 !== BACKSLASH) {																																																									
+								state = 'Identifier';
+								expected = 0;
+								expected2 = 0;
+								expected3 = 0;
+								expected4 = 0;
+								left = 1;	
+								pos+=9;
+								outputLine = outputLine + 'prototype';
+							// length keyword
+							} else if(lastState === 'IdentifierDot' && chr === LOWER_L && next === LOWER_E && next2 === LOWER_N && next3 === LOWER_G && next4 === LOWER_T && next5 === LOWER_H && !isValidVariablePart(next6) && next6 !== BACKSLASH) {																																																									
+								state = 'Identifier';
+								expected = 0;
+								expected2 = 0;
+								expected3 = 0;
+								expected4 = 0;
+								left = 1;	
+								pos+=6;
+								outputLine = outputLine + 'length';
 							} else {							
 								// Identifiers																											
 								if(rules.FunctionIdentifier[lastState]) {
