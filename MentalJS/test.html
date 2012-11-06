@@ -13,6 +13,7 @@
 	<body>
 		<script type="text/javascript">										
 !function(){
+
 		var rules = {		
 				ArrayComma:createRule('NewExpressions,Expression,Postfix'),
 				ArrayOpen:createRule('Statements,Operators,NewExpressions,Prefix'),		
@@ -251,7 +252,8 @@
 		}
 
 	window.sandbox = function(code) {			
-		var start = new Date(), end, elapsedTime;		
+		var start = new Date(), end, elapsedTime;
+			
 		var scoping = '$', pos = 0, chr, parentState, parentStates = {}, states, msg, state = 'Nothing', left = 0, output = '', outputLine = '', 
 		last, next, next2, next3, next4, next5, next6, next7, next8, next9, next10,
 		unicodeChr1, unicodeChr2, unicodeChr3, unicodeChr4,
@@ -1966,7 +1968,8 @@
 		
 		if(parseTree) {
 			document.getElementById('parseTree').value = parseTreeOutput;
-		}		
+		}
+		
 		var end = new Date();
 		elapsedTime = (end - start);
 		document.getElementById('time').innerHTML = elapsedTime + 'ms';						
