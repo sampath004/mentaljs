@@ -259,7 +259,8 @@
 		unicodeChr1, unicodeChr2, unicodeChr3, unicodeChr4,
 		previous, previous2, previous3, previous4,previous5,				
 		length = code.length, parseTree = 1, parseTreeOutput = '',
-		lookupSquare = 0, lookupCurly = 0, lookupParen = 0, ternaryCount = 0, isTernary = {}, caseCount = 0, isCase = {},
+		lookupSquare = 0, lookupCurly = 0, lookupParen = 0, ternaryCount = 0, isTernary = {}, caseCount = 0, isCase = {}, isVar = {},
+		isFor = {}, isForIn = {},  isIf = {},
 		asi = {
 			Else: {Number:1},
 			Number: {Number:1,Identifier:1},
@@ -470,7 +471,8 @@
 					if(lastState === 'Else') {
 						outputLine = outputLine + ' ';
 					}
-					outputLine = outputLine + 'if';																			
+					outputLine = outputLine + 'if';
+					isIf[lookupSquare+''+lookupCurly+''+lookupParen] = 1;																			
 				//var keyword
 				} else if(chr === LOWER_V && next === LOWER_A && next2 === LOWER_R && !isValidVariablePart(next3) && next3 !== BACKSLASH) {
 					state = 'Var';
@@ -481,7 +483,8 @@
 					expect = 0;
 					left = 0;	
 					pos+=3;	
-					outputLine = outputLine + 'var ';																															
+					outputLine = outputLine + 'var ';
+					isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 1;																															
 				//for keyword
 				} else if(chr === LOWER_F && next === LOWER_O && next2 === LOWER_R && !isValidVariablePart(next3) && next3 !== BACKSLASH) {
 					state = 'ForStatement';
@@ -492,13 +495,18 @@
 					expect = 0;
 					left = 0;	
 					pos+=3;	
-					outputLine = outputLine + 'for';																			
+					outputLine = outputLine + 'for';
+					isFor[lookupSquare+''+lookupCurly+''+lookupParen] = 1;																			
 				// else keyword
 				} else if(chr === LOWER_E && next === LOWER_L && next2 === LOWER_S && next3 === LOWER_E && !isValidVariablePart(next4) && next4 !== BACKSLASH) {							
 					if(asi.Else && asi.Else[lastState]) {
 						outputLine = outputLine + ';';
 						lastState = 'EndStatement';
-						left = 0;													
+						left = 0;
+						isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;													
+					}
+					if(lastState === 'EndStatement' && !isIf[lookupSquare+''+lookupCurly+''+lookupParen]) {
+						error("Syntax error unexpected else");
 					}																																						
 					state = 'Else';
 					expected = 0;
@@ -703,7 +711,10 @@
 					expected4 = 0;
 					left = 0;	
 					pos+=2;
-					outputLine = outputLine + ' in ';													
+					outputLine = outputLine + ' in ';
+					if(isFor[lookupSquare+''+lookupCurly+''+lookupParen]) {
+						isForIn[lookupSquare+''+lookupCurly+''+lookupParen] = 1;		
+					}													
 				// Infinity keyword		
 				} else if(chr === UPPER_I && next === LOWER_N && next2 === LOWER_F && next3 === LOWER_I && next4 === LOWER_N && next5 === LOWER_I && next6 === LOWER_T && next7 === LOWER_Y && !isValidVariablePart(next8) && next8 !== BACKSLASH) {
 					state = 'Infinity';
@@ -922,7 +933,8 @@
 					if(asi.RegExp && asi.RegExp[lastState]) {
 						outputLine = outputLine + ';';
 						lastState = 'EndStatement';
-						left = 0;														
+						left = 0;
+						isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;														
 					}	
 					
 					states = {escaping: 0, complete: 0, open: 0, square: 0, flags: {}};       
@@ -1051,7 +1063,8 @@
 				if(asi[state] && asi[state][lastState]) {
 					outputLine = outputLine + ';';
 					lastState = 'EndStatement';
-					left = 0;													
+					left = 0;
+					isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;													
 				}
 				parentStates[lookupSquare+''+lookupCurly+''+lookupParen] = state;						
 				left = 0;
@@ -1075,7 +1088,8 @@
 				if(asi[state] && asi[state][lastState]) {
 					outputLine = outputLine + ';';
 					lastState = 'EndStatement';
-					left = 0;													
+					left = 0;
+					isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;													
 				}						
 				outputLine = outputLine + ']';
 				left = 1;
@@ -1159,7 +1173,8 @@
 				if(asi[state] && asi[state][lastState]) {
 					outputLine = outputLine + ';';
 					lastState = 'EndStatement';
-					left = 0;													
+					left = 0;
+					isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;													
 				}
 				outputLine = outputLine + '(';
 				last = PAREN_OPEN;
@@ -1191,6 +1206,8 @@
 					expected3 = 0;
 					expected4 = 0;
 					left = 0;
+					isFor[lookupSquare+''+lookupCurly+''+lookupParen] = 0;		
+					isForIn[lookupSquare+''+lookupCurly+''+lookupParen] = 0;		
 				} else if(parentState === 'SwitchStatementParenOpen') {
 					state = 'SwitchStatementParenClose';
 					expected = 0;
@@ -1246,7 +1263,8 @@
 				if(asi[state] && asi[state][lastState]) {
 					outputLine = outputLine + ';';
 					lastState = 'EndStatement';
-					left = 0;												
+					left = 0;
+					isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;												
 				} 						
 				outputLine = outputLine + ')';
 				pos++;
@@ -1344,7 +1362,8 @@
 				if(asi[state] && asi[state][lastState]) {				
 					outputLine = outputLine + ';';
 					lastState = 'EndStatement';
-					left = 0;													
+					left = 0;
+					isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;													
 				}
 				outputLine = outputLine + '{';
 				if(state === 'FunctionStatementCurlyOpen' || state === 'FunctionExpressionCurlyOpen') {
@@ -1466,7 +1485,8 @@
 				if(asi[state] && asi[state][lastState]) {
 					outputLine = outputLine + ';';
 					lastState = 'EndStatement';
-					left = 0;													
+					left = 0;
+					isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;													
 				}
 				parentStates[lookupSquare+''+lookupCurly+''+lookupParen] = '';										
 				pos++;														
@@ -1509,13 +1529,15 @@
 					expected2 = 0;
 					expected3 = 0;
 					expected4 = 0;
-				} else if(parentState === 'Var') {
+				} else if(isVar[lookupSquare+''+lookupCurly+''+lookupParen]) {
 					state = 'VarComma';
 					expected = 'Identifier';
 					expected2 = 0;
 					expected3 = 0;
 					expected4 = 0;
-					expect = 0;					
+					expect = 0;	
+				} else if(isTernary[lookupSquare+''+lookupCurly+''+lookupParen]) {
+					error("Syntax error expected :");				
 				} else if(!parentState) {
 					state = 'Comma';
 					expected = 0;
@@ -1582,14 +1604,19 @@
 				last = COLON;												
 			} else if(chr === SEMI_COLON) {				
 				parentState = parentStates[lookupSquare+''+lookupCurly+''+lookupParen];									
-				if(parentState === 'For') {
+				if(isFor[lookupSquare+''+lookupCurly+''+(lookupParen-1)] && !isForIn[lookupSquare+''+lookupCurly+''+(lookupParen-1)]) {
 					state = 'ForSemi';
-					outputLine = outputLine + ';';																					
+					outputLine = outputLine + ';';
+					if(isFor[lookupSquare+''+lookupCurly+''+(lookupParen-1)] > 2) {
+						error("Syntax error unexpected for semi ;");
+					}
+					isFor[lookupSquare+''+lookupCurly+''+(lookupParen-1)]++;																					
 				} else {								
 					state = 'EndStatement';
 					if(lastState !== 'EndStatement') {
 						outputLine = outputLine + ';';	
-					}					
+					}
+					isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;					
 				}						
 				pos++;
 				left = 0;
@@ -1880,7 +1907,8 @@
 			if(asi[state] && asi[state][lastState] && newLineFlag) {
 				outputLine = outputLine + ';';
 				lastState = 'EndStatement';
-				left = 0;												
+				left = 0;
+				isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;												
 			}
 			
 			if(!rules[state][lastState]) {																							
