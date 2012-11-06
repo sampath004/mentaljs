@@ -1532,7 +1532,7 @@
 				statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = state;					
 			} else if(chr === COMMA) {			
 				parentState = parentStates[lookupSquare+'-'+lookupCurly+'-'+lookupParen];			
-				statement = statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen];																																																																																	
+				statement = statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen];																																																																																					
 				if(lastState === 'FunctionArgumentIdentifier') {
 					state = 'FunctionArgumentComma';
 					expect = 0;
@@ -1569,6 +1569,8 @@
 					expected3 = 0;
 					expected4 = 0;
 					expect = 0;	
+				} else if(!parentState && statement === 'TernaryQuestionMark') {
+					error("Syntax error expected :");
 				} else if(!parentState) {
 					state = 'Comma';
 					expected = 0;
