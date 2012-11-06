@@ -50,7 +50,7 @@
 				Else:createRule('IfStatementCurlyClose,EndStatement'),
 				ElseCurlyOpen:createRule('Else'),
 				ElseCurlyClose:createRule('Statements,Expression,ElseCurlyOpen'),
-				EndStatement:createRule('Statements,Expression,Postfix,Continue,Break,Return,SwitchColon'),		
+				EndStatement:createRule('Statements,Expression,Postfix,Continue,Break,Return,SwitchColon,ForStatementParenClose,IfStatementParenClose,WithStatementParenClose,WhileStatementParenClose'),		
 				False:createRule('Statements,Operators,Prefix,NewExpressions'),
 				FinallyStatement:createRule('CatchStatementCurlyClose'),
 				FinallyStatementCurlyOpen:createRule('FinallyStatement'),
@@ -495,7 +495,7 @@
 					left = 0;	
 					pos+=3;	
 					outputLine = outputLine + 'for';
-					statementTracking[lookupSquare+'-'+lookupCurly+'-'+(lookupParen+1)] = 'For';														
+					statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = 'For';														
 				// else keyword
 				} else if(chr === LOWER_E && next === LOWER_L && next2 === LOWER_S && next3 === LOWER_E && !isValidVariablePart(next4) && next4 !== BACKSLASH) {							
 					if(asi.Else && asi.Else[lastState]) {
@@ -1630,7 +1630,7 @@
 				left = 0;
 				last = COLON;												
 			} else if(chr === SEMI_COLON) {
-				statement = statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen];
+				statement = statementTracking[lookupSquare+'-'+lookupCurly+'-'+(lookupParen-1)];
 				parentState = parentStates[lookupSquare+'-'+lookupCurly+'-'+lookupParen];									
 				if(statement === 'For') {
 					state = 'ForSemi';
