@@ -195,8 +195,7 @@ function loadjQuery() {
 }
 function exec() {
 	var js = MentalJS(),
-		start = new Date(), end, elapsedTime;
-		 console.profile()
+		start = new Date(), end, elapsedTime;		 
 	try {
 		js.parse({
 			global: true,
@@ -212,8 +211,7 @@ function exec() {
 			complete: function() {
 				end = new Date();
 				elapsedTime = (end - start);
-				document.getElementById('timeTaken').innerHTML = elapsedTime + 'ms';
-				console.profileEnd();					
+				document.getElementById('timeTaken').innerHTML = elapsedTime + 'ms';					
 			},
 			evalCode: document.getElementById('enableEvalCode').checked 
 				? function(converted) {
