@@ -1374,6 +1374,7 @@
 					expected3 = 'ObjectLiteralIdentifierNumber';
 					expected4 = 'ObjectLiteralCurlyClose';
 					expect = 0;
+					parentStates[lookupSquare+'-'+(lookupCurly+1)+'-'+lookupParen] = state;
 				} else if(rules.BlockStatementCurlyOpen[lastState]) {
 					state = 'BlockStatementCurlyOpen';
 					expected = 0;
