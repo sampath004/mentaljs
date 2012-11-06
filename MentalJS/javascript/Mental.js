@@ -95,7 +95,7 @@
 			ModulusAssignment:createRule('Expression'),																		
 			Multiply:createRule('Expression,Postfix'),
 			MultiplyAssignment:createRule('Expression'),
-			ObjectLiteralCurlyOpen:createRule('NewExpressions,Operators'),
+			ObjectLiteralCurlyOpen:createRule('NewExpressions,Operators,Prefix'),
 			ObjectLiteralCurlyClose: createRule('Statements,Expression,ObjectLiteralCurlyOpen'),
 			ObjectLiteralIdentifier: createRule('ObjectLiteralCurlyOpen,ObjectLiteralComma'),
 			ObjectLiteralColon: createRule('ObjectLiteralIdentifier,ObjectLiteralIdentifierNumber,ObjectLiteralIdentifierString'),
