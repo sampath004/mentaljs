@@ -169,7 +169,6 @@
 				ZeroRightShift:createRule('Expression,Postfix'),
 				ZeroRightShiftAssignment:createRule('Expression'),										
 		};
-
 		function createRule(rules) {
 			rules = rules.split(',');
 			var expression = {
@@ -198,7 +197,9 @@
 				BlockStatementCurlyOpen:1,DoStatementCurlyOpen:1,CatchStatementCurlyOpen:1,
 				ElseCurlyOpen:1,FinallyStatementCurlyOpen:1,FunctionStatementCurlyOpen:1,IfStatementCurlyOpen:1,
 				SwitchStatementCurlyOpen:1,TryStatementCurlyOpen:1,WithStatementCurlyOpen:1,WhileStatementCurlyOpen:1,
-				FunctionExpressionCurlyOpen:1,ForStatementCurlyOpen:1,ForStatementCurlyClose:1
+				FunctionExpressionCurlyOpen:1,ForStatementCurlyOpen:1,ForStatementCurlyClose:1,
+				ElseParenClose:1,IfStatementParenClose:1,SwitchStatementParenClose:1,WithStatementParenClose:1,
+				WhileStatementParenClose:1,ForStatementParenClose:1
 			},
 			newExpressions = {
 				Comma:1, ArrayComma:1,ForStatementParenOpen:1,IfStatementParenOpen:1,SwitchStatementParenOpen:1,
