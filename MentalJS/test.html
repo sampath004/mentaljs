@@ -254,12 +254,12 @@
 	window.sandbox = function(code) {			
 		var start = new Date(), end, elapsedTime;
 			
-		var scoping = '$', pos = 0, chr, parentState, statement, statementTracking = {}, parentStates = {}, states, msg, state = 'Nothing', left = 0, output = '', outputLine = '', 
+		var scoping = '$', pos = 0, chr, parentState, parentStates = {}, states, msg, state = 'Nothing', left = 0, output = '', outputLine = '', 
 		last, next, next2, next3, next4, next5, next6, next7, next8, next9, next10,
 		unicodeChr1, unicodeChr2, unicodeChr3, unicodeChr4,
 		previous, previous2, previous3, previous4,previous5,				
 		length = code.length, parseTree = 1, parseTreeOutput = '',
-		lookupSquare = 0, lookupCurly = 0, lookupParen = 0, statementCounters = {}, forSemiCounters = {},
+		lookupSquare = 0, lookupCurly = 0, lookupParen = 0, ternaryCount = 0, isTernary = {}, caseCount = 0, isCase = {},
 		asi = {
 			Else: {Number:1},
 			Number: {Number:1,Identifier:1},
@@ -470,8 +470,7 @@
 					if(lastState === 'Else') {
 						outputLine = outputLine + ' ';
 					}
-					outputLine = outputLine + 'if';							
-					statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = 'IfStatement';							
+					outputLine = outputLine + 'if';																			
 				//var keyword
 				} else if(chr === LOWER_V && next === LOWER_A && next2 === LOWER_R && !isValidVariablePart(next3) && next3 !== BACKSLASH) {
 					state = 'Var';
@@ -482,8 +481,7 @@
 					expect = 0;
 					left = 0;	
 					pos+=3;	
-					outputLine = outputLine + 'var ';
-					statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = 'Var';																										
+					outputLine = outputLine + 'var ';																															
 				//for keyword
 				} else if(chr === LOWER_F && next === LOWER_O && next2 === LOWER_R && !isValidVariablePart(next3) && next3 !== BACKSLASH) {
 					state = 'ForStatement';
@@ -494,24 +492,14 @@
 					expect = 0;
 					left = 0;	
 					pos+=3;	
-					outputLine = outputLine + 'for';
-					statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = 'For';														
+					outputLine = outputLine + 'for';																			
 				// else keyword
 				} else if(chr === LOWER_E && next === LOWER_L && next2 === LOWER_S && next3 === LOWER_E && !isValidVariablePart(next4) && next4 !== BACKSLASH) {							
 					if(asi.Else && asi.Else[lastState]) {
 						outputLine = outputLine + ';';
 						lastState = 'EndStatement';
-						left = 0;
-						if(statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]) {
-							statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]++;
-						} else {
-							statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = 1;
-						}								
-					}																					
-					statement = statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen];							
-					if(statement !== 'IfStatement'|| (lastState === 'EndStatement' && statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen] > 1)) {
-						error("Syntax error else statement follows EndStatement without IfStatement");
-					}
+						left = 0;													
+					}																																						
 					state = 'Else';
 					expected = 0;
 					expected2 = 0;
@@ -631,7 +619,8 @@
 					left = 0;	
 					pos+=4;							
 					outputLine = outputLine + 'case ';
-					statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = 'Case';															
+					isCase[lookupSquare+''+lookupCurly+''+lookupParen] = 1;
+					caseCount++;																					
 				// catch keyword			
 				} else if(chr === LOWER_C && next === LOWER_A && next2 === LOWER_T && next3 === LOWER_C && next4 === LOWER_H && !isValidVariablePart(next5) && next5 !== BACKSLASH) {
 					state = 'CatchStatement';
@@ -714,10 +703,7 @@
 					expected4 = 0;
 					left = 0;	
 					pos+=2;
-					outputLine = outputLine + ' in ';
-					if(statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen] === 'For') {
-						statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = '';
-					}								
+					outputLine = outputLine + ' in ';													
 				// Infinity keyword		
 				} else if(chr === UPPER_I && next === LOWER_N && next2 === LOWER_F && next3 === LOWER_I && next4 === LOWER_N && next5 === LOWER_I && next6 === LOWER_T && next7 === LOWER_Y && !isValidVariablePart(next8) && next8 !== BACKSLASH) {
 					state = 'Infinity';
@@ -936,13 +922,7 @@
 					if(asi.RegExp && asi.RegExp[lastState]) {
 						outputLine = outputLine + ';';
 						lastState = 'EndStatement';
-						left = 0;
-						if(statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]) {
-							statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]++;
-						} else {
-							statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = 1;
-						}
-						statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = '';								
+						left = 0;														
 					}	
 					
 					states = {escaping: 0, complete: 0, open: 0, square: 0, flags: {}};       
@@ -1071,22 +1051,17 @@
 				if(asi[state] && asi[state][lastState]) {
 					outputLine = outputLine + ';';
 					lastState = 'EndStatement';
-					left = 0;
-					if(statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]) {
-						statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]++;
-					} else {
-						statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = 1;
-					}								
+					left = 0;													
 				}
-				parentStates[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = state;						
+				parentStates[lookupSquare+''+lookupCurly+''+lookupParen] = state;						
 				left = 0;
 				last = SQUARE_OPEN;
 				pos++;
 				lookupSquare++;
-				parentStates[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = state;						
+				parentStates[lookupSquare+''+lookupCurly+''+lookupParen] = state;						
 			} else if(chr === SQUARE_CLOSE) {
 				lookupSquare--;			
-				parentState = parentStates[lookupSquare+'-'+lookupCurly+'-'+lookupParen];									
+				parentState = parentStates[lookupSquare+''+lookupCurly+''+lookupParen];									
 				if(parentState === 'ArrayOpen') {
 					state = 'ArrayClose';
 					left = 1;
@@ -1100,20 +1075,14 @@
 				if(asi[state] && asi[state][lastState]) {
 					outputLine = outputLine + ';';
 					lastState = 'EndStatement';
-					left = 0;
-					if(statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]) {
-						statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]++;
-					} else {
-						statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = 1;
-					}								
+					left = 0;													
 				}						
 				outputLine = outputLine + ']';
 				left = 1;
 				last = SQUARE_CLOSE;
 				pos++;
-				parentStates[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = '';			
-			} else if(chr === PAREN_OPEN) {														
-				statement = statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen];																																																							
+				parentStates[lookupSquare+''+lookupCurly+''+lookupParen] = '';							
+			} else if(chr === PAREN_OPEN) {																																																																									
 				if(lastState === 'FunctionIdentifier') {
 					state = 'FunctionParenOpen';
 					expect = 0;
@@ -1190,27 +1159,17 @@
 				if(asi[state] && asi[state][lastState]) {
 					outputLine = outputLine + ';';
 					lastState = 'EndStatement';
-					left = 0;
-					if(statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]) {
-						statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]++;
-					} else {
-						statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = 1;
-					}								
+					left = 0;													
 				}
 				outputLine = outputLine + '(';
 				last = PAREN_OPEN;
 				pos++;
-				parentStates[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = state;
+				parentStates[lookupSquare+''+lookupCurly+''+lookupParen] = state;
 				left = 0;
 				lookupParen++;
-			} else if(chr === PAREN_CLOSE) {
-				statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = '';
-				if(statementTracking[lookupSquare+'-'+lookupCurly+'-'+(lookupParen-1)] === 'For') {
-					statementTracking[lookupSquare+'-'+lookupCurly+'-'+(lookupParen-1)] = '';
-				} 
-				forSemiCounters[lookupSquare+'-'+lookupCurly+'-'+(lookupParen-1)] = 0;
+			} else if(chr === PAREN_CLOSE) {				
 				lookupParen--;						
-				parentState = parentStates[lookupSquare+'-'+lookupCurly+'-'+lookupParen];																																																					
+				parentState = parentStates[lookupSquare+''+lookupCurly+''+lookupParen];																																																					
 				if(rules.FunctionParenClose[lastState]) {
 					state = 'FunctionParenClose';
 					expect = 0;
@@ -1287,16 +1246,11 @@
 				if(asi[state] && asi[state][lastState]) {
 					outputLine = outputLine + ';';
 					lastState = 'EndStatement';
-					left = 0;
-					if(statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]) {
-						statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]++;
-					} else {
-						statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = 1;
-					}								
+					left = 0;												
 				} 						
 				outputLine = outputLine + ')';
 				pos++;
-				parentStates[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = '';														
+				parentStates[lookupSquare+''+lookupCurly+''+lookupParen] = '';																		
 			} else if(chr === CURLY_OPEN) {																																												
 				if(lastState === 'FunctionParenClose') {
 					state = 'FunctionStatementCurlyOpen';
@@ -1377,7 +1331,7 @@
 					expected3 = 'ObjectLiteralIdentifierNumber';
 					expected4 = 'ObjectLiteralCurlyClose';
 					expect = 0;
-					parentStates[lookupSquare+'-'+(lookupCurly+1)+'-'+lookupParen] = state;
+					parentStates[lookupSquare+''+(lookupCurly+1)+''+lookupParen] = state;
 				} else if(rules.BlockStatementCurlyOpen[lastState]) {
 					state = 'BlockStatementCurlyOpen';
 					expected = 0;
@@ -1390,12 +1344,7 @@
 				if(asi[state] && asi[state][lastState]) {				
 					outputLine = outputLine + ';';
 					lastState = 'EndStatement';
-					left = 0;
-					if(statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]) {
-						statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]++;
-					} else {
-						statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = 1;
-					}								
+					left = 0;													
 				}
 				outputLine = outputLine + '{';
 				if(state === 'FunctionStatementCurlyOpen' || state === 'FunctionExpressionCurlyOpen') {
@@ -1403,12 +1352,12 @@
 				}
 				last = CURLY_OPEN;
 				pos++;
-				parentStates[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = state;
+				parentStates[lookupSquare+''+lookupCurly+''+lookupParen] = state;
 				left = 0;
 				lookupCurly++;
 			} else if(chr === CURLY_CLOSE) {
 				lookupCurly--;										
-				parentState = parentStates[lookupSquare+'-'+lookupCurly+'-'+lookupParen];																																									
+				parentState = parentStates[lookupSquare+''+lookupCurly+''+lookupParen];																																									
 				outputLine = outputLine + '}';																				
 				if(parentState === 'FunctionStatementCurlyOpen') {
 					state = 'FunctionStatementCurlyClose';
@@ -1511,20 +1460,15 @@
 					state = 'BlockStatementCurlyClose';
 					outputLine = outputLine + ';';
 					left = 0;
-				} else {																	
+				} else {																						
 					error('Unexpected }. Cannot follow '+lastState+'.Output:'+output);
 				}
 				if(asi[state] && asi[state][lastState]) {
 					outputLine = outputLine + ';';
 					lastState = 'EndStatement';
-					left = 0;
-					if(statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]) {
-						statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]++;
-					} else {
-						statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = 1;
-					}								
+					left = 0;													
 				}
-				parentStates[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = '';						
+				parentStates[lookupSquare+''+lookupCurly+''+lookupParen] = '';										
 				pos++;														
 			} else if(chr === QUESTION_MARK) {
 				state = 'TernaryQuestionMark';
@@ -1532,10 +1476,10 @@
 				last = QUESTION_MARK;
 				left = 0;
 				pos++;
-				statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = state;					
+				isTernary[lookupSquare+''+lookupCurly+''+lookupParen] = 1;
+				ternaryCount++;													
 			} else if(chr === COMMA) {			
-				parentState = parentStates[lookupSquare+'-'+lookupCurly+'-'+lookupParen];			
-				statement = statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen];																																																																																					
+				parentState = parentStates[lookupSquare+''+lookupCurly+''+lookupParen];																																																																																																
 				if(lastState === 'FunctionArgumentIdentifier') {
 					state = 'FunctionArgumentComma';
 					expect = 0;
@@ -1565,15 +1509,13 @@
 					expected2 = 0;
 					expected3 = 0;
 					expected4 = 0;
-				} else if(statement === 'Var') {
+				} else if(parentState === 'Var') {
 					state = 'VarComma';
 					expected = 'Identifier';
 					expected2 = 0;
 					expected3 = 0;
 					expected4 = 0;
-					expect = 0;	
-				} else if(!parentState && statement === 'TernaryQuestionMark') {
-					error("Syntax error expected :");
+					expect = 0;					
 				} else if(!parentState) {
 					state = 'Comma';
 					expected = 0;
@@ -1602,18 +1544,20 @@
 				pos++;
 				left = 0;
 			} else if(chr === COLON) {
-				parentState = parentStates[lookupSquare+'-'+lookupCurly+'-'+lookupParen];
-				statement = statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen];
-				if(parentState === 'ObjectLiteralCurlyOpen' || rules.ObjectLiteralColon[lastState]) {
+				parentState = parentStates[lookupSquare+''+lookupCurly+''+lookupParen];								
+				if(isTernary[lookupSquare+''+lookupCurly+''+lookupParen]) {
+					state = 'TernaryColon';
+					isTernary[lookupSquare+''+lookupCurly+''+lookupParen] = 0;
+					ternaryCount--;
+				} else if(parentState === 'ObjectLiteralCurlyOpen' || rules.ObjectLiteralColon[lastState]) {
 					state = 'ObjectLiteralColon';
 					expected = 0;
 					expected1 = '';
 					expected2 = 0;
 					expected3 = 0;
 					expected4 = 0;																								
-				} else if(statement === 'TernaryQuestionMark') {
-					state = 'TernaryColon';
-				} else if(statement === 'Case' || lastState === 'Default') {
+									
+				} else if(isCase[lookupSquare+''+lookupCurly+''+lookupParen] || lastState === 'Default') {
 					state = 'SwitchColon';
 					if(lastState === 'Case') {
 						error("Syntax error");
@@ -1622,7 +1566,11 @@
 					expected1 = '';
 					expected2 = 0;
 					expected3 = 0;
-					expected4 = 0;						
+					expected4 = 0;
+					if(lastState !== 'Default') {
+						isCase[lookupSquare+''+lookupCurly+''+lookupParen] = 0;
+						caseCount--;	
+					}						
 				} else if(!parentState) {
 					state = 'LabelColon';
 				} else {
@@ -1632,37 +1580,16 @@
 				pos++;
 				left = 0;
 				last = COLON;												
-			} else if(chr === SEMI_COLON) {
-				statement = statementTracking[lookupSquare+'-'+lookupCurly+'-'+(lookupParen-1)];
-				parentState = parentStates[lookupSquare+'-'+lookupCurly+'-'+lookupParen];									
-				if(statement === 'For') {
+			} else if(chr === SEMI_COLON) {				
+				parentState = parentStates[lookupSquare+''+lookupCurly+''+lookupParen];									
+				if(parentState === 'For') {
 					state = 'ForSemi';
-					outputLine = outputLine + ';';
-					if(statementCounters[lookupSquare+'-'+lookupCurly+'-'+(lookupParen-1)]) {
-						statementCounters[lookupSquare+'-'+lookupCurly+'-'+(lookupParen-1)]++;
-					} else {
-						statementCounters[lookupSquare+'-'+lookupCurly+'-'+(lookupParen-1)] = 1;
-					}	
-					if(forSemiCounters[lookupSquare+'-'+lookupCurly+'-'+(lookupParen-1)]) {
-						forSemiCounters[lookupSquare+'-'+lookupCurly+'-'+(lookupParen-1)]++;
-					} else {
-						forSemiCounters[lookupSquare+'-'+lookupCurly+'-'+(lookupParen-1)] = 1;
-					}
-					
-					if(forSemiCounters[lookupSquare+'-'+lookupCurly+'-'+(lookupParen-1)] > 2) {
-						error("Syntax error");
-					}																
+					outputLine = outputLine + ';';																					
 				} else {								
 					state = 'EndStatement';
 					if(lastState !== 'EndStatement') {
 						outputLine = outputLine + ';';	
-					}
-					statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = '';												
-					if(statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]) {
-						statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]++;
-					} else {
-						statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = 1;
-					}
+					}					
 				}						
 				pos++;
 				left = 0;
@@ -1953,13 +1880,7 @@
 			if(asi[state] && asi[state][lastState] && newLineFlag) {
 				outputLine = outputLine + ';';
 				lastState = 'EndStatement';
-				left = 0;
-				if(statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]) {
-					statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen]++;
-				} else {
-					statementCounters[lookupSquare+'-'+lookupCurly+'-'+lookupParen] = 1;
-				}
-				statementTracking[lookupSquare+'-'+lookupCurly+'-'+lookupParen]								
+				left = 0;												
 			}
 			
 			if(!rules[state][lastState]) {																							
@@ -2012,6 +1933,10 @@
 			error("Syntax error unmatched {");
 		} else if(lookupParen) {
 			error("Syntax error unmatched (");
+		} else if(ternaryCount) {
+			error("Syntax error unmatched ?");
+		} else if(caseCount) {
+			error("Syntax error unmatched case");
 		}
 		
 		if(parseTree) {
