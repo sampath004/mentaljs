@@ -1788,6 +1788,7 @@
 								expected4 = 'ObjectLiteralCurlyClose';
 								expect = 0;
 								parentStates[lookupSquare+''+(lookupCurly+1)+''+lookupParen] = state;
+								outputLine = outputLine + 'M.O(';
 							} else if(rules.BlockStatementCurlyOpen[lastState]) {
 								state = 'BlockStatementCurlyOpen';
 								expected = 0;
@@ -1841,6 +1842,7 @@
 								expected4 = 0;
 								left = 1;
 								isObjectLiteral[lookupSquare+''+(lookupCurly+1)+''+lookupParen] = 0;
+								outputLine = outputLine + ')';
 							} else if(parentState === 'ForStatementCurlyOpen') {
 								state = 'ForStatementCurlyClose';
 								expected = 0;
