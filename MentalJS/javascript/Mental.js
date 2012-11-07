@@ -729,7 +729,9 @@
 				    	}
 				    }	
 					
-					checkSyntax(code);
+					if(that.options.browserCheckSyntax) {
+					   checkSyntax(code);
+					}
 									
 					for(;;) {
 						outputLine = '';					
@@ -2402,12 +2404,14 @@
                     }
                     if(that.converted) {                    
                     	that.converted(output);
-                    }      
-                    checkSyntax(output);                                       													
+                    }
+                    if(that.options.browserCheckSyntax) {      
+                        checkSyntax(output);                 
+                    }                      													
 					return output;
 				};	
                 
-                this.options = {eval:true, stealth: true};
+                this.options = {eval:true, stealth: true, browserCheckSyntax: true};
                 
                 if(typeof obj === 'string') {
                     return execute(sandbox(obj));

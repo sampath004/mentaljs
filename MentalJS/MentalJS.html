@@ -200,7 +200,7 @@ function exec() {
 		js.parse({
 			global: true,
 			thisObject: window,
-			options: {eval:true, stealth: true},
+			options: {eval:true, stealth: true, browserCheckSyntax: true},
 			code:document.getElementById('code').value,
 			converted: function(converted) {
 				document.getElementById('converted').value = converted;					
