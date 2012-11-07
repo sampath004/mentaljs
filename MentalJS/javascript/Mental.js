@@ -7,6 +7,7 @@
 			AccessorClose: createRule('Expression,Postfix'),
 			Addition:createRule('Expression'),
 			AdditionAssignment:createRule('Expression'),		
+			AssignmentDivide:createRule('Expression'),
 			AndAssignment:createRule('Expression'),
 			BlockStatementCurlyOpen:createRule('Statements,SwitchColon'),
 			BlockStatementCurlyClose:createRule('Statements,Expression,BlockStatementCurlyOpen'),										
@@ -173,7 +174,8 @@
 			LogicalOr:1,BitwiseOr:1,Xor:1,Modulus:1,LogicalAnd:1,BitwiseAnd:1,ZeroRightShift:1,
 			RightShift:1,GreaterThan:1,GreaterThanEqual:1,LeftShift:1,LessThan:1,LessThanEqual:1,
 			Multiply:1,Minus:1,EqualAssignment:1,AdditionAssignment:1,OrAssignment:1,XorAssignment:1,ModulusAssignment:1,AndAssignment:1,
-			ZeroRightShiftAssignment:1,RightShiftAssignment:1,LeftShiftAssignment:1,MultiplyAssignment:1,MinusAssignment:1
+			ZeroRightShiftAssignment:1,RightShiftAssignment:1,LeftShiftAssignment:1,MultiplyAssignment:1,MinusAssignment:1,
+			AssignmentDivide:1
 		},			
 		statements = {
 			Nothing:1,EndStatement:1,BlockStatementCurlyClose:1,DoStatementCurlyClose:1,CatchStatementCurlyClose:1,
