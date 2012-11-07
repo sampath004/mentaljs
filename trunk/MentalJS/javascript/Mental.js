@@ -32,7 +32,7 @@
 			Continue:createRule('Statements'),										
 			EqualAssignment:createRule('Expression'),
 			Equal:createRule('Expression'),					
-			Else:createRule('IfStatementCurlyClose,EndStatement'),
+			Else:createRule('IfStatementCurlyClose,Statements'),
 			ElseCurlyOpen:createRule('Else'),
 			ElseCurlyClose:createRule('Statements,Expression,ElseCurlyOpen'),
 			EndStatement:createRule('Statements,Expression,Postfix,Continue,Break,Return,SwitchColon,ForStatementParenClose,IfStatementParenClose,WithStatementParenClose,WhileStatementParenClose'),		
@@ -652,11 +652,9 @@
 					length = code.length, parseTree = that.parseTree,
 					lookupSquare = 0, lookupCurly = 0, lookupParen = 0, ternaryCount = 0, isTernary = {}, caseCount = 0, isCase = {}, isVar = {},
 					isFor = {}, isForIn = {},  isIf = {}, isObjectLiteral = {},
-					asi = {
-						Else: {Number:1},
+					asi = {						
 						Number: {Number:1,Identifier:1},
-						Identifier: {Number:1,Identifier:1,VarIdentifier:1},
-						BlockStatementCurlyOpen:{Identifier:1,VarIdentifier:1},
+						Identifier: {Number:1,Identifier:1,VarIdentifier:1},						
 						ParenExpressionOpen:{VarIdentifier:1},
 						RegExp:{VarIdentifier:1}								
 					},											
@@ -902,14 +900,8 @@
 								outputLine = outputLine + 'for';
 								isFor[lookupSquare+''+lookupCurly+''+lookupParen] = 1;																			
 							// else keyword
-							} else if(chr === LOWER_E && next === LOWER_L && next2 === LOWER_S && next3 === LOWER_E && !isValidVariablePart(next4) && next4 !== BACKSLASH) {							
-								if(asi.Else && asi.Else[lastState]) {
-									outputLine = outputLine + ';';
-									lastState = 'EndStatement';
-									left = 0;
-									isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;													
-								}
-								if(lastState === 'EndStatement' && !isIf[lookupSquare+''+lookupCurly+''+lookupParen]) {
+							} else if(chr === LOWER_E && next === LOWER_L && next2 === LOWER_S && next3 === LOWER_E && !isValidVariablePart(next4) && next4 !== BACKSLASH) {															
+								if(!isIf[lookupSquare+''+lookupCurly+''+lookupParen]) {
 									error("Syntax error unexpected else");
 								}																																						
 								state = 'Else';
@@ -919,7 +911,7 @@
 								expected4 = 0;
 								left = 0;	
 								pos+=4;
-								outputLine = outputLine + 'else';								
+								outputLine = outputLine + 'else ';								
 							// while keyword
 							} else if(chr === LOWER_W && next === LOWER_H && next2 === LOWER_I && next3 === LOWER_L && next4 === LOWER_E && !isValidVariablePart(next5) && next5 !== BACKSLASH) {
 								state = 'WhileStatement';
@@ -1805,10 +1797,9 @@
 							isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;
 							lookupCurly--;																															
 							parentState = parentStates[lookupSquare+''+lookupCurly+''+lookupParen];																																									
-							outputLine = outputLine + '}';																				
+							outputLine = outputLine + '}';																											
 							if(parentState === 'FunctionStatementCurlyOpen') {
-								state = 'FunctionStatementCurlyClose';
-								outputLine = outputLine + ';';
+								state = 'FunctionStatementCurlyClose';								
 								left = 0;
 							} else if(parentState === 'ElseCurlyOpen') {
 								state = 'ElseCurlyClose';
@@ -1831,16 +1822,14 @@
 								expected2 = 0;
 								expected3 = 0;
 								expected4 = 0;
-								left = 0;
-								outputLine = outputLine + ';';
+								left = 0;								
 							} else if(parentState === 'WhileStatementCurlyOpen') {
 								state = 'WhileStatementCurlyClose';
 								expected = 0;
 								expected2 = 0;
 								expected3 = 0;
 								expected4 = 0;
-								left = 0;
-								outputLine = outputLine + ';';
+								left = 0;								
 							} else if(parentState === 'CatchStatementCurlyOpen') {
 								state = 'CatchStatementCurlyClose';
 								expected = 0;
@@ -1854,16 +1843,14 @@
 								expected2 = 0;
 								expected3 = 0;
 								expected4 = 0;
-								left = 0;
-								outputLine = outputLine + ';';					
+								left = 0;												
 							} else if(parentState === 'WithStatementCurlyOpen') {
 								state = 'WithStatementCurlyClose';
 								expected = 0;
 								expected2 = 0;
 								expected3 = 0;
 								expected4 = 0;
-								left = 0;
-								outputLine = outputLine + ';';
+								left = 0;								
 							} else if(parentState === 'TryStatementCurlyOpen') {
 								state = 'TryStatementCurlyClose';				
 								expected = 'CatchStatement';
@@ -1884,8 +1871,7 @@
 								expected2 = 0;
 								expected3 = 0;
 								expected4 = 0;
-								left = 0;
-								outputLine = outputLine + ';';							
+								left = 0;														
 							} else if(parentState === 'DoStatement') {
 								state = 'DoStatementCurlyOpen';
 								expected = 0;
@@ -1905,13 +1891,12 @@
 								state = 'FunctionExpressionCurlyClose';
 								left = 1;
 							} else if(parentState === 'BlockStatementCurlyOpen') {
-								state = 'BlockStatementCurlyClose';
-								outputLine = outputLine + ';';
+								state = 'BlockStatementCurlyClose';								
 								left = 0;
 							} else {																						
 								error('Unexpected }. Cannot follow '+lastState+'.Output:'+output);
 							}
-							if(asi[state] && asi[state][lastState]) {
+							if(asi[state] && asi[state][lastState]) {								
 								outputLine = outputLine + ';';
 								lastState = 'EndStatement';
 								left = 0;
@@ -2002,7 +1987,7 @@
 								state = 'TernaryColon';
 								isTernary[lookupSquare+''+lookupCurly+''+lookupParen]--;
 								ternaryCount--;
-							} else if(parentState === 'ObjectLiteralCurlyOpen' || rules.ObjectLiteralColon[lastState]) {
+							} else if(rules.ObjectLiteralColon[lastState]) {
 								state = 'ObjectLiteralColon';
 								expected = 0;
 								expected1 = '';
@@ -2336,7 +2321,7 @@
 							error("State does not exist in the rules:" +state);
 						}
 						
-						if(asi[state] && asi[state][lastState] && newLineFlag) {
+						if(asi[state] && asi[state][lastState] && newLineFlag) {						    
 							outputLine = outputLine + ';';
 							lastState = 'EndStatement';
 							left = 0;
