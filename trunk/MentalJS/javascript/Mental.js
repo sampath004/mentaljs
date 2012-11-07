@@ -37,7 +37,7 @@
 			ElseCurlyClose:createRule('Statements,Expression,ElseCurlyOpen'),
 			EndStatement:createRule('Statements,Expression,Postfix,Continue,Break,Return,SwitchColon,ForStatementParenClose,IfStatementParenClose,WithStatementParenClose,WhileStatementParenClose'),		
 			False:createRule('Statements,Operators,Prefix,NewExpressions'),
-			FinallyStatement:createRule('CatchStatementCurlyClose'),
+			FinallyStatement:createRule('CatchStatementCurlyClose,TryStatementCurlyClose'),
 			FinallyStatementCurlyOpen:createRule('FinallyStatement'),
 			FinallyStatementCurlyClose:createRule('Statements,Expression,FinallyStatementCurlyOpen'),
 			ForStatement:createRule('Statements,SwitchColon'),
@@ -108,8 +108,8 @@
 			ParenExpressionClose:createRule('Expression,Postfix'),
 			PostfixIncrement:createRule('Expression'),
 			PostfixDeincrement:createRule('Expression'),
-			PrefixDeincrement:createRule('Statements,NewExpressions,Operators'),
-			PrefixIncrement:createRule('Statements,NewExpressions,Operators'),
+			PrefixDeincrement:createRule('Statements,NewExpressions,Operators,Prefix'),
+			PrefixIncrement:createRule('Statements,NewExpressions,Operators,Prefix'),
 			Return:createRule('Statements'),
 			RegExp:createRule('Statements,Operators,NewExpressions,Prefix'),
 			RightShift:createRule('Expression,Postfix'),
@@ -187,7 +187,7 @@
 			WhileStatementParenClose:1,ForStatementParenClose:1,LabelColon:1
 		},
 		newExpressions = {
-			Comma:1, ArrayComma:1,ForStatementParenOpen:1,IfStatementParenOpen:1,SwitchStatementParenOpen:1,
+			Comma:1, ArrayComma:1,VarComma:1,ForStatementParenOpen:1,IfStatementParenOpen:1,SwitchStatementParenOpen:1,
 			WithStatementParenOpen:1,WhileStatementParenOpen:1,FunctionCallOpen:1,ParenExpressionOpen:1,
 			ArrayOpen:1,AccessorOpen:1,Case:1,Return:1,New:1,TypeOf:1,Delete:1,Void:1,ObjectLiteralColon:1,
 			SwitchColon:1,TernaryQuestionMark:1,TernaryColon:1,ForSemi:1,Continue:1,Break:1,Throw:1
@@ -270,11 +270,8 @@
                                             positions:[]
                                     }                                                                                       
                     };                                                      
-                    function error(str, rewritten) {
-                        var e = Error();                    
-                        if(that.converted && typeof rewritten != 'undefined') {
-                            that.converted(rewritten);
-                        }                                           
+                    function error(str) {
+                        var e = Error();                                                                                       
                         throw {
                             msg: str+(e.stack?' - '+e.stack:''),
                             pos: pos,
@@ -1608,7 +1605,8 @@
 							parentStates[lookupSquare+''+lookupCurly+''+lookupParen] = state;
 							left = 0;
 							lookupParen++;
-						} else if(chr === PAREN_CLOSE) {				
+						} else if(chr === PAREN_CLOSE) {
+						    isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;				
 							lookupParen--;						
 							parentState = parentStates[lookupSquare+''+lookupCurly+''+lookupParen];																																																					
 							if(rules.FunctionParenClose[lastState]) {
@@ -1800,8 +1798,9 @@
 							parentStates[lookupSquare+''+lookupCurly+''+lookupParen] = state;
 							left = 0;
 							lookupCurly++;
-						} else if(chr === CURLY_CLOSE) {
-							lookupCurly--;										
+						} else if(chr === CURLY_CLOSE) {							
+							isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;
+							lookupCurly--;																															
 							parentState = parentStates[lookupSquare+''+lookupCurly+''+lookupParen];																																									
 							outputLine = outputLine + '}';																				
 							if(parentState === 'FunctionStatementCurlyOpen') {
@@ -1923,7 +1922,11 @@
 							last = QUESTION_MARK;
 							left = 0;
 							pos++;
-							isTernary[lookupSquare+''+lookupCurly+''+lookupParen] = 1;
+							if(isTernary[lookupSquare+''+lookupCurly+''+lookupParen]) {
+							  isTernary[lookupSquare+''+lookupCurly+''+lookupParen]++;
+							} else {
+							  isTernary[lookupSquare+''+lookupCurly+''+lookupParen] = 1;
+							}
 							ternaryCount++;													
 						} else if(chr === COMMA) {			
 							parentState = parentStates[lookupSquare+''+lookupCurly+''+lookupParen];																																																																																																
@@ -1994,7 +1997,7 @@
 							parentState = parentStates[lookupSquare+''+lookupCurly+''+lookupParen];								
 							if(isTernary[lookupSquare+''+lookupCurly+''+lookupParen]) {
 								state = 'TernaryColon';
-								isTernary[lookupSquare+''+lookupCurly+''+lookupParen] = 0;
+								isTernary[lookupSquare+''+lookupCurly+''+lookupParen]--;
 								ternaryCount--;
 							} else if(parentState === 'ObjectLiteralCurlyOpen' || rules.ObjectLiteralColon[lastState]) {
 								state = 'ObjectLiteralColon';
@@ -2350,7 +2353,7 @@
 							if(expected4) {
 								msg = msg + ' or ' + expected4;
 							}
-							msg = msg + '. But got '+state + ' with last state:'+lastState;
+							msg = msg + '. But got '+state + ' with last state:'+lastState+', output:'+output;
 							error(msg);
 						}
 						
@@ -2373,7 +2376,7 @@
 						if(expected4) {
 							msg = msg + ' or ' + expected4;
 						}
-						msg = msg + '. But got '+state + ' with last state:'+lastState;
+						msg = msg + '. But got '+state + ' with last state:'+lastState + ', output:'+output;
 						error(msg);
 					}
 									
