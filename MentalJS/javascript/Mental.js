@@ -2,7 +2,7 @@
 		var rules = {		
 			ArrayComma:createRule('NewExpressions,Expression,Postfix'),
 			ArrayOpen:createRule('Statements,Operators,NewExpressions,Prefix'),		
-			ArrayClose:createRule('ArrayComma,ArrayOpen,Expression'),		
+			ArrayClose:createRule('ArrayComma,ArrayOpen,Expression,Postfix'),		
 			AccessorOpen: createRule('Expression'),		
 			AccessorClose: createRule('Expression,Postfix'),
 			Addition:createRule('Expression'),
@@ -10,7 +10,7 @@
 			AssignmentDivide:createRule('Expression'),
 			AndAssignment:createRule('Expression'),
 			BlockStatementCurlyOpen:createRule('Statements,SwitchColon'),
-			BlockStatementCurlyClose:createRule('Statements,Expression,BlockStatementCurlyOpen'),										
+			BlockStatementCurlyClose:createRule('Statements,Expression,BlockStatementCurlyOpen,Postfix'),										
 			BitwiseNot:createRule('Prefix,Statements,NewExpressions,Operators'),
 			BitwiseOr:createRule('Expression,Postfix'),
 			BitwiseAnd:createRule('Expression,Postfix'),		
@@ -21,31 +21,31 @@
 			Delete:createRule('Statements'),
 			Do:createRule('Statements,SwitchColon'),	
 			DoStatementCurlyOpen:createRule('Do'),
-			DoStatementCurlyClose:createRule('Statements,Expression,DoStatementCurlyOpen'),
+			DoStatementCurlyClose:createRule('Statements,Expression,DoStatementCurlyOpen,Postfix'),
 			DivideOperator:createRule('Expression'),
 			CatchStatement:createRule('TryStatementCurlyClose'),
 			CatchStatementParenOpen:createRule('CatchStatement'),
 			CatchStatementParenClose:createRule('CatchStatementIdentifier'),
 			CatchStatementIdentifier:createRule('CatchStatementParenOpen'),
 			CatchStatementCurlyOpen:createRule('CatchStatementParenClose'),
-			CatchStatementCurlyClose:createRule('Statements,Expression,CatchStatementCurlyOpen'),	
+			CatchStatementCurlyClose:createRule('Statements,Expression,CatchStatementCurlyOpen,Postfix'),	
 			Comma:createRule('Expression,Postfix'),
 			Continue:createRule('Statements'),										
 			EqualAssignment:createRule('Expression'),
 			Equal:createRule('Expression'),					
 			Else:createRule('IfStatementCurlyClose,Statements'),
 			ElseCurlyOpen:createRule('Else'),
-			ElseCurlyClose:createRule('Statements,Expression,ElseCurlyOpen'),
+			ElseCurlyClose:createRule('Statements,Expression,ElseCurlyOpen,Postfix'),
 			EndStatement:createRule('Statements,Expression,Postfix,Continue,Break,Return,SwitchColon,ForStatementParenClose,IfStatementParenClose,WithStatementParenClose,WhileStatementParenClose'),		
 			False:createRule('Statements,Operators,Prefix,NewExpressions'),
 			FinallyStatement:createRule('CatchStatementCurlyClose,TryStatementCurlyClose'),
 			FinallyStatementCurlyOpen:createRule('FinallyStatement'),
-			FinallyStatementCurlyClose:createRule('Statements,Expression,FinallyStatementCurlyOpen'),
+			FinallyStatementCurlyClose:createRule('Statements,Expression,FinallyStatementCurlyOpen,Postfix'),
 			ForStatement:createRule('Statements,SwitchColon'),
 			ForStatementParenOpen:createRule('ForStatement'),
 			ForStatementParenClose:createRule('ForSemi,Expression,Postfix'),
 			ForStatementCurlyOpen:createRule('ForStatementParenClose'),
-			ForStatementCurlyClose:createRule('Statements,Expression,ForStatementCurlyOpen'),
+			ForStatementCurlyClose:createRule('Statements,Expression,ForStatementCurlyOpen,Postfix'),
 			ForSemi:createRule('ForSemi,Expression,Postfix,ForStatementParenOpen'),
 			FunctionCallOpen:createRule('Identifier,FunctionExpressionCurlyClose,ParenExpressionClose,AccessorClose,FunctionCallClose,This'),
 			FunctionCallClose:createRule('Expression,FunctionCallOpen,Postfix'),
@@ -63,8 +63,8 @@
 			FunctionExpressionCurlyOpen:createRule('FunctionExpressionParenClose'),
 			FunctionStatement:createRule('Statements,SwitchColon'),
 			FunctionStatementCurlyOpen: createRule('FunctionParenClose'),										
-			FunctionStatementCurlyClose:createRule('Statements,Expression,FunctionStatementCurlyOpen'),
-			FunctionExpressionCurlyClose:createRule('Statements,Expression,FunctionExpressionCurlyOpen'),
+			FunctionStatementCurlyClose:createRule('Statements,Expression,FunctionStatementCurlyOpen,Postfix'),
+			FunctionExpressionCurlyClose:createRule('Statements,Expression,FunctionExpressionCurlyOpen,Postfix'),
 			GreaterThan:createRule('Expression,Postfix'),
 			GreaterThanEqual:createRule('Expression,Postfix'),
 			IdentifierDot:createRule('Expression'),
@@ -73,7 +73,7 @@
 			IfStatementParenOpen:createRule('IfStatement'),
 			IfStatementParenClose:createRule('Expression'),
 			IfStatementCurlyOpen:createRule('IfStatementParenClose'),
-			IfStatementCurlyClose:createRule('Statements,Expression,IfStatementCurlyOpen'),
+			IfStatementCurlyClose:createRule('Statements,Expression,IfStatementCurlyOpen,Postfix'),
 			In:createRule('Expression'),
 			'Infinity':createRule('Statements,Operators,Prefix,NewExpressions'),
 			InstanceOf:createRule('Expression'),
@@ -97,7 +97,7 @@
 			Multiply:createRule('Expression,Postfix'),
 			MultiplyAssignment:createRule('Expression'),
 			ObjectLiteralCurlyOpen:createRule('NewExpressions,Operators,Prefix'),
-			ObjectLiteralCurlyClose: createRule('Statements,Expression,ObjectLiteralCurlyOpen'),
+			ObjectLiteralCurlyClose: createRule('Statements,Expression,ObjectLiteralCurlyOpen,Postfix'),
 			ObjectLiteralIdentifier: createRule('ObjectLiteralCurlyOpen,ObjectLiteralComma'),
 			ObjectLiteralColon: createRule('ObjectLiteralIdentifier,ObjectLiteralIdentifierNumber,ObjectLiteralIdentifierString'),
 			ObjectLiteralComma: createRule('Expression,Postfix'),
@@ -122,14 +122,14 @@
 			SwitchStatementParenOpen:createRule('SwitchStatement'),
 			SwitchStatementParenClose:createRule('Expression'),
 			SwitchStatementCurlyOpen:createRule('SwitchStatementParenClose'),
-			SwitchStatementCurlyClose:createRule('SwitchStatementCurlyOpen,Expression,Statements'),
+			SwitchStatementCurlyClose:createRule('SwitchStatementCurlyOpen,Expression,Statements,Postfix'),
 			SwitchColon:createRule('Expression,Default'),					
 			This:createRule('Statements,Operators,NewExpressions,Prefix'),
 			TernaryQuestionMark:createRule('Expression'),
 			TernaryColon:createRule('Expression'),
 			TryStatement:createRule('Statements,SwitchColon'),
 			TryStatementCurlyOpen:createRule('TryStatement'),
-			TryStatementCurlyClose:createRule('TryStatementCurlyOpen,Expression,Statements'),
+			TryStatementCurlyClose:createRule('TryStatementCurlyOpen,Expression,Statements,Postfix'),
 			True:createRule('Statements,Operators,Prefix,NewExpressions'),
 			Throw:createRule('Statements,NewExpressions'),
 			TypeOf:createRule('Statements,NewExpressions,Operators'),
@@ -139,17 +139,17 @@
 			Var:createRule('Statements,NewExpressions'),
 			VarIdentifier:createRule('Var,VarComma'),
 			VarComma:createRule('Expression,Postfix'),
-			Void:createRule('Statements,NewExpressions'),
+			Void:createRule('Statements,NewExpressions,Operators'),
 			WithStatement:createRule('Statements,SwitchColon'),
 			WithStatementParenOpen:createRule('WithStatement'),
 			WithStatementParenClose:createRule('Expression'),
 			WithStatementCurlyOpen:createRule('WithStatementParenClose'),
-			WithStatementCurlyClose:createRule('WithStatementCurlyOpen,Expression,Statements'),
+			WithStatementCurlyClose:createRule('WithStatementCurlyOpen,Expression,Statements,Postfix'),
 			WhileStatement:createRule('Statements,DoStatementCurlyClose,SwitchColon'),
 			WhileStatementParenOpen:createRule('WhileStatement'),
 			WhileStatementParenClose:createRule('Expression,Postfix'),
 			WhileStatementCurlyOpen:createRule('WhileStatementParenClose'),
-			WhileStatementCurlyClose:createRule('WhileStatementCurlyOpen,Expression,Statements'),
+			WhileStatementCurlyClose:createRule('WhileStatementCurlyOpen,Expression,Statements,Postfix'),
 			Xor:createRule('Expression,Postfix'),
 			XorAssignment:createRule('Expression'),		
 			ZeroRightShift:createRule('Expression,Postfix'),
@@ -653,13 +653,7 @@
 					previous, previous2, previous3, previous4,previous5,				
 					length = code.length, parseTree = that.parseTree,
 					lookupSquare = 0, lookupCurly = 0, lookupParen = 0, ternaryCount = 0, isTernary = {}, caseCount = 0, isCase = {}, isVar = {},
-					isFor = {}, isForIn = {},  isIf = {}, isObjectLiteral = {},
-					asi = {						
-						Number: {Number:1,Identifier:1},
-						Identifier: {Number:1,Identifier:1,VarIdentifier:1},						
-						ParenExpressionOpen:{VarIdentifier:1},
-						RegExp:{VarIdentifier:1}								
-					},											
+					isFor = {}, isForIn = {},  isIf = {}, isObjectLiteral = {},																
 					expected = 0, expect = 0, expected2 = 0, expected3 = 0, expected4 = 0, lastState = 'Nothing', newLineFlag = 0,
 					SQUARE_OPEN = 91, SQUARE_CLOSE = 93, PAREN_OPEN = 40, PAREN_CLOSE = 41,
 					CURLY_OPEN = 123, CURLY_CLOSE = 125,
@@ -1216,7 +1210,7 @@
 								left = 1;	
 								pos+=6;
 								outputLine = outputLine + 'length';
-							} else {							
+							} else {							    							   							    							
 								// Identifiers																											
 								if(rules.FunctionIdentifier[lastState]) {
 									state = 'FunctionIdentifier';
@@ -1277,7 +1271,18 @@
 									expected4 = 0;
 									left = 1;								
 								} else {
-									error('Unexpected Identifier. Cannot follow '+lastState+'.Output:'+output);
+									if(!rules['Identifier'][lastState] && newLineFlag) {                                                                                    
+                                        outputLine = ';' + outputLine;
+                                        lastState = 'EndStatement';
+                                        left = 0;
+                                        isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;                                              
+                                    }
+                                    state = 'Identifier';
+                                    expected = 0;
+                                    expected2 = 0;
+                                    expected3 = 0;
+                                    expected4 = 0;
+                                    left = 1;
 								}					
 								states = {first:0};							
 								outputLine = outputLine + scoping;
@@ -1348,15 +1353,7 @@
 								outputLine = outputLine + scoping;													
 							}																													                                                                                                                                                                                                                                                                                     
 						} else if(chr === FORWARD_SLASH) {
-							if(!left && next !== ASTERIX && next !== FORWARD_SLASH) {
-								
-								if(asi.RegExp && asi.RegExp[lastState]) {
-									outputLine = outputLine + ';';
-									lastState = 'EndStatement';
-									left = 0;
-									isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;														
-								}	
-								
+							if(!left && next !== ASTERIX && next !== FORWARD_SLASH) {																								
 								states = {escaping: 0, complete: 0, open: 0, square: 0, flags: {}};       
 				                state = 'RegExp';
 				                left = 1;               
@@ -1479,13 +1476,7 @@
 							outputLine = outputLine + '[';
 							if(state === 'AccessorOpen') {
 								outputLine = outputLine + 'M.P(';
-							}
-							if(asi[state] && asi[state][lastState]) {
-								outputLine = outputLine + ';';
-								lastState = 'EndStatement';
-								left = 0;
-								isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;													
-							}
+							}							
 							parentStates[lookupSquare+''+lookupCurly+''+lookupParen] = state;						
 							left = 0;
 							last = SQUARE_OPEN;
@@ -1504,13 +1495,7 @@
 								outputLine = outputLine + ')';
 							} else {				
 								error('Unexpected ]. Cannot follow '+lastState+'.Output:'+output);
-							}
-							if(asi[state] && asi[state][lastState]) {
-								outputLine = outputLine + ';';
-								lastState = 'EndStatement';
-								left = 0;
-								isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;													
-							}						
+							}													
 							outputLine = outputLine + ']';
 							left = 1;
 							last = SQUARE_CLOSE;
@@ -1589,13 +1574,7 @@
 								expected4 = 0;
 							} else {								
 								error('Unexpected (. Cannot follow '+lastState+'.Output:'+output);
-							}					
-							if(asi[state] && asi[state][lastState]) {
-								outputLine = outputLine + ';';
-								lastState = 'EndStatement';
-								left = 0;
-								isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;													
-							}
+							}												
 							outputLine = outputLine + '(';
 							last = PAREN_OPEN;
 							pos++;
@@ -1680,13 +1659,7 @@
 								left = 1;
 							} else {																													
 								error('Unexpected ). Cannot follow '+lastState+'.Output:'+output);							
-							}
-							if(asi[state] && asi[state][lastState]) {
-								outputLine = outputLine + ';';
-								lastState = 'EndStatement';
-								left = 0;
-								isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;												
-							} 						
+							}											
 							outputLine = outputLine + ')';
 							pos++;
 							parentStates[lookupSquare+''+lookupCurly+''+lookupParen] = '';																		
@@ -1779,13 +1752,7 @@
 								expected4 = 0;
 							} else {												
 								error('Unexpected {. Cannot follow '+lastState+'.Output:'+output);
-							}			
-							if(asi[state] && asi[state][lastState]) {				
-								outputLine = outputLine + ';';
-								lastState = 'EndStatement';
-								left = 0;
-								isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;													
-							}
+							}										
 							outputLine = outputLine + '{';
 							if(state === 'FunctionStatementCurlyOpen' || state === 'FunctionExpressionCurlyOpen') {
 								outputLine = outputLine + 'var $arguments$=M.A(arguments);';
@@ -1897,13 +1864,7 @@
 								left = 0;
 							} else {																						
 								error('Unexpected }. Cannot follow '+lastState+'.Output:'+output);
-							}
-							if(asi[state] && asi[state][lastState]) {								
-								outputLine = outputLine + ';';
-								lastState = 'EndStatement';
-								left = 0;
-								isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;													
-							}
+							}							
 							parentStates[lookupSquare+''+lookupCurly+''+lookupParen] = '';										
 							pos++;														
 						} else if(chr === QUESTION_MARK) {
@@ -2101,7 +2062,7 @@
 								state = 'OrAssignment';
 								outputLine = outputLine + '|=';
 								pos+=2;
-							} else if(chr === AMPERSAND && next !== AMPERSAND && next !== EQUAL) {
+							} else if(chr === PIPE && next !== PIPE && next !== EQUAL) {
 								state = 'BitwiseOr';
 								outputLine = outputLine + '|';
 								pos++;						
@@ -2321,15 +2282,17 @@
 						
 						if(!rules[state]) {
 							error("State does not exist in the rules:" +state);
-						}
+						}												                       
 						
-						if(asi[state] && asi[state][lastState] && newLineFlag) {						    
-							outputLine = outputLine + ';';
+						if(!rules[state][lastState] && newLineFlag) {						    						    						    
+							outputLine = ';' + outputLine;
 							lastState = 'EndStatement';
 							left = 0;
 							isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;												
 						}
 						
+						output = output + '' + outputLine;
+						 
 						if(!rules[state][lastState]) {																							
 							error("Unexpected " + state + '. Cannot follow '+lastState+'.Output:'+output);
 						} else if(((expected && expected !== state) || (expected2 && expected2 !== state) || (expected3 && expected3 !== state) || (expected4 && expected4 !== state)) && expect === 1) {
@@ -2350,9 +2313,7 @@
 						if(parseTree){							
 							parseTreeOutput = parseTreeOutput + '<'+state+'>' + outputLine + '</'+state+'>';
 						}
-																
-						lastState = state;
-						output = output + '' + outputLine;
+						lastState = state;																				
 						newLineFlag = 0;																									
 					}	
 					if(((expected && expected !== state) || (expected2 && expected2 !== state) || (expected3 && expected3 !== state) || (expected4 && expected4 !== state))) {
