@@ -1604,8 +1604,20 @@
 								expected2 = 0;
 								expected3 = 0;
 								expected4 = 0;
-							} else {								
-								error('Unexpected (. Cannot follow '+lastState+'.Output:'+output);
+							} else {							    
+							    if(!rules['Identifier'][lastState] && newLineFlag) {                                                                                    
+                                   outputLine = ';' + outputLine;
+                                   lastState = 'EndStatement';
+                                   left = 0;
+                                   isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;
+                                   state = 'ParenExpressionOpen';
+                                   expected = 0;
+                                   expected2 = 0;
+                                   expected3 = 0;
+                                   expected4 = 0;
+                                } else {
+							       error('Unexpected (. Cannot follow '+lastState+'.Output:'+output);
+							    }															
 							}												
 							outputLine = outputLine + '(';
 							last = PAREN_OPEN;
@@ -1782,8 +1794,20 @@
 								expected2 = 0;
 								expected3 = 0;
 								expected4 = 0;
-							} else {												
-								error('Unexpected {. Cannot follow '+lastState+'.Output:'+output);
+							} else {
+							    if(!rules['Identifier'][lastState] && newLineFlag) {                                                                                    
+                                   outputLine = ';' + outputLine;
+                                   lastState = 'EndStatement';
+                                   left = 0;
+                                   isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;
+                                   state = 'BlockStatementCurlyOpen';
+                                   expected = 0;
+                                   expected2 = 0;
+                                   expected3 = 0;
+                                   expected4 = 0;                                              
+                                } else {												
+								    error('Unexpected {. Cannot follow '+lastState+'.Output:'+output);
+								}
 							}										
 							outputLine = outputLine + '{';
 							if(state === 'FunctionStatementCurlyOpen' || state === 'FunctionExpressionCurlyOpen') {
