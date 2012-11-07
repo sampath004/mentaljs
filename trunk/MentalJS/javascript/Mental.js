@@ -68,7 +68,7 @@
 			GreaterThanEqual:createRule('Expression,Postfix'),
 			IdentifierDot:createRule('Expression'),
 			Identifier: createRule('Statements,Operators,Prefix,NewExpressions,IdentifierDot'),
-			IfStatement:createRule('Statements,Else,SwitchColon'),
+			IfStatement:createRule('Statements,SwitchColon'),
 			IfStatementParenOpen:createRule('IfStatement'),
 			IfStatementParenClose:createRule('Expression'),
 			IfStatementCurlyOpen:createRule('IfStatementParenClose'),
@@ -110,7 +110,7 @@
 			PostfixDeincrement:createRule('Expression'),
 			PrefixDeincrement:createRule('Statements,NewExpressions,Operators,Prefix'),
 			PrefixIncrement:createRule('Statements,NewExpressions,Operators,Prefix'),
-			Return:createRule('Statements'),
+			Return:createRule('Statements,SwitchColon'),
 			RegExp:createRule('Statements,Operators,NewExpressions,Prefix'),
 			RightShift:createRule('Expression,Postfix'),
 			RightShiftAssignment:createRule('Expression'),
@@ -184,7 +184,7 @@
 			SwitchStatementCurlyOpen:1,TryStatementCurlyOpen:1,WithStatementCurlyOpen:1,WhileStatementCurlyOpen:1,
 			FunctionExpressionCurlyOpen:1,ForStatementCurlyOpen:1,ForStatementCurlyClose:1,
 			ElseParenClose:1,IfStatementParenClose:1,SwitchStatementParenClose:1,WithStatementParenClose:1,
-			WhileStatementParenClose:1,ForStatementParenClose:1,LabelColon:1
+			WhileStatementParenClose:1,ForStatementParenClose:1,LabelColon:1,Return:1,Else:1
 		},
 		newExpressions = {
 			Comma:1, ArrayComma:1,VarComma:1,ForStatementParenOpen:1,IfStatementParenOpen:1,SwitchStatementParenOpen:1,
@@ -938,6 +938,7 @@
 								expected2 = 0;
 								expected3 = 0;
 								expected4 = 0;
+								expect = 0;
 								left = 0;	
 								pos+=6;	
 								outputLine = outputLine + 'switch';							
