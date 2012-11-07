@@ -18,7 +18,7 @@
 			Case: createRule('SwitchStatementCurlyOpen,EndStatement,SwitchColon'),		
 			Default:createRule('SwitchStatementCurlyOpen,EndStatement,SwitchColon'),
 			Debugger:createRule('Statements'),
-			Delete:createRule('Statements'),
+			Delete:createRule('Statements,NewExpressions,Operators'),
 			Do:createRule('Statements,SwitchColon'),	
 			DoStatementCurlyOpen:createRule('Do'),
 			DoStatementCurlyClose:createRule('Statements,Expression,DoStatementCurlyOpen,Postfix,Break,Continue'),
@@ -32,7 +32,7 @@
 			Comma:createRule('Expression,Postfix'),
 			Continue:createRule('Statements'),										
 			EqualAssignment:createRule('Expression'),
-			Equal:createRule('Expression'),					
+			Equal:createRule('Expression,Postfix'),					
 			Else:createRule('IfStatementCurlyClose,Statements'),
 			ElseCurlyOpen:createRule('Else'),
 			ElseCurlyClose:createRule('Statements,Expression,ElseCurlyOpen,Postfix,Break,Continue'),
@@ -71,7 +71,7 @@
 			Identifier: createRule('Statements,Operators,Prefix,NewExpressions,IdentifierDot'),
 			IfStatement:createRule('Statements,SwitchColon'),
 			IfStatementParenOpen:createRule('IfStatement'),
-			IfStatementParenClose:createRule('Expression'),
+			IfStatementParenClose:createRule('Expression,Postfix'),
 			IfStatementCurlyOpen:createRule('IfStatementParenClose'),
 			IfStatementCurlyClose:createRule('Statements,Expression,IfStatementCurlyOpen,Postfix,Break,Continue'),
 			In:createRule('Expression'),
@@ -125,8 +125,8 @@
 			SwitchStatementCurlyClose:createRule('SwitchStatementCurlyOpen,Expression,Statements,Postfix,Break,Continue'),
 			SwitchColon:createRule('Expression,Default'),					
 			This:createRule('Statements,Operators,NewExpressions,Prefix'),
-			TernaryQuestionMark:createRule('Expression'),
-			TernaryColon:createRule('Expression'),
+			TernaryQuestionMark:createRule('Expression,Postfix'),
+			TernaryColon:createRule('Expression,Postfix'),
 			TryStatement:createRule('Statements,SwitchColon'),
 			TryStatementCurlyOpen:createRule('TryStatement'),
 			TryStatementCurlyClose:createRule('TryStatementCurlyOpen,Expression,Statements,Postfix,Break,Continue'),
@@ -142,7 +142,7 @@
 			Void:createRule('Statements,NewExpressions,Operators'),
 			WithStatement:createRule('Statements,SwitchColon'),
 			WithStatementParenOpen:createRule('WithStatement'),
-			WithStatementParenClose:createRule('Expression'),
+			WithStatementParenClose:createRule('Expression,Postfix'),
 			WithStatementCurlyOpen:createRule('WithStatementParenClose'),
 			WithStatementCurlyClose:createRule('WithStatementCurlyOpen,Expression,Statements,Postfix,Break,Continue'),
 			WhileStatement:createRule('Statements,DoStatementCurlyClose,SwitchColon'),
@@ -186,7 +186,7 @@
 			SwitchStatementCurlyOpen:1,TryStatementCurlyOpen:1,WithStatementCurlyOpen:1,WhileStatementCurlyOpen:1,
 			FunctionExpressionCurlyOpen:1,ForStatementCurlyOpen:1,ForStatementCurlyClose:1,
 			ElseParenClose:1,IfStatementParenClose:1,SwitchStatementParenClose:1,WithStatementParenClose:1,
-			WhileStatementParenClose:1,ForStatementParenClose:1,LabelColon:1,Return:1,Else:1,SwitchColon:1
+			WhileStatementParenClose:1,ForStatementParenClose:1,LabelColon:1,Return:1,Else:1,SwitchColon:1,Do:1
 		},
 		newExpressions = {
 			Comma:1, ArrayComma:1,VarComma:1,ForStatementParenOpen:1,IfStatementParenOpen:1,SwitchStatementParenOpen:1,
@@ -757,7 +757,13 @@
 								left = 1;
 				           	 	state = 'Number';
 				          	} else {
-				          		error('Unexpected Number. Cannot follow '+lastState+'.Output:'+output);
+				          		if(!rules['Number'][lastState] && newLineFlag) {                                                                                    
+                                    outputLine = ';' + outputLine;
+                                    lastState = 'EndStatement';
+                                    left = 1;
+                                    isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;
+                                    state = 'Number';                                
+                                }
 				          	}
 							
 							states = {hex:0, len:0, dot: 0, e:0};                        
@@ -851,9 +857,22 @@
 									expected3 = 0;
 									expected4 = 0;
 									expect = 0;
-								} else {
-									error('Unexpected function. Cannot follow '+lastState+'.Output:'+output);
-								}
+								} else {								    
+								    if(!rules['Identifier'][lastState] && newLineFlag) {                                                                                    
+                                        outputLine = ';' + outputLine;
+                                        lastState = 'EndStatement';
+                                        left = 0;
+                                        isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;
+                                        state = 'FunctionStatement';
+                                        expected = 'FunctionIdentifier';
+                                        expected2 = 0;
+                                        expected3 = 0;
+                                        expected4 = 0;
+                                        expect = 0;
+                                    } else {
+                                        error('Unexpected function. Cannot follow '+lastState+'.Output:'+output);
+                                    }                                              
+                                }
 								left = 0;
 								pos+=8;
 								outputLine = outputLine + 'function';											
@@ -872,7 +891,13 @@
 								outputLine = outputLine + 'if';
 								isIf[lookupSquare+''+lookupCurly+''+lookupParen] = 1;																			
 							//var keyword
-							} else if(chr === LOWER_V && next === LOWER_A && next2 === LOWER_R && !isValidVariablePart(next3) && next3 !== BACKSLASH) {
+							} else if(chr === LOWER_V && next === LOWER_A && next2 === LOWER_R && !isValidVariablePart(next3) && next3 !== BACKSLASH) {																																
+								if(!rules['Var'][lastState]) {                                                                                                                       
+                                    outputLine = ';' + outputLine;
+                                    lastState = 'EndStatement';
+                                    left = 0;
+                                    isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;                                              
+                                }
 								state = 'Var';
 								expected = 'Identifier';
 								expected2 = 0;
@@ -882,7 +907,7 @@
 								left = 0;	
 								pos+=3;	
 								outputLine = outputLine + 'var ';
-								isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 1;																																				
+								isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 1;																																												
 							//for keyword
 							} else if(chr === LOWER_F && next === LOWER_O && next2 === LOWER_R && !isValidVariablePart(next3) && next3 !== BACKSLASH) {
 								state = 'ForStatement';
@@ -937,6 +962,7 @@
 								expected2 = 0;
 								expected3 = 0;
 								expected4 = 0;
+								expect = 0;
 								left = 0;	
 								pos+=4;
 								outputLine = outputLine + 'with';								
@@ -1084,7 +1110,7 @@
 								expect = 0;
 								left = 0;	
 								pos+=2;
-								outputLine = outputLine + 'do';								
+								outputLine = outputLine + 'do ';								
 							// finally keyword			
 							} else if(chr === LOWER_F && next === LOWER_I && next2 === LOWER_N && next3 === LOWER_A && next4 === LOWER_L && next5 === LOWER_L && next6 === LOWER_Y && !isValidVariablePart(next7) && next7 !== BACKSLASH) {
 								state = 'FinallyStatement';
@@ -1256,7 +1282,7 @@
 									expected3 = 0;
 									expected4 = 0;
 									expect = 0;
-								} else if(rules.VarIdentifier[lastState]) {
+								} else if(rules.VarIdentifier[lastState]) {									
 									state = 'VarIdentifier';
 									expected = 0;
 									expected2 = 0;
@@ -1351,7 +1377,13 @@
 									pos++;
 								}
 								outputLine = outputLine + scoping;													
-							}																													                                                                                                                                                                                                                                                                                     
+							}
+							
+							if(!rules[state][lastState] && newLineFlag) {                                                                                    
+                                outputLine = ';' + outputLine;
+                                lastState = 'EndStatement';                                
+                                isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;                                              
+                            }																																																																			                                                                                                                                                                                                                                                                                     
 						} else if(chr === FORWARD_SLASH) {
 							if(!left && next !== ASTERIX && next !== FORWARD_SLASH) {																								
 								states = {escaping: 0, complete: 0, open: 0, square: 0, flags: {}};       
@@ -2276,7 +2308,7 @@
 							error("Unable to parse "+ String.fromCharCode(chr));
 						}															
 						
-						if(state === 'Nothing') {
+						if(state === 'Nothing') {						    
 							error("No state defined for char:" +String.fromCharCode(chr));
 						}
 						
