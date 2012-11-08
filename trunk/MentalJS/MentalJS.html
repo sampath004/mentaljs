@@ -206,7 +206,7 @@ function exec() {
 		js.parse({
 			global: true,
 			thisObject: window,
-			options: {eval:true, stealth: true, browserCheckSyntax: true},
+			options: {eval:true, stealth: true, browserCheckSyntax: document.getElementById('enableFunctionCode').checked },
 			code:document.getElementById('code').value,
 			converted: function(converted) {
 				document.getElementById('converted').value = converted;					
@@ -254,7 +254,7 @@ function exec() {
 		<legend>MentalJS Parser</legend>				
 		<div class="clear">
 			<span class="column">
-				<label>Your Code:</label>
+				<label>Your Code: Browser syntax check? <input type="checkbox" id="browser" checked="checked"><br></label>				
 				<textarea id="code"></textarea>
 			</span>
 			<span class="column">
