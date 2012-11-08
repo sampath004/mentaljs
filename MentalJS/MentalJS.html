@@ -209,7 +209,7 @@ function exec() {
 		js.parse({
 			global: true,
 			thisObject: window,
-			options: {eval:true, stealth: true, browserCheckSyntax: document.getElementById('enableFunctionCode').checked },
+			options: {eval:true, stealth: true, browserCheckSyntax: document.getElementById('browser').checked },
 			code:document.getElementById('code').value,
 			converted: function(converted) {
 				document.getElementById('converted').value = converted;					
