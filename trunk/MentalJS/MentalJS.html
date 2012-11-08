@@ -193,6 +193,12 @@ function loadjQuery() {
 	xhr.send();
 	document.getElementById('code').value = xhr.responseText;
 }
+function inception() {
+	var xhr = new XMLHttpRequest;
+	xhr.open('GET', 'javascript/Mental.js', false);
+	xhr.send();
+	document.getElementById('code').value = 'function Error(){return {};};Object.defineProperty=function(){};Object.create=function(obj){return obj;};' + xhr.responseText + 'eval("js=MentalJS();alert(js.parse(\'1+1\'))");';
+}
 function exec() {
 	var js = MentalJS(),
 		start = new Date(), end, elapsedTime;		 
@@ -274,6 +280,7 @@ function exec() {
 			<input type="button" value="Hack Test" onclick="runTest();" />
 			<input type="button" value="JS Tests" onclick="self.location='jstests/'" />  
 			<input type="button" value="Clear errors" onclick="document.getElementById('result').value=''" /> 			
+			<input type="button" value="Inception" onclick="inception()" />
 			<input type="button" value="Execute code" onclick="exec()" />			
 		</p>
 		<div id="tests"></div>
