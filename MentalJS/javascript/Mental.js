@@ -1494,7 +1494,7 @@
 									state = 'DivideOperator';
 									pos++;
 									last = FORWARD_SLASH;
-									outputLine = outputLine + '/';	
+									outputLine = outputLine + ' / ';	
 								}
 							} else {
 								error('Unexpected /. Cannot follow '+lastState+'.Output:'+output);
