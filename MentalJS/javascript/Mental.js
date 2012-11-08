@@ -590,7 +590,7 @@
                                 '$productSub$': {configurable: true, get:function(){return navigator.productSub}},
                                 '$userAgent$': {configurable: true, get:function(){return navigator.userAgent}},
                                 '$vendor$': {configurable: true, get:function(){return navigator.vendor}},
-                                '$vendorSub$': {configurable: true, get:function(){return navigator.vendorSub}},                                
+                                '$vendorSub$': {configurable: true, get:function(){return navigator.vendorSub}}                               
                             }); 
                             Object.defineProperties(document.documentElement, {
                                 '$contains$': {enumerable:false,configurable: true, writable: false, value: function(){return document.documentElement.contains.apply(document.documentElement, arguments)}},
