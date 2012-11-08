@@ -58,7 +58,7 @@
 			FunctionExpressionParenOpen:createRule('FunctionExpression,FunctionExpressionIdentifier'),
 			FunctionExpressionArgumentIdentifier:createRule('FunctionExpressionParenOpen,FunctionExpressionArgumentComma'),		
 			FunctionExpressionArgumentComma:createRule('FunctionExpressionArgumentIdentifier'),
-			FunctionParenClose: createRule('FunctionStatementCurlyOpen,FunctionParenOpen,FunctionArgumentIdentifier'),
+			FunctionParenClose: createRule('FunctionParenOpen,FunctionArgumentIdentifier'),
 			FunctionExpressionParenClose: createRule('FunctionExpressionArgumentIdentifier,FunctionExpressionParenOpen'),
 			FunctionExpressionCurlyOpen:createRule('FunctionExpressionParenClose'),
 			FunctionStatement:createRule('Statements,SwitchColon'),
@@ -2063,7 +2063,7 @@
 							next2 = code.charCodeAt(pos+2);						
 							if(chr === EXCLAMATION_MARK && next !== EQUAL && !left) {
 								state = 'Not';
-								outputLine = outputLine + '!';
+								outputLine = outputLine + ' ! ';
 								pos++;
 							} else if(chr === EXCLAMATION_MARK && next === EQUAL && next2 !== EQUAL) {
 								state = 'NotEqual';
@@ -2101,7 +2101,7 @@
 								pos+=2;
 							} else if(chr === PLUS && next !== EQUAL && next !== PLUS && left) {
 								state = 'Addition';
-								outputLine = outputLine + '+';
+								outputLine = outputLine + ' + ';
 								pos++;
 							} else if(chr === PLUS && next !== EQUAL && next !== PLUS && !left) {
 								state = 'UnaryPlus';
@@ -2122,7 +2122,7 @@
 								pos+=2;
 							} else if(chr === PIPE && next !== PIPE && next !== EQUAL) {
 								state = 'BitwiseOr';
-								outputLine = outputLine + '|';
+								outputLine = outputLine + ' | ';
 								pos++;						
 							} else {
 								error('Unexpected | Cannot follow '+lastState+'.Output:'+output);
@@ -2135,7 +2135,7 @@
 								pos+=2;
 							} else if(chr === CARET && next !== EQUAL) {
 								state = 'Xor';
-								outputLine = outputLine + '^';
+								outputLine = outputLine + ' ^ ';
 								pos++;						
 							} else {
 								error('Unexpected ^. Cannot follow '+lastState+'.Output:'+output);
@@ -2148,7 +2148,7 @@
 								pos+=2;
 							} else if(chr === PERCENT && next !== EQUAL) {
 								state = 'Modulus';
-								outputLine = outputLine + '%';
+								outputLine = outputLine + ' % ';
 								pos++;						
 							} else {
 								error('Unexpected % Cannot follow '+lastState+'.Output:'+output);
@@ -2165,7 +2165,7 @@
 								pos+=2;
 							} else if(chr === AMPERSAND && next !== AMPERSAND && next !== EQUAL) {
 								state = 'BitwiseAnd';
-								outputLine = outputLine + '&';
+								outputLine = outputLine + ' & ';
 								pos++;						
 							} else {
 								error('Unexpected & Cannot follow '+lastState+'.Output:'+output);
@@ -2175,7 +2175,7 @@
 							next2 = code.charCodeAt(pos+2);						
 							if(chr === EQUAL && next !== EQUAL) {
 								state = 'EqualAssignment';
-								outputLine = outputLine + '=';
+								outputLine = outputLine + ' = ';
 								pos++;
 							} else if(chr === EQUAL && next === EQUAL && next2 !== EQUAL) {
 								state = 'Equal';
@@ -2210,7 +2210,7 @@
 								pos+=2;
 							} else if(chr === GREATER_THAN && next !== EQUAL) {
 								state = 'GreaterThan';
-								outputLine = outputLine + '>';
+								outputLine = outputLine + ' > ';
 								pos++;
 							} else if(chr === GREATER_THAN && next === EQUAL) {
 								state = 'GreaterThanEqual';
@@ -2232,7 +2232,7 @@
 								pos+=2;
 							} else if(chr === LESS_THAN && next !== EQUAL) {
 								state = 'LessThan';
-								outputLine = outputLine + '<';
+								outputLine = outputLine + ' < ';
 								pos++;
 							} else if(chr === LESS_THAN && next === EQUAL) {
 								state = 'LessThanEqual';
@@ -2245,7 +2245,7 @@
 						} else if(chr === ASTERIX) {											
 							if(chr === ASTERIX && next !== EQUAL) {
 								state = 'Multiply';
-								outputLine = outputLine + '*';
+								outputLine = outputLine + ' * ';
 								pos++;
 							} else if(chr === ASTERIX && next === EQUAL) {
 								state = 'MultiplyAssignment';
@@ -2270,7 +2270,7 @@
 								pos+=2;
 							} else if(chr === MINUS && next !== EQUAL && next !== MINUS && left) {
 								state = 'Minus';
-								outputLine = outputLine + '-';
+								outputLine = outputLine + ' - ';
 								pos++;
 							} else if(chr === MINUS && next !== EQUAL && next !== MINUS && !left) {
 								state = 'UnaryMinus';
@@ -2304,15 +2304,19 @@
 								if(pos === length) {
 										break;
 									}
-								chr = code.charCodeAt(pos);							
+								chr = code.charCodeAt(pos);
+								next = code.charCodeAt(pos+1);							
 								if(chr === SINGLE_QUOTE && !states.escaping && states[SINGLE_QUOTE]) {
 				                    states.complete = 1;                 
 				                } else if(chr === DOUBLE_QUOTE && !states.escaping && states[DOUBLE_QUOTE]) {
-				                    states.complete = 1;                                                
+				                    states.complete = 1;
+				                } else if(chr === BACKSLASH && !states.escaping && (next === NEWLINE || next === CARRIAGE_RETURN || next === LINE_SEPARATOR || next === PARAGRAPH_SEPARATOR) ) {				                    
+				                    pos+=2;
+				                    continue;                                                
 				                } else if(chr === BACKSLASH && !states.escaping) {
-				                    states.escaping = 1;
+				                    states.escaping = 1;				                
 				                } else if(chr === BACKSLASH && states.escaping) {
-				                    states.escaping = 0;
+				                    states.escaping = 0;				                
 				                } else if((chr === NEWLINE || chr === CARRIAGE_RETURN || chr === LINE_SEPARATOR || chr === PARAGRAPH_SEPARATOR) && !states.escaping) {
 				                    error("Unterminated string literal");
 				                } else if(states.escaping) {
