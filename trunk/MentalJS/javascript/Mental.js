@@ -153,7 +153,7 @@
 			Xor:createRule('Expression,Postfix'),
 			XorAssignment:createRule('Expression'),		
 			ZeroRightShift:createRule('Expression,Postfix'),
-			ZeroRightShiftAssignment:createRule('Expression'),										
+			ZeroRightShiftAssignment:createRule('Expression')										
 	};
 	function createRule(rules) {
 		rules = rules.split(',');
