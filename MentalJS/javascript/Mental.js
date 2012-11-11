@@ -1795,13 +1795,31 @@
 								expected2 = 0;
 								expected3 = 0;
 								expected4 = 0;
-							} else {
-							    if(!rules['Identifier'][lastState] && newLineFlag) {                                                                                    
-                                   outputLine = ';' + outputLine;
-                                   lastState = 'EndStatement';
-                                   left = 0;
-                                   isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;
-                                   state = 'BlockStatementCurlyOpen';
+							} else {							    							    							  							    
+							    if(!rules['Identifier'][lastState] && newLineFlag) {							        
+							      if(isFor[lookupSquare+''+lookupCurly+''+(lookupParen-1)] && !isForIn[lookupSquare+''+lookupCurly+''+(lookupParen-1)]) {
+                                    lastState = 'ForSemi';
+                                    outputLine = outputLine + ';';
+                                    if(isFor[lookupSquare+''+lookupCurly+''+(lookupParen-1)] > 2) {
+                                        error("Syntax error unexpected for semi ;");
+                                    }
+                                    isFor[lookupSquare+''+lookupCurly+''+(lookupParen-1)]++;
+                                    isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;
+                                    state = 'ObjectLiteralCurlyOpen';
+                                    expected = 'ObjectLiteralIdentifier';
+                                    expected2 = 'ObjectLiteralIdentifierString';
+                                    expected3 = 'ObjectLiteralIdentifierNumber';
+                                    expected4 = 'ObjectLiteralCurlyClose';
+                                    expect = 0;
+                                    parentStates[lookupSquare+''+(lookupCurly+1)+''+lookupParen] = state;
+                                    outputLine = outputLine + 'M.O(';   
+							      } else {                                                                                      
+                                       outputLine = ';' + outputLine;
+                                       lastState = 'EndStatement';
+                                       left = 0;
+                                       isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;
+                                       state = 'BlockStatementCurlyOpen';
+                                  }
                                    expected = 0;
                                    expected2 = 0;
                                    expected3 = 0;
