@@ -918,7 +918,7 @@
 								expect = 0;
 								left = 0;	
 								pos+=3;	
-								outputLine = outputLine + 'for';
+								outputLine = outputLine + 'for ';
 								isFor[lookupSquare+''+lookupCurly+''+lookupParen] = 1;																			
 							// else keyword
 							} else if(chr === LOWER_E && next === LOWER_L && next2 === LOWER_S && next3 === LOWER_E && !isValidVariablePart(next4) && next4 !== BACKSLASH) {															
@@ -1035,7 +1035,7 @@
 								expected4 = 0;
 								left = 0;	
 								pos+=5;
-								outputLine = outputLine + 'break';								
+								outputLine = outputLine + 'break ';								
 							// case keyword
 							} else if(chr === LOWER_C && next === LOWER_A && next2 === LOWER_S && next3 === LOWER_E && !isValidVariablePart(next4) && next4 !== BACKSLASH) {
 								state = 'Case';
@@ -1068,7 +1068,7 @@
 								expected4 = 0;
 								left = 0;	
 								pos+=8;
-								outputLine = outputLine + 'continue';										
+								outputLine = outputLine + 'continue ';										
 							// debugger keyword			
 							} else if(chr === LOWER_D && next === LOWER_E && next2 === LOWER_B && next3 === LOWER_U && next4 === LOWER_G && next5 === LOWER_G && next6 === LOWER_E && next7 === LOWER_R && !isValidVariablePart(next8) && next8 !== BACKSLASH) {
 								state = 'Debugger';
