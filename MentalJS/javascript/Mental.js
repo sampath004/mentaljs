@@ -90,6 +90,7 @@
 			Null: createRule('Statements,Operators,NewExpressions,Prefix'),
 			NotEqual:createRule('Expression,Postfix'),					
 			Not:createRule('Prefix,Statements,NewExpressions,Operators'),
+			Nothing:{},
 			Minus:createRule('Expression,Postfix'),
 			MinusAssignment:createRule('Expression'),
 			Modulus:createRule('Expression,Postfix'),
@@ -185,7 +186,7 @@
 			ElseCurlyOpen:1,FinallyStatementCurlyOpen:1,FunctionStatementCurlyOpen:1,IfStatementCurlyOpen:1,
 			SwitchStatementCurlyOpen:1,TryStatementCurlyOpen:1,WithStatementCurlyOpen:1,WhileStatementCurlyOpen:1,
 			FunctionExpressionCurlyOpen:1,ForStatementCurlyOpen:1,ForStatementCurlyClose:1,
-			ElseParenClose:1,IfStatementParenClose:1,SwitchStatementParenClose:1,WithStatementParenClose:1,
+			IfStatementParenClose:1,SwitchStatementParenClose:1,WithStatementParenClose:1,
 			WhileStatementParenClose:1,ForStatementParenClose:1,LabelColon:1,Return:1,Else:1,SwitchColon:1,Do:1
 		},
 		newExpressions = {
@@ -744,6 +745,12 @@
 						} else if(chr === NEWLINE || chr === CARRIAGE_RETURN || chr === LINE_SEPARATOR || chr === PARAGRAPH_SEPARATOR) {						
 							newLineFlag = 1;
 							pos++;
+							if(lastState === 'Break' || lastState === 'Continue' || lastState === 'Return') {
+							    output = output + ';';
+							    lastState = 'EndStatement';
+							    isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;
+							    left = 0;
+							}
 							continue;												
 						} else if((chr >= DIGIT_0 && chr <= DIGIT_9) || (!left && chr === PERIOD)) {																														
 							if(rules.ObjectLiteralIdentifierNumber[lastState]) {
