@@ -283,8 +283,7 @@
                             text: code.slice(pos-10, pos+10),
                             code: this.code
                         }           
-                    };
-                    
+                    };                    
                     function execute(code) {
                     var result, hiddenProperties,
                         M = {
@@ -695,8 +694,31 @@
                             pos = (e.lineNumber - relativeLineNumber - 1);                
                             error(e, code);
                         }
-                    }; 
-					
+                    };
+                    function asi(useOutput) {
+                        if(isFor[lookupSquare+''+lookupCurly+''+(lookupParen-1)] && !isForIn[lookupSquare+''+lookupCurly+''+(lookupParen-1)]) {
+                            lastState = 'ForSemi';
+                            if(useOutput) { 
+                                output = output + ';';
+                            } else {
+                                outputLine = outputLine + ';';
+                            }
+                            if(isFor[lookupSquare+''+lookupCurly+''+(lookupParen-1)] > 2) {
+                                error("Syntax error unexpected for semi ;");
+                            }
+                            isFor[lookupSquare+''+lookupCurly+''+(lookupParen-1)]++;
+                            isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;                             
+                          } else { 
+                            if(useOutput) {                                                                                      
+                               output = output + ';';
+                            } else {
+                               outputLine = ';' + outputLine;
+                            }
+                            lastState = 'EndStatement';
+                            left = 0;
+                            isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;                               
+                          }
+                    }; 					
 					function isValidVariable(c) {
 				    	if((c >= LOWER_A && c <= LOWER_Z) || (c >= UPPER_A && c <= UPPER_Z) || c === UNDERSCORE || c === DOLLAR) {
 				    		return true;
@@ -746,10 +768,7 @@
 							newLineFlag = 1;
 							pos++;
 							if(lastState === 'Break' || lastState === 'Continue' || lastState === 'Return') {
-							    output = output + ';';
-							    lastState = 'EndStatement';
-							    isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;
-							    left = 0;
+							    asi(true);
 							}
 							continue;												
 						} else if((chr >= DIGIT_0 && chr <= DIGIT_9) || (!left && chr === PERIOD)) {																														
@@ -765,10 +784,8 @@
 				           	 	state = 'Number';
 				          	} else {
 				          		if(!rules['Number'][lastState] && newLineFlag) {                                                                                    
-                                    outputLine = ';' + outputLine;
-                                    lastState = 'EndStatement';
-                                    left = 1;
-                                    isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;
+                                    asi();
+                                    left = 1;                                    
                                     state = 'Number';                                
                                 }
 				          	}
@@ -782,24 +799,30 @@
 				            }                  
 				            for(;;) {
 				            	
-				            	if(pos === length) {
+				            	if(pos === length) {				            	    				                    
 				                    break;
 				                }
 				            	
 				                chr = code.charCodeAt(pos);                
 				                next = code.charCodeAt(pos+1);                
-				                if(chr >= DIGIT_0 && chr <= DIGIT_9) {
+				                if(states.len === 0 && chr === DIGIT_0 && (next >= DIGIT_0 && next <= DIGIT_9)) {
+				                   pos++;
+				                   continue; 
+				                } else if(chr >= DIGIT_0 && chr <= DIGIT_9) {				                    
 				                	if(states.hex) {
 				                		states.hex++;   
+				                	} else if(states.e) {
+				                	    states.e++;
 				                	}
 				                } else if(states.hex && ((chr >= LOWER_A && chr <= LOWER_F) || (chr >= UPPER_A && chr <= UPPER_F))) {
 				                	states.hex++;         	                                    
 				                } else if((chr === LOWER_E || chr === UPPER_E) && next === PLUS && !states.e) {                                                                
 				                    outputLine = outputLine + 'e+';
-				                    states.e = 1;
+				                    states.e = 1;				                    
 				                    pos+=2;
+				                    continue;
 				                } else if(!states.hex && chr === PERIOD && !states.dot) {                    
-				                    if(states.e) {
+				                    if(states.e) {				                        
 				                    	break;
 				                    }
 				                    states.dot = 1;
@@ -809,7 +832,8 @@
 				                	outputLine = outputLine + 'e-';
 				                	states.e = 1;
 				                    pos+=2;
-				                } else if((chr === LOWER_E || chr === UPPER_E) && (next >= DIGIT_0 && next <= DIGIT_9 || next === PLUS || next === MINUS) && states.e && states.len > 0) {                	
+				                    continue;
+				                } else if((chr === LOWER_E || chr === UPPER_E) && (next >= DIGIT_0 && next <= DIGIT_9 || next === PLUS || next === MINUS) && states.e && states.len > 0) {                					                					                					                	
 				                	break;
 				                } else if((chr === LOWER_E || chr === UPPER_E) && next !== MINUS && next !== PLUS && (next >= DIGIT_0 && next <= DIGIT_9)) {
 				                	states.e = 1;                                
@@ -819,14 +843,14 @@
 				                    break;
 				                } else if(!state.hex && (!((chr >= DIGIT_0 && chr <= DIGIT_9) || chr === PERIOD || chr === LOWER_E || chr === UPPER_E)) && states.len === 0) {
 				                    error('Invalid number');                                                                     
-				                } else {
+				                } else {				                    				                	
 				                	break;
 				                }
 				                                                           
 				                outputLine = outputLine + code.charAt(pos);
 				                pos++;
 				                states.len++;                
-				                if(states.complete) {
+				                if(states.complete) {				                    
 				                    break;
 				                }                
 				            }  
@@ -835,7 +859,9 @@
 				            	error("Syntax error expected number");
 				            } else if(states.hex && states.len <= 2) {            	            	
 				            	error("Expected hex digit");
-				            }                                                                                                                                                                                     
+				            } else if(states.e === 1) {
+				                error("Expected exponent");
+				            }                                                                                                                                                                                    
 						} else if((chr >= LOWER_A && chr <= LOWER_Z) || (chr >= UPPER_A && chr <= UPPER_Z) || (chr === BACKSLASH || isValidVariable(chr))) {
 							
 							next2 = code.charCodeAt(pos+2);
@@ -866,10 +892,7 @@
 									expect = 0;
 								} else {								    
 								    if(!rules['Identifier'][lastState] && newLineFlag) {                                                                                    
-                                        outputLine = ';' + outputLine;
-                                        lastState = 'EndStatement';
-                                        left = 0;
-                                        isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;
+                                        asi();
                                         state = 'FunctionStatement';
                                         expected = 'FunctionIdentifier';
                                         expected2 = 0;
@@ -900,10 +923,7 @@
 							//var keyword
 							} else if(chr === LOWER_V && next === LOWER_A && next2 === LOWER_R && !isValidVariablePart(next3) && next3 !== BACKSLASH) {																																
 								if(!rules['Var'][lastState]) {                                                                                                                       
-                                    outputLine = ';' + outputLine;
-                                    lastState = 'EndStatement';
-                                    left = 0;
-                                    isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;                                              
+                                    asi();                                             
                                 }
 								state = 'Var';
 								expected = 'Identifier';
@@ -1305,10 +1325,7 @@
 									left = 1;								
 								} else {
 									if(!rules['Identifier'][lastState] && newLineFlag) {                                                                                    
-                                        outputLine = ';' + outputLine;
-                                        lastState = 'EndStatement';
-                                        left = 0;
-                                        isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;                                              
+                                        asi();                                              
                                     }
                                     state = 'Identifier';
                                     expected = 0;
@@ -1387,9 +1404,7 @@
 							}
 							
 							if(!rules[state][lastState] && newLineFlag) {                                                                                    
-                                outputLine = ';' + outputLine;
-                                lastState = 'EndStatement';                                
-                                isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;                                              
+                                asi();                                              
                             }																																																																			                                                                                                                                                                                                                                                                                     
 						} else if(chr === FORWARD_SLASH) {
 							if(!left && next !== ASTERIX && next !== FORWARD_SLASH) {																								
@@ -1613,10 +1628,7 @@
 								expected4 = 0;
 							} else {							    
 							    if(!rules['Identifier'][lastState] && newLineFlag) {                                                                                    
-                                   outputLine = ';' + outputLine;
-                                   lastState = 'EndStatement';
-                                   left = 0;
-                                   isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;
+                                   asi();
                                    state = 'ParenExpressionOpen';
                                    expected = 0;
                                    expected2 = 0;
@@ -1804,14 +1816,8 @@
 								expected4 = 0;
 							} else {							    							    							  							    
 							    if(!rules['Identifier'][lastState] && newLineFlag) {							        
-							      if(isFor[lookupSquare+''+lookupCurly+''+(lookupParen-1)] && !isForIn[lookupSquare+''+lookupCurly+''+(lookupParen-1)]) {
-                                    lastState = 'ForSemi';
-                                    outputLine = outputLine + ';';
-                                    if(isFor[lookupSquare+''+lookupCurly+''+(lookupParen-1)] > 2) {
-                                        error("Syntax error unexpected for semi ;");
-                                    }
-                                    isFor[lookupSquare+''+lookupCurly+''+(lookupParen-1)]++;
-                                    isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;
+							      asi();
+							      if(lastState === 'ForSemi') {                                    
                                     state = 'ObjectLiteralCurlyOpen';
                                     expected = 'ObjectLiteralIdentifier';
                                     expected2 = 'ObjectLiteralIdentifierString';
@@ -1820,17 +1826,13 @@
                                     expect = 0;
                                     parentStates[lookupSquare+''+(lookupCurly+1)+''+lookupParen] = state;
                                     outputLine = outputLine + 'M.O(';   
-							      } else {                                                                                      
-                                       outputLine = ';' + outputLine;
-                                       lastState = 'EndStatement';
-                                       left = 0;
-                                       isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;
-                                       state = 'BlockStatementCurlyOpen';
-                                  }
-                                   expected = 0;
-                                   expected2 = 0;
-                                   expected3 = 0;
-                                   expected4 = 0;                                              
+							      } else {                                                                                                                             
+                                    state = 'BlockStatementCurlyOpen';
+                                    expected = 0;
+                                    expected2 = 0;
+                                    expected3 = 0;
+                                    expected4 = 0;
+                                  }                                                                                 
                                 } else {												
 								    error('Unexpected {. Cannot follow '+lastState+'.Output:'+output);
 								}
@@ -2372,10 +2374,7 @@
 						}												                       
 						
 						if(!rules[state][lastState] && newLineFlag) {						    						    						    
-							outputLine = ';' + outputLine;
-							lastState = 'EndStatement';
-							left = 0;
-							isVar[lookupSquare+''+lookupCurly+''+lookupParen] = 0;												
+							asi();												
 						}
 						
 						output = output + '' + outputLine;
