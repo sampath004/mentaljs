@@ -157,7 +157,8 @@ function runTest() {
 						"for(;0;)break\ntypeof/lo;log($placeholder$)/+0",
 						"1<!--0[0];for(1\nfunction lo(){}/log($placeholder$)/+0<!--0[0];);",
 						"01.E+/-0;lo='/+log($placeholder$)//'",
-						"07.in/log($placeholder$)/+0",													
+						"07.in/log($placeholder$)/+0",
+						"eval(\"1..lo\\u2028in\\u2028function\\u2028()/'/;log($placeholder$)//'\");",													
 						//dos vectors
 						"_:/\[/","_:/'/","_:/(]\\[)/","_:/ / /**/","0/function(){}/","function()[]"
 						];
@@ -207,10 +208,13 @@ function inception() {
 	xhr.send();
 	document.getElementById('code').value = 'function Error(){return {};};Object.defineProperty=function(){};Object.create=function(obj){return obj;};' + xhr.responseText + 'eval("js=MentalJS();alert(js.parse(\'1+1\'))");';
 }
-function exec() {
+function exec(runProfile) {
 	var js = MentalJS(),
 		start = new Date(), end, elapsedTime;		 
-	try {
+	try {		
+		if(runProfile) {
+			console.profile();
+		}
 		js.parse({
 			global: true,
 			thisObject: window,
@@ -223,6 +227,9 @@ function exec() {
 				document.getElementById('result').value = 'type:' + typeof result + '\n' + result;
 			},
 			complete: function() {
+				if(runProfile) {
+					console.profileEnd();
+				}
 				end = new Date();
 				elapsedTime = (end - start);
 				document.getElementById('timeTaken').innerHTML = elapsedTime + 'ms';					
@@ -288,7 +295,8 @@ function exec() {
 			<input type="button" value="Hack Test" onclick="runTest();" />
 			<input type="button" value="JS Tests" onclick="self.location='jstests/'" />  
 			<input type="button" value="Clear errors" onclick="document.getElementById('result').value=''" /> 			
-			<input type="button" value="Inception" onclick="inception()" />
+			<input type="button" value="Inception" onclick="inception()" /><br />
+			<input type="button" value="Execute code + profiler" onclick="exec(true)" />
 			<input type="button" value="Execute code" onclick="exec()" />			
 		</p>
 		<div id="tests"></div>
