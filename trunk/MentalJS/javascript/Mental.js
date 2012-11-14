@@ -2037,8 +2037,7 @@
 								ternaryCount--;
 							} else if(rules.ObjectLiteralColon[lastState]) {
 								state = 'ObjectLiteralColon';
-								expected = 0;
-								expected1 = '';
+								expected = 0;								
 								expected2 = 0;
 								expected3 = 0;
 								expected4 = 0;																								
@@ -2048,8 +2047,7 @@
 								if(lastState === 'Case') {
 									error("Syntax error");
 								}
-								expected = 0;
-								expected1 = '';
+								expected = 0;								
 								expected2 = 0;
 								expected3 = 0;
 								expected4 = 0;
