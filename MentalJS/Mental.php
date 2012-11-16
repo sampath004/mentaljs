@@ -110,7 +110,7 @@ class MentalJS {
 		return $this->valid;
 	}
 	public function rewrite($code) {
-		return $this->parse($code, array('rewrite' => 1));
+		return $this->parse($code, array('minify' => 1, 'rewrite' => 1));
 	}
 	public function getParseTree($code) {
 		$this->parse($code, array('parseTree'=>1));
@@ -939,7 +939,7 @@ class MentalJS {
 	                        $this->pos+=2;
 	                        break 1;
 	                    }           
-	                    if($this->pos + 1 > $$length) {             
+	                    if($this->pos + 1 > $length) {             
 	                        $this->error("Unterminated multiline comment");
 	                    }	
 						if($options['comments']) {
