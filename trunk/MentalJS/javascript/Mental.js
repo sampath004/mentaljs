@@ -807,12 +807,7 @@
 				                pos+=2;
 				                states.len = 2;                
 				            }                  
-				            for(;;) {
-				            	
-				            	if(pos === length) {				            	    				                    
-				                    break;
-				                }
-				            	
+				            for(;;) {				            					            	
 				                chr = code.charCodeAt(pos);                
 				                next = code.charCodeAt(pos+1);                
 				                if(states.len === 0 && chr === DIGIT_0 && (next >= DIGIT_0 && next <= DIGIT_9)) {
@@ -1010,6 +1005,7 @@
 								expected2 = 0;
 								expected3 = 0;
 								expected4 = 0;
+								expect = 0;
 								left = 1;	
 								pos+=4;
 								outputLine = outputLine + 'this';								
@@ -1346,12 +1342,7 @@
 								}					
 								states = {first:0};							
 								outputLine = outputLine + scoping;
-								for(;;) {
-									
-									if(pos === length) {
-										break;
-									}
-									
+								for(;;) {																		
 									chr = code.charCodeAt(pos);
 									if(chr === BACKSLASH) {
 										next = code.charCodeAt(pos+1);
@@ -1413,8 +1404,13 @@
 								outputLine = outputLine + scoping;													
 							}
 							
-							if(!rules[state][lastState] && newLineFlag) {                                                                                    
-                                asi();                                              
+							if(!rules[state][lastState] && newLineFlag) {                                                                                                                    
+                                if(left) {
+                                    asi();
+                                    left = 1;    
+                                } else {
+                                    asi();
+                                }                                                                          
                             }                                                                                    																																																																			                                                                                                                                                                                                                                                                                     
 						} else if(chr === FORWARD_SLASH) {
 							if(!left && next !== ASTERIX && next !== FORWARD_SLASH) {																								
@@ -1480,10 +1476,7 @@
 							} else if(next === FORWARD_SLASH) {
 								states = {};                        
 				                pos+=2;                 
-				                for(;;) {
-				                	if(pos === length) {
-										break;
-									}
+				                for(;;) {				                	
 				                    chr = code.charCodeAt(pos);
 				                    if(chr === NEWLINE || chr === CARRIAGE_RETURN || chr === LINE_SEPARATOR || chr === PARAGRAPH_SEPARATOR) {
 				                        states.complete = 1;
@@ -1499,10 +1492,7 @@
 				                continue;	                           
 							} else if(next === ASTERIX) {							
 				                pos += 2;                 
-				                for(;;) {
-				                	if(pos === length) {
-										break;
-									}
+				                for(;;) {				                	
 				                    chr = code.charCodeAt(pos);
 				                    next = code.charCodeAt(pos+1);                          
 				                    if(chr === ASTERIX && next === FORWARD_SLASH) {               	                                
@@ -2335,10 +2325,7 @@
 							if(state === 'ObjectLiteralIdentifierString') {
 								outputLine = outputLine + scoping;	
 							}
-							for(;;) {
-								if(pos === length) {
-										break;
-									}
+							for(;;) {								
 								chr = code.charCodeAt(pos);
 								next = code.charCodeAt(pos+1);							
 								if(chr === SINGLE_QUOTE && !states.escaping && states[SINGLE_QUOTE]) {
@@ -2374,7 +2361,7 @@
 						}															
 						
 						if(state === 'Nothing') {						    
-							error("No state defined for char:" +String.fromCharCode(chr));
+							error("No state defined for char:" +String.fromCharCode(chr) + ', left: '+left+', last state: '+lastState+',output:'+output);
 						}
 						
 						if(!rules[state]) {
