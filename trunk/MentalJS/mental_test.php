@@ -59,7 +59,11 @@ $input = (string) $_POST['input'];
 					try {	
 						$js->parse($input);
 					} catch (Exception $e) {}
-					$result = $js->isValid();
+					if($js->isValid()) {
+						$result = 'Valid syntax';
+					} else {
+						$result = 'Invalid syntax';
+					}
 				break;
 				case "ParseTree":
 					$js = new MentalJS;
@@ -79,6 +83,7 @@ $input = (string) $_POST['input'];
 			<fieldset>
 				<legend>Options</legend>
 				<select name="option">
+					<option value="">Please select</option>
 					<option>Rewrite</option>
 					<option>Minify</option>
 					<option>isValid</option>
