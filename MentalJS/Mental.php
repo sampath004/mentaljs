@@ -1,4 +1,60 @@
 <?php
+/*
+		            ,+?=:                                
+                ~ZZZZZZZZZ7               ,::           
+              ?ZZZZZ7$ZZZZ7$:         ,7ZZZZZZZZ=       
+             IZZZZZZZZZZZZZZZ=       ZI$ZZZZ$ZZZZZ.     
+            :ZZZZ$ZZZZZZZ?IIZZ.     IZZZ77ZZZZ$7ZZZ.    
+            ZZZZZZZZZZ7ZZZI  ~7.   7Z7ZZZZZZ$ZZZ7ZZZ    
+           :ZZZZ7ZZZZ$ZZZ.     .  :ZZZZZZZZZZ7ZZZ$ZZ7   
+           ?ZZZZ$ZZZZZZZZ         Z7Z?$ZZZZZZZZZZZZZZ   
+           IZZZZ$ZZZZZZZZ      , ,Z     .ZZZZZ7ZZZ$ZZ.  
+           +ZZZZ7ZZZZZZZZZ:   ZZ ~:      IZZZZZIZZIZZ:  
+           .ZZZZ$ZZZZ$ZZZZZZZZZI ~.      =ZZZZZ7ZZ7ZZ.  
+            ZZZZZ?ZZZZIZZZZZZZ?  .7      ZZZZZZ7ZZZZZ   
+             ZZZZZIZZZZZ77$II?    ZZ: .~ZZZZZZIZZZZZI   
+             .ZZZZZZZZZZZZZ7Z     =$ZZZZZZZZZZZZZIZZ    
+               =ZZZZZZZ$7ZZ7       7IZZZZZZZZZZZIZZ,    
+                 :ZZZZZZI,          ~Z$ZZZZIZZZ$ZZ,     
+                                      =$ZZZZ$ZZZI       
+                                         .+I?,       
+MENTALJS USAGE
+-----------------------------------
+
+REWRITING
+-----------------------------------
+$js = new MentalJS;
+try {
+	$start = microtime();
+	echo $js->rewrite("abc'") . '<br>';
+	$end = microtime();
+	echo abs($end - $start) . 'ms';
+} catch (Exception $e) {
+    echo 'Caught exception: ',  $e->getMessage(), "\n";
+}
+
+SYNTAX CHECKING
+-----------------------------------
+$js = new MentalJS;
+try {
+	$js->parse("1+1");
+} catch (Exception $e){}
+if($js->isValid()) {
+	echo 'Is valid JS';
+} else {
+	echo 'Invalid JS';
+} 
+
+PARSE TREE
+-----------------------------------
+$js = new MentalJS;
+echo $js->getParseTree("1+1");  
+
+MINIFY
+-----------------------------------
+$js = new MentalJS;
+echo $js->minify("function      x (    ) {\n\n\n\n\n x      =      1\n3\n\n}");
+*/
 class MentalJS {			
 	const SQUARE_OPEN = 91; const SQUARE_CLOSE = 93; const PAREN_OPEN = 40; const PAREN_CLOSE = 41;
 	const CURLY_OPEN = 123; const CURLY_CLOSE = 125;
@@ -72,7 +128,7 @@ class MentalJS {
                 $this->outputLine = $this->outputLine . ';';
             }
             if($this->isFor[$this->lookupSquare.''.$this->lookupCurly.''.($this->lookupParen-1)] > 2) {
-                error("Syntax error unexpected for semi ;");
+                $this->error("Syntax error unexpected for semi ;");
             }
             $this->isFor[$this->lookupSquare.''.$this->lookupCurly.''.($this->lookupParen-1)]++;
             $this->isVar[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = 0;                             
@@ -86,7 +142,10 @@ class MentalJS {
             $this->left = 0;
             $this->isVar[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = 0;                               
           }
-    } 	
+    }
+	protected function error($str) {			
+		 throw new Exception($str. '. At position ' . $this->pos . ' - ' . substr($this->code, -10));
+	} 	
 	public function parse($code, $options = array()) {									
 		$this->valid = false;
 		$this->code = $code;				
@@ -108,10 +167,7 @@ class MentalJS {
 		}
 		function charAt($str, $i) {
 			return substr($str, $i, 1);
-		}	
-		function error($str) {			
-			 throw new Exception($str);
-		}
+		}			
 		function uniord($c) {
 		    $h = ord($c{0});
 		    if ($h <= 0x7F) {
@@ -220,11 +276,11 @@ class MentalJS {
 	                } else if(($this->chr === self::LOWER_E || $this->chr === self::UPPER_E) && $next !== self::MINUS && $next !== self::PLUS && ($next >= self::DIGIT_0 && $next <= self::DIGIT_9)) {
 	                	$this->states['e'] = 1;                                
 	                } else if(($this->chr === self::LOWER_E || $this->chr === self::UPPER_E) && $next !== self::MINUS && $next !== self::PLUS && (!($next >= self::DIGIT_0 && $next <= self::DIGIT_9))) {
-	                	error("Missing exponent");                                                                                                                         
+	                	$this->error("Missing exponent");                                                                                                                         
 	                } else if(!$this->states['hex'] && (!(($this->chr >= self::DIGIT_0 && $this->chr <= self::DIGIT_9) || $this->chr === self::LOWER_E || $this->chr === self::UPPER_E)) && $this->states['len'] > 0) {                       	                     	                                  
 	                    break 1;
 	                } else if(!$this->state['hex'] && (!(($this->chr >= self::DIGIT_0 && $this->chr <= self::DIGIT_9) || $this->chr === self::PERIOD || $this->chr === self::LOWER_E || $this->chr === self::UPPER_E)) && $this->states['len'] === 0) {
-	                    error('Invalid number');                                                                     
+	                    $this->error('Invalid number');                                                                     
 	                } else {				                    				                	
 	                	break 1;
 	                }
@@ -238,11 +294,11 @@ class MentalJS {
 	            }  
 	            
 	            if($this->chr === self::PERIOD && $this->states['len'] === 1) {
-	            	error("Syntax error $expected number");
+	            	$this->error("Syntax error $expected number");
 	            } else if($this->states['hex'] && $this->states['len'] <= 2) {            	            	
-	            	error("expected hex digit");
+	            	$this->error("expected hex digit");
 	            } else if($this->states['e'] === 1) {
-	                error("expected exponent");
+	                $this->error("expected exponent");
 	            }                                                                                                                                                                                    
 			} else if(($this->chr >= self::LOWER_A && $this->chr <= self::LOWER_Z) || ($this->chr >= self::UPPER_A && $this->chr <= self::UPPER_Z) || ($this->chr === self::BACKSLASH || $this->isValidVariable($this->chr))) {
 				
@@ -282,7 +338,7 @@ class MentalJS {
                             $expected4 = 0;
                             $expect = 0;
                         } else {
-                            error('Unexpected function. Cannot follow '.$this->lastState+'.output:'.$this->output);
+                            $this->error('Unexpected function. Cannot follow '.$this->lastState+'.output:'.$this->output);
                         }                                              
                     }
 					$this->left = 0;
@@ -332,7 +388,7 @@ class MentalJS {
 				// else keyword
 				} else if($this->chr === self::LOWER_E && $next === self::LOWER_L && $next2 === self::LOWER_S && $next3 === self::LOWER_E && !$this->isValidVariablePart($next4) && $next4 !== self::BACKSLASH) {															
 					if(!$this->isIf[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen]) {
-						error("Syntax error unexpected else");
+						$this->error("Syntax error unexpected else");
 					}																																						
 					$this->state = 'Else';
 					$expected = 0;
@@ -733,7 +789,7 @@ class MentalJS {
 							$unicodeChr3 = charAt($code, $this->pos+4);
 							$unicodeChr4 = charAt($code, $this->pos+5);																		
 							if($next !== self::LOWER_U) {
-								error('Invalid unicode escape sequence');
+								$this->error('Invalid unicode escape sequence');
 							}
 							if(
 								(($next2 >= self::LOWER_A && $next2 <= self::LOWER_F) || ($next2 >= self::UPPER_A && $next2 <= self::UPPER_F) || ($next2 >= self::DIGIT_0 && $next2 <= self::DIGIT_9))&&
@@ -747,7 +803,7 @@ class MentalJS {
 										$this->pos+=6;
 										continue 1;
 									} else {
-										error("Invalid unicode escape sequence used as variable");		
+										$this->error("Invalid unicode escape sequence used as variable");		
 									}
 									$this->states['first'] = 1;	
 								} else {
@@ -756,17 +812,17 @@ class MentalJS {
 										$this->pos+=6;
 										continue 1;
 									} else {
-										error("Invalid unicode escape sequence used as variable");		
+										$this->error("Invalid unicode escape sequence used as variable");		
 									}
 								}
 							} else {
-								error("Invalid hex digits in unicode escape");
+								$this->error("Invalid hex digits in unicode escape");
 							}																														
 						} else if(!$this->states['first']) {							
 							$this->states['first'] = 1;
 							if($this->isValidVariable($this->chr)) {																
 							} else {
-								error('Unexpected character ' . charAt($code, $this->pos) . '. Cannot follow '.$this->lastState.'.output:'.$this->output);
+								$this->error('Unexpected character ' . charAt($code, $this->pos) . '. Cannot follow '.$this->lastState.'.output:'.$this->output);
 							}	
 						} else {
 							if($this->isValidVariablePart($this->chr)) {										
@@ -814,7 +870,7 @@ class MentalJS {
 	                    } else if($this->chr === self::SQUARE_OPEN && !$this->states['escaping'] && !$this->states['square']) {
 	                    	$next2 = charCodeAt($code,$this->pos+2); 
 	                        if($next === self::SQUARE_CLOSE || ($next === self::CARET && $next2 === self::SQUARE_CLOSE)) {
-	                            error("Empty character class not allowed.");
+	                            $this->error("Empty character class not allowed.");
 	                        }
 	                        $this->states['square'] = 1;               
 	                    } else if($this->chr === self::BACKSLASH && !$this->states['escaping']) {
@@ -824,19 +880,19 @@ class MentalJS {
 	                    } else if($this->chr === self::SQUARE_CLOSE && !$this->states['escaping']) {                
 	                        $this->states['square'] = 0;               
 	                    } else if($this->chr === self::NEWLINE || $this->chr === self::CARRIAGE_RETURN || $this->chr === self::LINE_SEPARATOR || $this->chr === self::PARAGRAPH_SEPARATOR) {
-	                        error("Unterminated regex literal");                                
+	                        $this->error("Unterminated regex literal");                                
 	                    } else if($this->states['escaping']) {
 	                        $this->states['escaping'] = 0;
 	                    } else if(!$this->states['open'] && $next !== self::LOWER_I && $next !== self::LOWER_M && $next !== self::LOWER_G) {
 	                        if(!$this->states['open'] && ($this->chr === self::LOWER_I || $this->chr === self::LOWER_M || $this->chr === self::LOWER_G) && $this->states['flags'][$this->chr]) {
-	                            error("Duplicate regex flag");
+	                            $this->error("Duplicate regex flag");
 	                        }               
 	                        $this->states['complete'] = 1;
 	                    } else if(!$this->states['open'] && ($this->chr === self::LOWER_I || $this->chr === self::LOWER_M || $this->chr === self::LOWER_G) && !$this->states['flags'][$this->chr]) {
 	                        $this->states['flags'][$this->chr] = 1;
 	                    } 
 	                    if($this->pos + 1 > $length && $this->states['open']) {               
-	                        error("Unterminated regex literal");
+	                        $this->error("Unterminated regex literal");
 	                    }
 	                    
 	                    if($this->pos + 1 > $length) { 
@@ -887,7 +943,7 @@ class MentalJS {
 	                        break 1;
 	                    }           
 	                    if($this->pos + 1 > $$length) {             
-	                        error("Unterminated multiline comment");
+	                        $this->error("Unterminated multiline comment");
 	                    }	
 						if($options['comments']) {
 							$this->output = $this->output . charAt($code, $this->pos);
@@ -909,7 +965,7 @@ class MentalJS {
 						$this->outputLine = $this->outputLine . ' / ';	
 					}
 				} else {
-					error('Unexpected /. Cannot follow '.$this->lastState.'.output:'.$this->output);
+					$this->error('Unexpected /. Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 			} else if($this->chr === self::SQUARE_OPEN) {			
 				if(!$this->left) {
@@ -942,7 +998,7 @@ class MentalJS {
 						$this->outputLine = $this->outputLine . ')';
 					}
 				} else {				
-					error('Unexpected ]. Cannot follow '.$this->lastState.'.output:'.$this->output);
+					$this->error('Unexpected ]. Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}													
 				$this->outputLine = $this->outputLine . ']';
 				$this->left = 1;
@@ -1029,7 +1085,7 @@ class MentalJS {
                        $expected3 = 0;
                        $expected4 = 0;
                     } else {
-				       error('Unexpected (. Cannot follow '.$this->lastState.'.output:'.$this->output);
+				       $this->error('Unexpected (. Cannot follow '.$this->lastState.'.output:'.$this->output);
 				    }															
 				}												
 				$this->outputLine = $this->outputLine . '(';
@@ -1115,7 +1171,7 @@ class MentalJS {
 					$expected4 = 0;
 					$this->left = 1;
 				} else {																													
-					error('Unexpected ). Cannot follow '.$this->lastState.'.output:'.$this->output);							
+					$this->error('Unexpected ). Cannot follow '.$this->lastState.'.output:'.$this->output);							
 				}											
 				$this->outputLine = $this->outputLine . ')';
 				$this->pos++;
@@ -1230,7 +1286,7 @@ class MentalJS {
                         $expected4 = 0;
                       }                                                                                 
                     } else {												
-					    error('Unexpected {. Cannot follow '.$this->lastState.'.output:'.$this->output);
+					    $this->error('Unexpected {. Cannot follow '.$this->lastState.'.output:'.$this->output);
 					}
 				}										
 				$this->outputLine = $this->outputLine . '{';
@@ -1348,7 +1404,7 @@ class MentalJS {
 					$this->state = 'BlockStatementCurlyClose';								
 					$this->left = 0;
 				} else {																						
-					error('Unexpected }. Cannot follow '.$this->lastState.'.output:'.$this->output);
+					$this->error('Unexpected }. Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}							
 				$this->parentStates[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = '';										
 				$this->pos++;																				
@@ -1403,7 +1459,7 @@ class MentalJS {
 					$expected4 = 0;
 					$expect = 0;	
 				} else if($this->isTernary[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen]) {
-					error("Syntax error $expected :");				
+					$this->error("Syntax error $expected :");				
 				} else {
 					$this->state = 'Comma';
 					$expected = 0;
@@ -1419,7 +1475,7 @@ class MentalJS {
 				if($this->left) {							
 					$this->state = 'IdentifierDot';								
 				} else {
-					error('Unexpected . Cannot follow '.$this->lastState.'.output:'.$this->output);
+					$this->error('Unexpected . Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$expected = 'Identifier';
 				$expected2 = 0;
@@ -1446,7 +1502,7 @@ class MentalJS {
 				} else if($this->isCase[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] || $this->lastState === 'Default') {
 					$this->state = 'SwitchColon';
 					if($this->lastState === 'Case') {
-						error("Syntax error");
+						$this->error("Syntax error");
 					}
 					$expected = 0;
 					$expected1 = '';
@@ -1460,7 +1516,7 @@ class MentalJS {
 				} else if(!$this->parentState) {
 					$this->state = 'LabelColon';
 				} else {
-					error('Unexpected : Cannot follow '.$this->lastState.'.output:'.$this->output);
+					$this->error('Unexpected : Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->outputLine = $this->outputLine . ':';
 				$this->pos++;
@@ -1472,7 +1528,7 @@ class MentalJS {
 					$this->state = 'ForSemi';
 					$this->outputLine = $this->outputLine . ';';
 					if($this->isFor[$this->lookupSquare.''.$this->lookupCurly.''.($this->lookupParen-1)] > 2) {
-						error("Syntax error unexpected for semi ;");
+						$this->error("Syntax error unexpected for semi ;");
 					}
 					$this->isFor[$this->lookupSquare.''.$this->lookupCurly.''.($this->lookupParen-1)]++;
 					$this->isVar[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = 0;																						
@@ -1501,7 +1557,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . '!==';
 					$this->pos+=3;							
 				} else {
-					error('Unexpected !. Cannot follow '.$this->lastState.'.output:'.$this->output);
+					$this->error('Unexpected !. Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}			
 				$this->left = 0;				
 			} else if($this->chr === self::TILDE) {
@@ -1510,7 +1566,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . '~';
 					$this->pos++;												
 				} else {
-					error('Unexpected ~ Cannot follow '.$this->lastState.'.output:'.$this->output);
+					$this->error('Unexpected ~ Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;	
 			} else if($this->chr === self::PLUS) {
@@ -1535,7 +1591,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . '+';
 					$this->pos++;																	
 				} else {
-					error('Unexpected + Cannot follow '.$this->lastState.'.output:'.$this->output);
+					$this->error('Unexpected + Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;
 			} else if($this->chr === self::PIPE) {
@@ -1552,7 +1608,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . ' | ';
 					$this->pos++;						
 				} else {
-					error('Unexpected | Cannot follow '.$this->lastState.'.output:'.$this->output);
+					$this->error('Unexpected | Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;
 			} else if($this->chr === self::CARET) {	
@@ -1565,7 +1621,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . ' ^ ';
 					$this->pos++;						
 				} else {
-					error('Unexpected ^. Cannot follow '.$this->lastState.'.output:'.$this->output);
+					$this->error('Unexpected ^. Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;
 			} else if($this->chr === self::PERCENT) {
@@ -1578,7 +1634,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . ' % ';
 					$this->pos++;						
 				} else {
-					error('Unexpected % Cannot follow '.$this->lastState.'.output:'.$this->output);
+					$this->error('Unexpected % Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;								
 			} else if($this->chr === self::AMPERSAND) {
@@ -1595,7 +1651,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . ' & ';
 					$this->pos++;						
 				} else {
-					error('Unexpected & Cannot follow '.$this->lastState.'.output:'.$this->output);
+					$this->error('Unexpected & Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;	
 			} else if($this->chr === self::EQUAL) {
@@ -1613,7 +1669,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . '===';
 					$this->pos+=3;
 				} else {
-					error('Unexpected = Cannot follow '.$this->lastState.'.output:'.$this->output);
+					$this->error('Unexpected = Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;																											
 			} else if($this->chr === self::GREATER_THAN) {
@@ -1644,7 +1700,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . '>=';
 					$this->pos+=2;						
 				} else {
-					error('Unexpected > Cannot follow '.$this->lastState.'.output:'.$this->output);
+					$this->error('Unexpected > Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;		
 			} else if($this->chr === self::LESS_THAN) {
@@ -1666,7 +1722,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . '<=';
 					$this->pos+=2;						
 				} else {
-					error('Unexpected < Cannot follow '.$this->lastState.'.output:'.$this->output);
+					$this->error('Unexpected < Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;
 			} else if($this->chr === self::ASTERIX) {											
@@ -1679,7 +1735,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . '*=';
 					$this->pos+=2;						
 				} else {
-					error('Unexpected * Cannot follow '.$this->lastState.'.output:'.$this->output);
+					$this->error('Unexpected * Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;																						
 			} else if($this->chr === self::MINUS) {
@@ -1704,7 +1760,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . '-';
 					$this->pos++;																	
 				} else {					
-					error('Unexpected - Cannot follow '.$this->lastState.'.output:'.$this->output);
+					$this->error('Unexpected - Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;																			
 			} else if($this->chr === self::SINGLE_QUOTE || $this->chr === self::DOUBLE_QUOTE) {															
@@ -1744,12 +1800,12 @@ class MentalJS {
 	                } else if($this->chr === self::BACKSLASH && $this->states['escaping']) {
 	                    $this->states['escaping'] = 0;				                
 	                } else if(($this->chr === self::NEWLINE || $this->chr === self::CARRIAGE_RETURN || $this->chr === self::LINE_SEPARATOR || $this->chr === self::PARAGRAPH_SEPARATOR) && !$this->states['escaping']) {
-	                    error("Unterminated string literal");
+	                    $this->error("Unterminated string literal");
 	                } else if($this->states['escaping']) {
 	                    $this->states['escaping'] = 0;
 	                }                            
 	                if($this->pos + 1 > $length) {
-	                    error("Unterminated string literal");
+	                    $this->error("Unterminated string literal");
 	                }
 	                if($this->states['complete'] && $this->state === 'ObjectLiteralIdentifierString') {
 						if($options['rewrite']) {	
@@ -1763,15 +1819,15 @@ class MentalJS {
 	                }							
 				}																														
 			} else {						
-				error("Unable to parse ". charAt($code, $this->pos));
+				$this->error("Unable to parse ". charAt($code, $this->pos));
 			}															
 			
 			if($this->state === 'Nothing') {						    
-				error("No state defined for char:" . charAt($code, $this->pos));
+				$this->error("No state defined for char:" . charAt($code, $this->pos));
 			}
 			
 			if(!$rules[$this->state]) {
-				error("state does not exist in the rules:" . $this->state);
+				$this->error("state does not exist in the rules:" . $this->state);
 			}												                       
 			
 			if(!$rules[$this->state][$this->lastState] && $newLineFlag) {						    						    						    
@@ -1781,7 +1837,7 @@ class MentalJS {
 			$this->output = $this->output . '' . $this->outputLine;						
 			 
 			if(!$rules[$this->state][$this->lastState]) {																							
-				error("Unexpected " . $this->state . '. Cannot follow '.$this->lastState.'.output:'.$this->output);
+				$this->error("Unexpected " . $this->state . '. Cannot follow '.$this->lastState.'.output:'.$this->output);
 			} else if((($expected && $expected !== $this->state) || ($expected2 && $expected2 !== $this->state) || ($expected3 && $expected3 !== $this->state) || ($expected4 && $expected4 !== $this->state)) && $expect === 1) {
 				$this->msg = "expected " . $expected;
 				if($expected2) {
@@ -1794,7 +1850,7 @@ class MentalJS {
 					$this->msg = $this->msg . ' or ' . $expected4;
 				}
 				$this->msg = $this->msg . '. But got '.$this->state . ' with $last $this->state:'.$this->lastState.', output:'.$this->output;
-				error($this->msg);
+				$this->error($this->msg);
 			}
 			
 			if($parseTree){							
@@ -1815,21 +1871,21 @@ class MentalJS {
 				$this->msg = $this->msg . ' or ' . $expected4;
 			}
 			$this->msg = $this->msg . '. But got '.$this->state . ' with $last state:'.$this->lastState . ', output:'.$this->output;
-			error($this->msg);
+			$this->error($this->msg);
 		}
 						
 		if($this->lastState === 'IfStatementParenClose') {
-			error("Syntax error");	
+			$this->error("Syntax error");	
 		}
 		
 		if($this->lookupSquare) {
-			error("Syntax error unmatched [");
+			$this->error("Syntax error unmatched [");
 		} else if($this->lookupCurly) {
-			error("Syntax error unmatched {");
+			$this->error("Syntax error unmatched {");
 		} else if($this->lookupParen) {
-			error("Syntax error unmatched (");
+			$this->error("Syntax error unmatched (");
 		} else if($this->caseCount) {
-			error("Syntax error unmatched case");
+			$this->error("Syntax error unmatched case");
 		}
 		
 		if($options['parseTree']) {						
@@ -1838,14 +1894,5 @@ class MentalJS {
 		$this->valid = true;	                             													
 		return $this->output;
 	}
-}
-$js = new MentalJS;
-try {
-	$start = microtime();
-	echo $js->rewrite(file_get_contents("javascript/Mental.js")) . '<br>';
-	$end = microtime();
-	echo abs($end - $start) . 'ms';
-} catch (Exception $e) {
-    echo 'Caught exception: ',  $e->getMessage(), "\n";
 }
 ?>
