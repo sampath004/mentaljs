@@ -324,22 +324,32 @@
                             Object.defineProperties(node, {
                                 '$innerText$': {configurable:true, get:function(){return this.innerText;},set:function(innerText){this.innerText = innerText;}},
                                 '$innerHTML$': {configurable:true, get:function(){return this.innerHTML}, set:function(innerHTML){
-                                    var doc, elements, element, i, j, tags;
+                                    var doc, elements, element, i, j, tags, attrs;
                                     doc = document.implementation.createHTMLDocument('');
                                     doc.body.innerHTML = innerHTML;                                    
-                                    tags = doc.body.getElementsByTagName('*');                                    
+                                    tags = doc.body.getElementsByTagName('*'); 
+                                                                       
                                     for(i = 0; i < tags.length;i++) {
                                         element = tags[i];                                        
+                                        attrs = [];                                        
                                         for(j=0;j<element.attributes.length;j++) {
                                             if(attributeWhitelist.test(element.attributes[j].name)) {
-                                                continue;
-                                            }                                            
-                                            element.setAttribute(element.attributes[j].name, '');
-                                            element[element.attributes[j].name] =  '';                                                                                                                                    
-                                        }                                        
-                                        element.appendChild(document.createTextNode(' '));
-                                    }                                                                                                            
-                                    this.innerHTML = doc.body.innerHTML; 
+                                                attrs.push({name:element.attributes[j].name,value:element.attributes[j].value});
+                                            }                                                                                                                                                                                                                                                                     
+                                        } 
+                                        for (j= element.attributes.length; j-->0;)
+                                        element.removeAttributeNode(element.attributes[i]);
+                                        
+                                        for(j=0;j<attrs.length;j++) {
+                                           element.setAttribute(attrs[j].name, attrs[j].name);                                                                                                                                       
+                                        }
+                                        if(element.firstChild && element.firstChild.nodeType === 3) {
+                                           element.firstChild.nodeValue = ' ';
+                                        } else {                                        
+                                            element.appendChild(doc.createTextNode(' '));
+                                        }                                                                                                                                                                                                                                              
+                                    }                                                                                                                                                                                                                      
+                                    return this.innerHTML = doc.body.innerHTML; 
                                  }},
                                 '$textContent$': {configurable:true, get:function(){return this.textContent;},set:function(textContent){this.textContent = textContent;}},
                                 '$style$': {configurable:true, get:function(){ 
