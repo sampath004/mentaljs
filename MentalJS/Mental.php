@@ -24,11 +24,8 @@ MENTALJS USAGE
 REWRITING
 -----------------------------------
 $js = new MentalJS;
-try {
-	$start = microtime();
+try {	
 	echo $js->rewrite("abc'") . '<br>';
-	$end = microtime();
-	echo abs($end - $start) . 'ms';
 } catch (Exception $e) {
     echo 'Caught exception: ',  $e->getMessage(), "\n";
 }
