@@ -63,18 +63,45 @@ class MentalJS {
 		$this->parse($code, array('parseTree'=>1));
 		return '<parseTree>'.$this->parseTree.'</parseTree>';
 	}
+	protected function asi($useOutput = false) {
+        if($this->isFor[$this->lookupSquare.''.$this->lookupCurly.''.($this->lookupParen-1)] && !$this->isForIn[$this->lookupSquare.''.$this->lookupCurly.''.($this->lookupParen-1)]) {
+            $this->lastState = 'ForSemi';
+            if($useOutput) { 
+                $this->output = $this->output . ';';
+            } else {
+                $this->outputLine = $this->outputLine . ';';
+            }
+            if($this->isFor[$this->lookupSquare.''.$this->lookupCurly.''.($this->lookupParen-1)] > 2) {
+                error("Syntax error unexpected for semi ;");
+            }
+            $this->isFor[$this->lookupSquare.''.$this->lookupCurly.''.($this->lookupParen-1)]++;
+            $this->isVar[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = 0;                             
+          } else { 
+            if($useOutput) {                                                                                      
+               $this->output = $this->output . ';';
+            } else {
+               $this->outputLine = ';' . $this->outputLine;
+            }
+            $this->lastState = 'EndStatement';
+            $this->left = 0;
+            $this->isVar[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = 0;                               
+          }
+    } 	
 	public function parse($code, $options = array()) {									
 		$this->valid = false;
 		$this->code = $code;				
 		$rules=array('ArrayComma'=>array('Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'Return'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1,'ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'ArrayOpen'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1,'Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1),'ArrayClose'=>array('ArrayComma'=> 1,'ArrayOpen'=> 1,'ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'AccessorOpen'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'AccessorClose'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'Addition'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'AdditionAssignment'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'AssignmentDivide'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'AndAssignment'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'BlockStatementCurlyOpen'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1),'BlockStatementCurlyClose'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1,'Break'=> 1,'Continue'=> 1),'BitwiseNot'=>array('Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1,'Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1),'BitwiseOr'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'BitwiseAnd'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'Break'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1),'Case'=>array('SwitchStatementCurlyOpen'=> 1,'EndStatement'=> 1,'SwitchColon'=> 1),'Default'=>array('SwitchStatementCurlyOpen'=> 1,'EndStatement'=> 1,'SwitchColon'=> 1),'Debugger'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1),'Delete'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1),'Do'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1),'DoStatementCurlyOpen'=>array('Do'=> 1),'DoStatementCurlyClose'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1,'Break'=> 1,'Continue'=> 1),'DivideOperator'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'CatchStatement'=>array('TryStatementCurlyClose'=> 1),'CatchStatementParenOpen'=>array('CatchStatement'=> 1),'CatchStatementParenClose'=>array('CatchStatementIdentifier'=> 1),'CatchStatementIdentifier'=>array('CatchStatementParenOpen'=> 1),'CatchStatementCurlyOpen'=>array('CatchStatementParenClose'=> 1),'CatchStatementCurlyClose'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1,'Break'=> 1,'Continue'=> 1),'Comma'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'Continue'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1),'EqualAssignment'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'Equal'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'Else'=>array('IfStatementCurlyClose'=> 1,'Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1),'ElseCurlyOpen'=>array('Else'=> 1),'ElseCurlyClose'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1,'Break'=> 1,'Continue'=> 1),'EndStatement'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1,'Continue'=> 1,'Break'=> 1),'False'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1,'Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1),'FinallyStatement'=>array('CatchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1),'FinallyStatementCurlyOpen'=>array('FinallyStatement'=> 1),'FinallyStatementCurlyClose'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1,'Break'=> 1,'Continue'=> 1),'ForStatement'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1),'ForStatementParenOpen'=>array('ForStatement'=> 1),'ForStatementParenClose'=>array('ForSemi'=> 1,'ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1,'Break'=> 1,'Continue'=> 1),'ForStatementCurlyOpen'=>array('ForStatementParenClose'=> 1),'ForStatementCurlyClose'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1,'Break'=> 1,'Continue'=> 1),'ForSemi'=>array('ForSemi'=> 1,'ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1,'ForStatementParenOpen'=> 1),'FunctionCallOpen'=>array('Identifier'=> 1,'FunctionExpressionCurlyClose'=> 1,'ParenExpressionClose'=> 1,'AccessorClose'=> 1,'FunctionCallClose'=> 1,'This'=> 1),'FunctionCallClose'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'FunctionCallOpen'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'FunctionArgumentIdentifier'=>array('FunctionParenOpen'=> 1,'FunctionArgumentComma'=> 1),'FunctionArgumentComma'=>array('FunctionArgumentIdentifier'=> 1),'FunctionIdentifier'=>array('FunctionStatement'=> 1),'FunctionParenOpen'=>array('FunctionIdentifier'=> 1),'FunctionExpression'=>array('In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1,'Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'Return'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1),'FunctionExpressionIdentifier'=>array('FunctionExpression'=> 1),'FunctionExpressionParenOpen'=>array('FunctionExpression'=> 1,'FunctionExpressionIdentifier'=> 1),'FunctionExpressionArgumentIdentifier'=>array('FunctionExpressionParenOpen'=> 1,'FunctionExpressionArgumentComma'=> 1),'FunctionExpressionArgumentComma'=>array('FunctionExpressionArgumentIdentifier'=> 1),'FunctionParenClose'=>array('FunctionParenOpen'=> 1,'FunctionArgumentIdentifier'=> 1),'FunctionExpressionParenClose'=>array('FunctionExpressionArgumentIdentifier'=> 1,'FunctionExpressionParenOpen'=> 1),'FunctionExpressionCurlyOpen'=>array('FunctionExpressionParenClose'=> 1),'FunctionStatement'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1),'FunctionStatementCurlyOpen'=>array('FunctionParenClose'=> 1),'FunctionStatementCurlyClose'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1,'Break'=> 1,'Continue'=> 1),'FunctionExpressionCurlyClose'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1,'Break'=> 1,'Continue'=> 1),'GreaterThan'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'GreaterThanEqual'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'IdentifierDot'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'Identifier'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1,'Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1,'IdentifierDot'=> 1),'IfStatement'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1),'IfStatementParenOpen'=>array('IfStatement'=> 1),'IfStatementParenClose'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'IfStatementCurlyOpen'=>array('IfStatementParenClose'=> 1),'IfStatementCurlyClose'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1,'Break'=> 1,'Continue'=> 1),'In'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'Infinity'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1,'Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1),'InstanceOf'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'LabelColon'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'LessThan'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'LessThanEqual'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'LeftShift'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'LeftShiftAssignment'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'LogicalOr'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'LogicalAnd'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'NaN'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1,'Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1),'New'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1,'Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1),'Number'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1,'Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1),'Null'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1,'Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1),'NotEqual'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'Not'=>array('Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1,'Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1),'Nothing'=>array(),'Minus'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'MinusAssignment'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'Modulus'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'ModulusAssignment'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'Multiply'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'MultiplyAssignment'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'ObjectLiteralCurlyOpen'=>array('Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'Return'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1,'Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1),'ObjectLiteralCurlyClose'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'ObjectLiteralCurlyOpen'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'ObjectLiteralIdentifier'=>array('ObjectLiteralCurlyOpen'=> 1,'ObjectLiteralComma'=> 1),'ObjectLiteralColon'=>array('ObjectLiteralIdentifier'=> 1,'ObjectLiteralIdentifierNumber'=> 1,'ObjectLiteralIdentifierString'=> 1),'ObjectLiteralComma'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'ObjectLiteralIdentifierNumber'=>array('ObjectLiteralCurlyOpen'=> 1,'ObjectLiteralComma'=> 1),'ObjectLiteralIdentifierString'=>array('ObjectLiteralCurlyOpen'=> 1,'ObjectLiteralComma'=> 1),'OrAssignment'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'ParenExpressionOpen'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1,'Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1),'ParenExpressionComma'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'ParenExpressionClose'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'$this->postfixIncrement'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'$this->postfixDeincrement'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'PrefixDeincrement'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1,'Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1),'PrefixIncrement'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1,'Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1),'Return'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1),'RegExp'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1,'Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1),'RightShift'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'RightShiftAssignment'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'String'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1,'Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1),'StrictEqual'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'StrictNotEqual'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'SwitchStatement'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1),'SwitchStatementParenOpen'=>array('SwitchStatement'=> 1),'SwitchStatementParenClose'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'SwitchStatementCurlyOpen'=>array('SwitchStatementParenClose'=> 1),'SwitchStatementCurlyClose'=>array('SwitchStatementCurlyOpen'=> 1,'ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1,'Break'=> 1,'Continue'=> 1),'SwitchColon'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'Default'=> 1),'This'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1,'Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1),'TernaryQuestionMark'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'TernaryColon'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'TryStatement'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1),'TryStatementCurlyOpen'=>array('TryStatement'=> 1),'TryStatementCurlyClose'=>array('TryStatementCurlyOpen'=> 1,'ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1,'Break'=> 1,'Continue'=> 1),'True'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1,'Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1),'Throw'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1),'TypeOf'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1),'UnaryPlus'=>array('Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1,'Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1),'UnaryMinus'=>array('Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1,'Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1),'Undefined'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1,'Not'=> 1,'BitwiseNot'=> 1,'UnaryMinus'=> 1,'UnaryPlus'=> 1,'PrefixDeincrement'=> 1,'PrefixIncrement'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1),'Var'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1),'VarIdentifier'=>array('Var'=> 1,'VarComma'=> 1),'VarComma'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'Void'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'Comma'=> 1,'ArrayComma'=> 1,'VarComma'=> 1,'ForStatementParenOpen'=> 1,'IfStatementParenOpen'=> 1,'SwitchStatementParenOpen'=> 1,'WithStatementParenOpen'=> 1,'WhileStatementParenOpen'=> 1,'FunctionCallOpen'=> 1,'ParenExpressionOpen'=> 1,'ArrayOpen'=> 1,'AccessorOpen'=> 1,'Case'=> 1,'New'=> 1,'TypeOf'=> 1,'Delete'=> 1,'Void'=> 1,'ObjectLiteralColon'=> 1,'TernaryQuestionMark'=> 1,'TernaryColon'=> 1,'ForSemi'=> 1,'Continue'=> 1,'Break'=> 1,'Throw'=> 1,'In'=> 1,'InstanceOf'=> 1,'Addition'=> 1,'DivideOperator'=> 1,'Equal'=> 1,'NotEqual'=> 1,'StrictEqual'=> 1,'StrictNotEqual'=> 1,'LogicalOr'=> 1,'BitwiseOr'=> 1,'Xor'=> 1,'Modulus'=> 1,'LogicalAnd'=> 1,'BitwiseAnd'=> 1,'ZeroRightShift'=> 1,'RightShift'=> 1,'GreaterThan'=> 1,'GreaterThanEqual'=> 1,'LeftShift'=> 1,'LessThan'=> 1,'LessThanEqual'=> 1,'Multiply'=> 1,'Minus'=> 1,'EqualAssignment'=> 1,'AdditionAssignment'=> 1,'OrAssignment'=> 1,'XorAssignment'=> 1,'ModulusAssignment'=> 1,'AndAssignment'=> 1,'ZeroRightShiftAssignment'=> 1,'RightShiftAssignment'=> 1,'LeftShiftAssignment'=> 1,'MultiplyAssignment'=> 1,'MinusAssignment'=> 1,'AssignmentDivide'=> 1),'WithStatement'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1),'WithStatementParenOpen'=>array('WithStatement'=> 1),'WithStatementParenClose'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'WithStatementCurlyOpen'=>array('WithStatementParenClose'=> 1),'WithStatementCurlyClose'=>array('WithStatementCurlyOpen'=> 1,'ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1,'Break'=> 1,'Continue'=> 1),'WhileStatement'=>array('Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'WhileStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1),'WhileStatementParenOpen'=>array('WhileStatement'=> 1),'WhileStatementParenClose'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'WhileStatementCurlyOpen'=>array('WhileStatementParenClose'=> 1),'WhileStatementCurlyClose'=>array('WhileStatementCurlyOpen'=> 1,'ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'Nothing'=> 1,'EndStatement'=> 1,'BlockStatementCurlyClose'=> 1,'DoStatementCurlyClose'=> 1,'CatchStatementCurlyClose'=> 1,'ElseCurlyClose'=> 1,'FinallyStatementCurlyClose'=> 1,'FunctionStatementCurlyClose'=> 1,'IfStatementCurlyClose'=> 1,'SwitchStatementCurlyClose'=> 1,'TryStatementCurlyClose'=> 1,'WithStatementCurlyClose'=> 1,'WhileStatementCurlyClose'=> 1,'BlockStatementCurlyOpen'=> 1,'DoStatementCurlyOpen'=> 1,'CatchStatementCurlyOpen'=> 1,'ElseCurlyOpen'=> 1,'FinallyStatementCurlyOpen'=> 1,'FunctionStatementCurlyOpen'=> 1,'IfStatementCurlyOpen'=> 1,'SwitchStatementCurlyOpen'=> 1,'TryStatementCurlyOpen'=> 1,'WithStatementCurlyOpen'=> 1,'FunctionExpressionCurlyOpen'=> 1,'ForStatementCurlyOpen'=> 1,'ForStatementCurlyClose'=> 1,'IfStatementParenClose'=> 1,'SwitchStatementParenClose'=> 1,'WithStatementParenClose'=> 1,'WhileStatementParenClose'=> 1,'ForStatementParenClose'=> 1,'LabelColon'=> 1,'Return'=> 1,'Else'=> 1,'SwitchColon'=> 1,'Do'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1,'Break'=> 1,'Continue'=> 1),'Xor'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'XorAssignment'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1),'ZeroRightShift'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1,'$this->postfixIncrement'=> 1,'$this->postfixDeincrement'=> 1),'ZeroRightShiftAssignment'=>array('ArrayClose'=> 1,'AccessorClose'=> 1,'False'=> 1,'FunctionCallClose'=> 1,'FunctionExpressionCurlyClose'=> 1,'Identifier'=> 1,'Infinity'=> 1,'NaN'=> 1,'Number'=> 1,'Null'=> 1,'ObjectLiteralCurlyClose'=> 1,'ParenExpressionClose'=> 1,'RegExp'=> 1,'String'=> 1,'This'=> 1,'True'=> 1,'Undefined'=> 1,'VarIdentifier'=> 1));
 					 													
-		$this->scoping = '$'; $this->pos = 0; $this->chr = ''; $this->parentState; $this->parentStates = array(); $this->states; 
-		$this->msg = ''; $this->state = 'Nothing'; $this->left = 0; $output = ''; $this->outputLine = ''; 
-		$last; $next; $next2; $next3; $next4; $next5; $next6; $next7; $next8; $next9; $next10; $unicodeChr1; $unicodeChr2; $unicodeChr3; $unicodeChr4;
-		$previous; $previous2; $previous3; $previous4;$previous5; $length = strlen($code); $parseTree = (int) $options['parseTree'];
-		$lookupSquare = 0; $lookupCurly = 0; $lookupParen = 0; $ternaryCount = 0; $isTernary = array(); $caseCount = 0; $isCase = array(); $isVar = array();
-		$isFor = array(); $isForIn = array();  $isIf = array(); $isObjectLiteral = array(); $expected = 0; $expect = 0; $expected2 = 0; $expected3 = 0; 
-		$expected4 = 0; $lastState = 'Nothing'; $newLineFlag = 0;
+		$this->scoping = '$'; $this->pos = 0; $this->chr = ''; $this->parentState; $this->parentStates = array(); $this->states = array(); 
+		$this->msg = ''; $this->state = 'Nothing'; $this->left = 0; $this->output = ''; $this->outputLine = ''; 
+		$last = ''; $next = ''; $next2 = ''; $next3 = ''; $next4 = ''; $next5 = ''; $next6 = ''; $next7 = ''; $next8 = ''; $next9 = ''; $next10 = ''; 
+		$unicodeChr1 = ''; $unicodeChr2 = ''; $unicodeChr3 = ''; $unicodeChr4 = '';
+		$previous = ''; $previous2 = ''; $previous3 = ''; $previous4 = '';$previous5 = ''; $length = strlen($code); $parseTree = (int) $options['parseTree'];		
+		$this->lookupSquare = 0; $this->lookupCurly = 0; $this->lookupParen = 0; $this->ternaryCount = 0; $this->isTernary = array(); 
+		$this->caseCount = 0; $this->isCase = array(); $this->isVar = array();
+		$this->isFor = array(); $this->isForIn = array();  $this->isIf = array(); $this->isObjectLiteral = array(); 
+		$expected = 0; $expect = 0; $expected2 = 0; $expected3 = 0; 
+		$expected4 = 0; $this->lastState = 'Nothing'; $newLineFlag = 0;
 											
 		function charCodeAt($str, $i){
 		  return uniord(substr($str, $i, 1));
@@ -103,31 +130,7 @@ class MentalJS {
 		    } else {
 		        die("Javascript contains characters out of range");
 		    }
-		}	
-        function asi($useOutput = false) {
-            if($isFor[$lookupSquare.''.$lookupCurly.''.($lookupParen-1)] && !$isForIn[$lookupSquare.''.$lookupCurly.''.($lookupParen-1)]) {
-                $lastState = 'ForSemi';
-                if($useOutput) { 
-                    $output = $output . ';';
-                } else {
-                    $this->outputLine = $this->outputLine . ';';
-                }
-                if($isFor[$lookupSquare.''.$lookupCurly.''.($lookupParen-1)] > 2) {
-                    error("Syntax error unexpected for semi ;");
-                }
-                $isFor[$lookupSquare.''.$lookupCurly.''.($lookupParen-1)]++;
-                $isVar[$lookupSquare.''.$lookupCurly.''.$lookupParen] = 0;                             
-              } else { 
-                if($useOutput) {                                                                                      
-                   $output = $output . ';';
-                } else {
-                   $this->outputLine = ';' . $this->outputLine;
-                }
-                $lastState = 'EndStatement';
-                $this->left = 0;
-                $isVar[$lookupSquare.''.$lookupCurly.''.$lookupParen] = 0;                               
-              }
-        }; 													
+		};	        											
 		for(;;) {
 			$this->outputLine = '';					
 			if($this->pos === $length) {						
@@ -142,33 +145,33 @@ class MentalJS {
 		    if($this->chr === self::NEWLINE || $this->chr === self::CARRIAGE_RETURN || $this->chr === self::LINE_SEPARATOR || $this->chr === self::PARAGRAPH_SEPARATOR) {                                                   
                 $newLineFlag = 1;
                 if(!$options['minify']) {
-					$output = $output . charAt($code, $this->pos); 
+					$this->output = $this->output . charAt($code, $this->pos); 
 				}
                 $this->pos++;				                            
-                if($lastState === 'Break' || $lastState === 'Continue' || $lastState === 'Return') {
-                    asi(true);
+                if($this->lastState === 'Break' || $this->lastState === 'Continue' || $this->lastState === 'Return') {
+                    $this->asi(true);
                 }
                 continue;   
 			} else if($this->chr === 9 || $this->chr === 11 || $this->chr === 12 || $this->chr === 32 || $this->chr === 160 || $this->chr === 5760 || $this->chr === 6158 || $this->chr === 8192 || $this->chr === 8193 || $this->chr === 8194 || $this->chr === 8195 || $this->chr === 8196 || $this->chr === 8197 || $this->chr === 8198 || $this->chr === 8199 || $this->chr === 8200 || $this->chr === 8201 || $this->chr === 8202 || $this->chr === 8239 || $this->chr === 8287 || $this->chr === 12288) {
 				if(!$options['minify']) {
-					$output = $output . charAt($code, $this->pos); 
+					$this->output = $this->output . charAt($code, $this->pos); 
 				}	
 				$this->pos++;
 				continue;																						
 			} else if(($this->chr >= self::DIGIT_0 && $this->chr <= self::DIGIT_9) || (!$this->left && $this->chr === self::PERIOD)) {																														
-				if($rules['ObjectLiteralIdentifierNumber'][$lastState]) {
+				if($rules['ObjectLiteralIdentifierNumber'][$this->lastState]) {
 					$this->state = 'ObjectLiteralIdentifierNumber';
 					$expected = 'ObjectLiteralColon';
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
 					$expect = 0;							
-				} else if($rules['Number'][$lastState]) {
+				} else if($rules['Number'][$this->lastState]) {
 					$this->left = 1;
 	           	 	$this->state = 'Number';
 	          	} else {
-	          		if(!$rules['Number'][$lastState] && $newLineFlag) {                                                                                    
-                        asi();
+	          		if(!$rules['Number'][$this->lastState] && $newLineFlag) {                                                                                    
+                        $this->asi();
                         $this->left = 1;                                    
                         $this->state = 'Number';                                
                     }
@@ -181,12 +184,7 @@ class MentalJS {
 	                $this->pos+=2;
 	                $this->states['len'] = 2;                
 	            }                  
-	            for(;;) {
-	            	
-	            	if($this->pos === $length) {				            	    				                    
-	                    break 1;
-	                }
-	            	
+	            for(;;) {	            		            		            	
 	                $this->chr = charCodeAt($code, $this->pos);                
 	                $next = charCodeAt($code, $this->pos+1);                
 	                if($this->states['len'] === 0 && $this->chr === self::DIGIT_0 && ($next >= self::DIGIT_0 && $next <= self::DIGIT_9)) {
@@ -260,14 +258,14 @@ class MentalJS {
 				
 				//function keyword
 				if($this->chr === self::LOWER_F && $next === self::LOWER_U && $next2 === self::LOWER_N && $next3 === self::LOWER_C && $next4 === self::LOWER_T && $next5 === self::LOWER_I && $next6 === self::LOWER_O && $next7 === self::LOWER_N && !$this->isValidVariablePart($next8) && $next8 !== self::BACKSLASH) {								
-					if($rules['FunctionExpression'][$lastState]) {
+					if($rules['FunctionExpression'][$this->lastState]) {
 						$this->state = 'FunctionExpression';
 						$expected = 'FunctionExpressionIdentifier';
 						$expected2 = 'FunctionExpressionParenOpen';
 						$expected3 = 0;
 						$expected4 = 0;
 						$expect = 0;																
-					} else if($rules['FunctionStatement'][$lastState]) {
+					} else if($rules['FunctionStatement'][$this->lastState]) {
 						$this->state = 'FunctionStatement';
 						$expected = 'FunctionIdentifier';
 						$expected2 = 0;
@@ -275,8 +273,8 @@ class MentalJS {
 						$expected4 = 0;
 						$expect = 0;
 					} else {								    
-					    if(!$rules['Identifier'][$lastState] && $newLineFlag) {                                                                                    
-                            asi();
+					    if(!$rules['Identifier'][$this->lastState] && $newLineFlag) {                                                                                    
+                            $this->asi();
                             $this->state = 'FunctionStatement';
                             $expected = 'FunctionIdentifier';
                             $expected2 = 0;
@@ -284,7 +282,7 @@ class MentalJS {
                             $expected4 = 0;
                             $expect = 0;
                         } else {
-                            error('Unexpected function. Cannot follow '.$lastState+'.output:'.$output);
+                            error('Unexpected function. Cannot follow '.$this->lastState+'.output:'.$this->output);
                         }                                              
                     }
 					$this->left = 0;
@@ -299,15 +297,15 @@ class MentalJS {
 					$expected4 = 0;
 					$this->left = 0;	
 					$this->pos+=2;
-					if($lastState === 'Else') {
+					if($this->lastState === 'Else') {
 						$this->outputLine = $this->outputLine . ' ';
 					}
 					$this->outputLine = $this->outputLine . 'if';
-					$isIf[$lookupSquare.''.$lookupCurly.''.$lookupParen] = 1;																			
+					$this->isIf[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = 1;																			
 				//var keyword
 				} else if($this->chr === self::LOWER_V && $next === self::LOWER_A && $next2 === self::LOWER_R && !$this->isValidVariablePart($next3) && $next3 !== self::BACKSLASH) {																																
-					if(!$rules['Var'][$lastState]) {                                                                                                                       
-                        asi();                                             
+					if(!$rules['Var'][$this->lastState]) {                                                                                                                       
+                        $this->asi();                                             
                     }
 					$this->state = 'Var';
 					$expected = 'Identifier';
@@ -318,7 +316,7 @@ class MentalJS {
 					$this->left = 0;	
 					$this->pos+=3;	
 					$this->outputLine = $this->outputLine . 'var ';
-					$isVar[$lookupSquare.''.$lookupCurly.''.$lookupParen] = 1;																																												
+					$this->isVar[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = 1;																																												
 				//for keyword
 				} else if($this->chr === self::LOWER_F && $next === self::LOWER_O && $next2 === self::LOWER_R && !$this->isValidVariablePart($next3) && $next3 !== self::BACKSLASH) {
 					$this->state = 'ForStatement';
@@ -330,10 +328,10 @@ class MentalJS {
 					$this->left = 0;	
 					$this->pos+=3;	
 					$this->outputLine = $this->outputLine . 'for ';
-					$isFor[$lookupSquare.''.$lookupCurly.''.$lookupParen] = 1;																			
+					$this->isFor[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = 1;																			
 				// else keyword
 				} else if($this->chr === self::LOWER_E && $next === self::LOWER_L && $next2 === self::LOWER_S && $next3 === self::LOWER_E && !$this->isValidVariablePart($next4) && $next4 !== self::BACKSLASH) {															
-					if(!$isIf[$lookupSquare.''.$lookupCurly.''.$lookupParen]) {
+					if(!$this->isIf[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen]) {
 						error("Syntax error unexpected else");
 					}																																						
 					$this->state = 'Else';
@@ -428,7 +426,7 @@ class MentalJS {
 					$this->pos+=4;
 					$this->outputLine = $this->outputLine . 'null';								
 				// undefined keyword
-				} else if($lastState !== 'FunctionArgumentComma' && $lastState !== 'FunctionExpressionArgumentComma' && $this->chr === self::LOWER_U && $next === self::LOWER_N && $next2 === self::LOWER_D && $next3 === self::LOWER_E && $next4 === self::LOWER_F && $next5 === self::LOWER_I && $next6 === self::LOWER_N && $next7 === self::LOWER_E && $next8 === self::LOWER_D && !$this->isValidVariablePart($next9) && $next9 !== self::BACKSLASH) {
+				} else if($this->lastState !== 'FunctionArgumentComma' && $this->lastState !== 'FunctionExpressionArgumentComma' && $this->chr === self::LOWER_U && $next === self::LOWER_N && $next2 === self::LOWER_D && $next3 === self::LOWER_E && $next4 === self::LOWER_F && $next5 === self::LOWER_I && $next6 === self::LOWER_N && $next7 === self::LOWER_E && $next8 === self::LOWER_D && !$this->isValidVariablePart($next9) && $next9 !== self::BACKSLASH) {
 					$this->state = 'Undefined';
 					$expected = 0;
 					$expected2 = 0;
@@ -457,8 +455,8 @@ class MentalJS {
 					$this->left = 0;	
 					$this->pos+=4;							
 					$this->outputLine = $this->outputLine . 'case ';
-					$isCase[$lookupSquare.''.$lookupCurly.''.$lookupParen] = 1;
-					$caseCount++;																					
+					$this->isCase[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = 1;
+					$this->caseCount++;																					
 				// catch keyword			
 				} else if($this->chr === self::LOWER_C && $next === self::LOWER_A && $next2 === self::LOWER_T && $next3 === self::LOWER_C && $next4 === self::LOWER_H && !$this->isValidVariablePart($next5) && $next5 !== self::BACKSLASH) {
 					$this->state = 'CatchStatement';
@@ -543,8 +541,8 @@ class MentalJS {
 					$this->left = 0;	
 					$this->pos+=2;
 					$this->outputLine = $this->outputLine . ' in ';
-					if($isFor[$lookupSquare.''.$lookupCurly.''.$lookupParen]) {
-						$isForIn[$lookupSquare.''.$lookupCurly.''.$lookupParen] = 1;		
+					if($this->isFor[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen]) {
+						$this->isForIn[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = 1;		
 					}													
 				// Infinity keyword		
 				} else if($this->chr === self::UPPER_I && $next === self::LOWER_N && $next2 === self::LOWER_F && $next3 === self::LOWER_I && $next4 === self::LOWER_N && $next5 === self::LOWER_I && $next6 === self::LOWER_T && $next7 === self::LOWER_Y && !$this->isValidVariablePart($next8) && $next8 !== self::BACKSLASH) {
@@ -628,7 +626,7 @@ class MentalJS {
 					$this->pos+=4;
 					$this->outputLine = $this->outputLine . 'void ';
 				// prototype keyword
-				} else if($lastState === 'IdentifierDot' && $this->chr === self::LOWER_P && $next === self::LOWER_R && $next2 === self::LOWER_O && $next3 === self::LOWER_T && $next4 === self::LOWER_O && $next5 === self::LOWER_T && $next6 === self::LOWER_Y && $next7 === self::LOWER_P && $next8 === self::LOWER_E && !$this->isValidVariablePart($next9) && $next9 !== self::BACKSLASH) {																																																									
+				} else if($this->lastState === 'IdentifierDot' && $this->chr === self::LOWER_P && $next === self::LOWER_R && $next2 === self::LOWER_O && $next3 === self::LOWER_T && $next4 === self::LOWER_O && $next5 === self::LOWER_T && $next6 === self::LOWER_Y && $next7 === self::LOWER_P && $next8 === self::LOWER_E && !$this->isValidVariablePart($next9) && $next9 !== self::BACKSLASH) {																																																									
 					$this->state = 'Identifier';
 					$expected = 0;
 					$expected2 = 0;
@@ -638,7 +636,7 @@ class MentalJS {
 					$this->pos+=9;
 					$this->outputLine = $this->outputLine . 'prototype';
 				// length keyword
-				} else if($lastState === 'IdentifierDot' && $this->chr === self::LOWER_L && $next === self::LOWER_E && $next2 === self::LOWER_N && $next3 === self::LOWER_G && $next4 === self::LOWER_T && $next5 === self::LOWER_H && !$this->isValidVariablePart($next6) && $next6 !== self::BACKSLASH) {																																																									
+				} else if($this->lastState === 'IdentifierDot' && $this->chr === self::LOWER_L && $next === self::LOWER_E && $next2 === self::LOWER_N && $next3 === self::LOWER_G && $next4 === self::LOWER_T && $next5 === self::LOWER_H && !$this->isValidVariablePart($next6) && $next6 !== self::BACKSLASH) {																																																									
 					$this->state = 'Identifier';
 					$expected = 0;
 					$expected2 = 0;
@@ -649,7 +647,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . 'length';
 				} else {																																    							   							    				
 					// Identifiers																											
-					if($rules['FunctionIdentifier'][$lastState]) {
+					if($rules['FunctionIdentifier'][$this->lastState]) {
 						$this->state = 'FunctionIdentifier';
 						$expected = 'FunctionParenOpen';
 						$expected2 = 0;
@@ -657,21 +655,21 @@ class MentalJS {
 						$expected4 = 0;
 						$expect = 0;
 						$this->outputLine = $this->outputLine . ' ';
-					} else if($rules['CatchStatementIdentifier'][$lastState]) {
+					} else if($rules['CatchStatementIdentifier'][$this->lastState]) {
 						$this->state = 'CatchStatementIdentifier';
 						$expected = 'CatchStatementParenClose';
 						$expected2 = 0;
 						$expected3 = 0;
 						$expected4 = 0;
 						$expect = 0;
-					} else if($rules['ObjectLiteralIdentifier'][$lastState]) {
+					} else if($rules['ObjectLiteralIdentifier'][$this->lastState]) {
 						$this->state = 'ObjectLiteralIdentifier';
 						$expected = 'ObjectLiteralColon';
 						$expected2 = 0;
 						$expected3 = 0;
 						$expected4 = 0;
 						$expect = 0;									
-					} else if($rules['FunctionExpressionIdentifier'][$lastState]) {
+					} else if($rules['FunctionExpressionIdentifier'][$this->lastState]) {
 						$this->state = 'FunctionExpressionIdentifier';
 						$expected = 'FunctionExpressionParenOpen';
 						$expected2 = 0;
@@ -679,28 +677,28 @@ class MentalJS {
 						$expected4 = 0;
 						$expect = 0;
 						$this->outputLine = $this->outputLine . ' ';
-					} else if($rules['FunctionArgumentIdentifier'][$lastState]) {
+					} else if($rules['FunctionArgumentIdentifier'][$this->lastState]) {
 						$this->state = 'FunctionArgumentIdentifier';
 						$expected = 'FunctionParenClose';
 						$expected2 = 'FunctionArgumentComma';
 						$expected3 = 0;
 						$expected4 = 0;
 						$expect = 0;				
-					} else if($rules['FunctionExpressionArgumentIdentifier'][$lastState]) {
+					} else if($rules['FunctionExpressionArgumentIdentifier'][$this->lastState]) {
 						$this->state = 'FunctionExpressionArgumentIdentifier';
 						$expected = 'FunctionExpressionParenClose';
 						$expected2 = 'FunctionExpressionArgumentComma';
 						$expected3 = 0;
 						$expected4 = 0;
 						$expect = 0;
-					} else if($rules['VarIdentifier'][$lastState]) {									
+					} else if($rules['VarIdentifier'][$this->lastState]) {									
 						$this->state = 'VarIdentifier';
 						$expected = 0;
 						$expected2 = 0;
 						$expected3 = 0;
 						$expected4 = 0;
 						$expect = 0;																													
-					} else if($rules['Identifier'][$lastState]) {
+					} else if($rules['Identifier'][$this->lastState]) {
 						$this->state = 'Identifier';
 						$expected = 0;
 						$expected2 = 0;
@@ -708,8 +706,8 @@ class MentalJS {
 						$expected4 = 0;
 						$this->left = 1;								
 					} else {
-						if(!$rules['Identifier'][$lastState] && $newLineFlag) {                                                                                    
-                            asi();                                              
+						if(!$rules['Identifier'][$this->lastState] && $newLineFlag) {                                                                                    
+                            $this->asi();                                              
                         }
                         $this->state = 'Identifier';
                         $expected = 0;
@@ -722,11 +720,7 @@ class MentalJS {
 					if($options['rewrite']) {							
 						$this->outputLine = $this->outputLine . $this->scoping;
 					}
-					for(;;) {						
-						if($this->pos === $length) {							
-							break 1;
-						}
-						
+					for(;;) {												
 						$this->chr = charCodeAt($code, $this->pos);																		
 						if($this->chr === self::BACKSLASH) {
 							$next = charCodeAt($code,$this->pos+1);
@@ -772,7 +766,7 @@ class MentalJS {
 							$this->states['first'] = 1;
 							if($this->isValidVariable($this->chr)) {																
 							} else {
-								error('Unexpected character ' . charAt($code, $this->pos) . '. Cannot follow '.$lastState.'.output:'.$output);
+								error('Unexpected character ' . charAt($code, $this->pos) . '. Cannot follow '.$this->lastState.'.output:'.$this->output);
 							}	
 						} else {
 							if($this->isValidVariablePart($this->chr)) {										
@@ -790,8 +784,8 @@ class MentalJS {
 					}																		
 				}
 				
-				if(!$rules[$this->state][$lastState] && $newLineFlag) {                                                                                    
-                    asi();                                              
+				if(!$rules[$this->state][$this->lastState] && $newLineFlag) {                                                                                    
+                    $this->asi();                                              
                 }																								                                                                                    																																																																			                                                                                                                                                                                                                                                                                     
 			} else if($this->chr === self::FORWARD_SLASH) {
 				if(!$this->left && $next !== self::ASTERIX && $next !== self::FORWARD_SLASH) {																								
@@ -858,12 +852,9 @@ class MentalJS {
 					$this->states = array();                        
 	                $this->pos+=2;
 					if($options['comments']) {
-						$output = $output . '//';		
+						$this->output = $this->output . '//';		
 					}                 
-	                for(;;) {
-	                	if($this->pos === $length) {
-							break 1;
-						}
+	                for(;;) {	                	
 	                    $this->chr = charCodeAt($code,$this->pos);						
 	                    if($this->chr === self::NEWLINE || $this->chr === self::CARRIAGE_RETURN || $this->chr === self::LINE_SEPARATOR || $this->chr === self::PARAGRAPH_SEPARATOR) {
 	                        $this->states['complete'] = 1;
@@ -872,7 +863,7 @@ class MentalJS {
 	                        break 1;
 	                    }
 						if($options['comments']) {
-							$output = $output . charAt($code, $this->pos);
+							$this->output = $this->output . charAt($code, $this->pos);
 						}	                            
 	                    $this->pos++;
 	                    if($this->states['complete']) {
@@ -883,17 +874,14 @@ class MentalJS {
 				} else if($next === self::ASTERIX) {							
 	                $this->pos += 2;
 					if($options['comments']) {
-						$output = $output . '/*';		
+						$this->output = $this->output . '/*';		
 					}                 
-	                for(;;) {
-	                	if($this->pos === $length) {
-							break 1;
-						}
+	                for(;;) {	                	
 	                    $this->chr = charCodeAt($code,$this->pos);
 	                    $next = charCodeAt($code,$this->pos+1);                          
 	                    if($this->chr === self::ASTERIX && $next === self::FORWARD_SLASH) {
 	                        if($options['comments']) {
-								$output = $output . '*/';		
+								$this->output = $this->output . '*/';		
 							}	               	                                
 	                        $this->pos+=2;
 	                        break 1;
@@ -902,7 +890,7 @@ class MentalJS {
 	                        error("Unterminated multiline comment");
 	                    }	
 						if($options['comments']) {
-							$output = $output . charAt($code, $this->pos);
+							$this->output = $this->output . charAt($code, $this->pos);
 						}                            
 	                    $this->pos++;	                            
 	                } 
@@ -921,7 +909,7 @@ class MentalJS {
 						$this->outputLine = $this->outputLine . ' / ';	
 					}
 				} else {
-					error('Unexpected /. Cannot follow '.$lastState.'.output:'.$output);
+					error('Unexpected /. Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 			} else if($this->chr === self::SQUARE_OPEN) {			
 				if(!$this->left) {
@@ -935,15 +923,15 @@ class MentalJS {
 						$this->outputLine = $this->outputLine . 'M.P(';
 					}
 				}							
-				$this->parentStates[$lookupSquare.''.$lookupCurly.''.$lookupParen] = $this->state;						
+				$this->parentStates[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = $this->state;						
 				$this->left = 0;
 				$last = self::SQUARE_OPEN;
 				$this->pos++;
-				$lookupSquare++;
-				$this->parentStates[$lookupSquare.''.$lookupCurly.''.$lookupParen] = $this->state;						
+				$this->lookupSquare++;
+				$this->parentStates[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = $this->state;						
 			} else if($this->chr === self::SQUARE_CLOSE) {
-				$lookupSquare--;			
-				$this->parentState = $this->parentStates[$lookupSquare.''.$lookupCurly.''.$lookupParen];									
+				$this->lookupSquare--;			
+				$this->parentState = $this->parentStates[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen];									
 				if($this->parentState === 'ArrayOpen') {
 					$this->state = 'ArrayClose';
 					$this->left = 1;
@@ -954,107 +942,107 @@ class MentalJS {
 						$this->outputLine = $this->outputLine . ')';
 					}
 				} else {				
-					error('Unexpected ]. Cannot follow '.$lastState.'.output:'.$output);
+					error('Unexpected ]. Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}													
 				$this->outputLine = $this->outputLine . ']';
 				$this->left = 1;
 				$last = self::SQUARE_CLOSE;
 				$this->pos++;
-				$this->parentStates[$lookupSquare.''.$lookupCurly.''.$lookupParen] = '';							
+				$this->parentStates[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = '';							
 			} else if($this->chr === self::PAREN_OPEN) {																																																																									
-				if($lastState === 'FunctionIdentifier') {
+				if($this->lastState === 'FunctionIdentifier') {
 					$this->state = 'FunctionParenOpen';
 					$expect = 0;
 					$expected = 'FunctionArgumentIdentifier';
 					$expected2 = 'FunctionParenClose';
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($lastState === 'ForStatement') {
+				} else if($this->lastState === 'ForStatement') {
 					$this->state = 'ForStatementParenOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($rules['FunctionCallOpen'][$lastState]) {
+				} else if($rules['FunctionCallOpen'][$this->lastState]) {
 					$this->state = 'FunctionCallOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($lastState === 'IfStatement') {
+				} else if($this->lastState === 'IfStatement') {
 					$this->state = 'IfStatementParenOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;	
-				} else if($lastState === 'CatchStatement') {
+				} else if($this->lastState === 'CatchStatement') {
 					$this->state = 'CatchStatementParenOpen';
 					$expected = 'CatchStatementIdentifier';
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;	
 					$expect = 0;			
-				} else if($lastState === 'WhileStatement') {
+				} else if($this->lastState === 'WhileStatement') {
 					$this->state = 'WhileStatementParenOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($lastState === 'SwitchStatement') {
+				} else if($this->lastState === 'SwitchStatement') {
 					$this->state = 'SwitchStatementParenOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($lastState === 'WithStatement') {
+				} else if($this->lastState === 'WithStatement') {
 					$this->state = 'WithStatementParenOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($lastState === 'FunctionExpressionIdentifier') {
+				} else if($this->lastState === 'FunctionExpressionIdentifier') {
 					$this->state = 'FunctionExpressionParenOpen';
 					$expect = 0;
 					$expected = 'FunctionExpressionArgumentIdentifier';
 					$expected2 = 'FunctionExpressionParenClose';
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($lastState === 'FunctionExpression') {
+				} else if($this->lastState === 'FunctionExpression') {
 					$this->state = 'FunctionExpressionParenOpen';
 					$expect = 0;
 					$expected = 'FunctionExpressionArgumentIdentifier';
 					$expected2 = 'FunctionExpressionParenClose';
 					$expected3 = 0;
 					$expected4 = 0;							
-				} else if($rules['ParenExpressionOpen'][$lastState]) {							
+				} else if($rules['ParenExpressionOpen'][$this->lastState]) {							
 					$this->state = 'ParenExpressionOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
 				} else {							    
-				    if(!$rules['Identifier'][$lastState] && $newLineFlag) {                                                                                    
-                       asi();
+				    if(!$rules['Identifier'][$this->lastState] && $newLineFlag) {                                                                                    
+                       $this->asi();
                        $this->state = 'ParenExpressionOpen';
                        $expected = 0;
                        $expected2 = 0;
                        $expected3 = 0;
                        $expected4 = 0;
                     } else {
-				       error('Unexpected (. Cannot follow '.$lastState.'.output:'.$output);
+				       error('Unexpected (. Cannot follow '.$this->lastState.'.output:'.$this->output);
 				    }															
 				}												
 				$this->outputLine = $this->outputLine . '(';
 				$last = self::PAREN_OPEN;
 				$this->pos++;
-				$this->parentStates[$lookupSquare.''.$lookupCurly.''.$lookupParen] = $this->state;
+				$this->parentStates[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = $this->state;
 				$this->left = 0;
-				$lookupParen++;
+				$this->lookupParen++;
 			} else if($this->chr === self::PAREN_CLOSE) {
-			    $isVar[$lookupSquare.''.$lookupCurly.''.$lookupParen] = 0;				
-				$lookupParen--;						
-				$this->parentState = $this->parentStates[$lookupSquare.''.$lookupCurly.''.$lookupParen];																																																					
-				if($rules['FunctionParenClose'][$lastState]) {
+			    $this->isVar[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = 0;				
+				$this->lookupParen--;						
+				$this->parentState = $this->parentStates[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen];																																																					
+				if($rules['FunctionParenClose'][$this->lastState]) {
 					$this->state = 'FunctionParenClose';
 					$expect = 0;
 					$expected = "FunctionStatementCurlyOpen";
@@ -1075,8 +1063,8 @@ class MentalJS {
 					$expected3 = 0;
 					$expected4 = 0;
 					$this->left = 0;
-					$isFor[$lookupSquare.''.$lookupCurly.''.$lookupParen] = 0;		
-					$isForIn[$lookupSquare.''.$lookupCurly.''.$lookupParen] = 0;		
+					$this->isFor[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = 0;		
+					$this->isForIn[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = 0;		
 				} else if($this->parentState === 'SwitchStatementParenOpen') {
 					$this->state = 'SwitchStatementParenClose';
 					$expected = 0;
@@ -1112,7 +1100,7 @@ class MentalJS {
 					$expected3 = 0;
 					$expected4 = 0;
 					$this->left = 0;
-				} else if($rules['FunctionExpressionParenClose'][$lastState]) {
+				} else if($rules['FunctionExpressionParenClose'][$this->lastState]) {
 					$this->state = 'FunctionExpressionParenClose';
 					$expect = 0;
 					$expected = "FunctionExpressionCurlyOpen";
@@ -1127,112 +1115,112 @@ class MentalJS {
 					$expected4 = 0;
 					$this->left = 1;
 				} else {																													
-					error('Unexpected ). Cannot follow '.$lastState.'.output:'.$output);							
+					error('Unexpected ). Cannot follow '.$this->lastState.'.output:'.$this->output);							
 				}											
 				$this->outputLine = $this->outputLine . ')';
 				$this->pos++;
-				$this->parentStates[$lookupSquare.''.$lookupCurly.''.$lookupParen] = '';																		
+				$this->parentStates[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = '';																		
 			} else if($this->chr === self::CURLY_OPEN) {																																																
-				if($lastState === 'FunctionParenClose') {
+				if($this->lastState === 'FunctionParenClose') {
 					$this->state = 'FunctionStatementCurlyOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($lastState === 'Do') {
+				} else if($this->lastState === 'Do') {
 					$this->state = 'DoStatementCurlyOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($lastState === 'Else') {
+				} else if($this->lastState === 'Else') {
 					$this->state = 'ElseCurlyOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($lastState === 'WhileStatementParenClose') {
+				} else if($this->lastState === 'WhileStatementParenClose') {
 					$this->state = 'WhileStatementCurlyOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;	
-				} else if($lastState === 'CatchStatementParenClose') {
+				} else if($this->lastState === 'CatchStatementParenClose') {
 					$this->state = 'CatchStatementCurlyOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($lastState === 'ForStatementParenClose') {
+				} else if($this->lastState === 'ForStatementParenClose') {
 					$this->state = 'ForStatementCurlyOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($lastState === 'WithStatementParenClose') {
+				} else if($this->lastState === 'WithStatementParenClose') {
 					$this->state = 'WithStatementCurlyOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;				
-				} else if($lastState === 'TryStatement') {
+				} else if($this->lastState === 'TryStatement') {
 					$this->state = 'TryStatementCurlyOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($lastState === 'SwitchStatementParenClose') {
+				} else if($this->lastState === 'SwitchStatementParenClose') {
 					$this->state = 'SwitchStatementCurlyOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($lastState === 'IfStatementParenClose') {
+				} else if($this->lastState === 'IfStatementParenClose') {
 					$this->state = 'IfStatementCurlyOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($lastState === 'FinallyStatement') {
+				} else if($this->lastState === 'FinallyStatement') {
 					$this->state = 'FinallyStatementCurlyOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($lastState === 'FunctionExpressionParenClose') {
+				} else if($this->lastState === 'FunctionExpressionParenClose') {
 					$this->state = 'FunctionExpressionCurlyOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($rules['ObjectLiteralCurlyOpen'][$lastState]) {				
+				} else if($rules['ObjectLiteralCurlyOpen'][$this->lastState]) {				
 					$this->state = 'ObjectLiteralCurlyOpen';
 					$expected = 'ObjectLiteralIdentifier';
 					$expected2 = 'ObjectLiteralIdentifierString';
 					$expected3 = 'ObjectLiteralIdentifierNumber';
 					$expected4 = 'ObjectLiteralCurlyClose';
 					$expect = 0;
-					$this->parentStates[$lookupSquare.''.($lookupCurly+1).''.$lookupParen] = $this->state;
+					$this->parentStates[$this->lookupSquare.''.($this->lookupCurly+1).''.$this->lookupParen] = $this->state;
 					if($options['rewrite']) {
 						$this->outputLine = $this->outputLine . 'M.O(';
 					}
-				} else if($rules['BlockStatementCurlyOpen'][$lastState]) {
+				} else if($rules['BlockStatementCurlyOpen'][$this->lastState]) {
 					$this->state = 'BlockStatementCurlyOpen';
 					$expected = 0;
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
 				} else {							    							    							  							    
-				    if(!$rules['Identifier'][$lastState] && $newLineFlag) {							        
-				      asi();
-				      if($lastState === 'ForSemi') {                                    
+				    if(!$rules['Identifier'][$this->lastState] && $newLineFlag) {							        
+				      $this->asi();
+				      if($this->lastState === 'ForSemi') {                                    
                         $this->state = 'ObjectLiteralCurlyOpen';
                         $expected = 'ObjectLiteralIdentifier';
                         $expected2 = 'ObjectLiteralIdentifierString';
                         $expected3 = 'ObjectLiteralIdentifierNumber';
                         $expected4 = 'ObjectLiteralCurlyClose';
                         $expect = 0;
-                        $this->parentStates[$lookupSquare.''.($lookupCurly+1).''.$lookupParen] = $this->state;
+                        $this->parentStates[$this->lookupSquare.''.($this->lookupCurly+1).''.$this->lookupParen] = $this->state;
                         $this->outputLine = $this->outputLine . 'M.O(';   
 				      } else {                                                                                                                             
                         $this->state = 'BlockStatementCurlyOpen';
@@ -1242,7 +1230,7 @@ class MentalJS {
                         $expected4 = 0;
                       }                                                                                 
                     } else {												
-					    error('Unexpected {. Cannot follow '.$lastState.'.output:'.$output);
+					    error('Unexpected {. Cannot follow '.$this->lastState.'.output:'.$this->output);
 					}
 				}										
 				$this->outputLine = $this->outputLine . '{';
@@ -1253,13 +1241,13 @@ class MentalJS {
 				}
 				$last = self::CURLY_OPEN;
 				$this->pos++;
-				$this->parentStates[$lookupSquare.''.$lookupCurly.''.$lookupParen] = $this->state;
+				$this->parentStates[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = $this->state;
 				$this->left = 0;
-				$lookupCurly++;								
+				$this->lookupCurly++;								
 			} else if($this->chr === self::CURLY_CLOSE) {							
-				$isVar[$lookupSquare.''.$lookupCurly.''.$lookupParen] = 0;
-				$lookupCurly--;																															
-				$this->parentState = $this->parentStates[$lookupSquare.''.$lookupCurly.''.$lookupParen];																																													
+				$this->isVar[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = 0;
+				$this->lookupCurly--;																															
+				$this->parentState = $this->parentStates[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen];																																													
 				$this->outputLine = $this->outputLine . '}';																											
 				if($this->parentState === 'FunctionStatementCurlyOpen') {
 					$this->state = 'FunctionStatementCurlyClose';								
@@ -1278,7 +1266,7 @@ class MentalJS {
 					$expected3 = 0;
 					$expected4 = 0;
 					$this->left = 1;
-					$isObjectLiteral[$lookupSquare.''.($lookupCurly+1).''.$lookupParen] = 0;
+					$this->isObjectLiteral[$this->lookupSquare.''.($this->lookupCurly+1).''.$this->lookupParen] = 0;
 					if($options['rewrite']) {
 						$this->outputLine = $this->outputLine . ')';
 					}
@@ -1360,9 +1348,9 @@ class MentalJS {
 					$this->state = 'BlockStatementCurlyClose';								
 					$this->left = 0;
 				} else {																						
-					error('Unexpected }. Cannot follow '.$lastState.'.output:'.$output);
+					error('Unexpected }. Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}							
-				$this->parentStates[$lookupSquare.''.$lookupCurly.''.$lookupParen] = '';										
+				$this->parentStates[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = '';										
 				$this->pos++;																				
 			} else if($this->chr === self::QUESTION_MARK) {
 				$this->state = 'TernaryQuestionMark';
@@ -1370,24 +1358,24 @@ class MentalJS {
 				$last = self::QUESTION_MARK;
 				$this->left = 0;
 				$this->pos++;
-				if($isTernary[$lookupSquare.''.$lookupCurly.''.$lookupParen]) {
-				  $isTernary[$lookupSquare.''.$lookupCurly.''.$lookupParen]++;
+				if($this->isTernary[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen]) {
+				  $this->isTernary[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen]++;
 				} else {
-				  $isTernary[$lookupSquare.''.$lookupCurly.''.$lookupParen] = 1;
+				  $this->isTernary[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = 1;
 				}
-				$ternaryCount++;													
+				$this->ternaryCount++;													
 			} else if($this->chr === self::COMMA) {			
-				$this->parentState = $this->parentStates[$lookupSquare.''.$lookupCurly.''.$lookupParen];																																																																																																
-				if($lastState === 'FunctionArgumentIdentifier') {
+				$this->parentState = $this->parentStates[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen];																																																																																																
+				if($this->lastState === 'FunctionArgumentIdentifier') {
 					$this->state = 'FunctionArgumentComma';
 					$expect = 0;
 					$expected = 'FunctionArgumentIdentifier';
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($this->parentState === 'ArrayOpen' || $lastState === 'ArrayOpen') {
+				} else if($this->parentState === 'ArrayOpen' || $this->lastState === 'ArrayOpen') {
 					$this->state = 'ArrayComma';															
-				} else if($lastState === 'FunctionExpressionArgumentIdentifier') {
+				} else if($this->lastState === 'FunctionExpressionArgumentIdentifier') {
 					$this->state = 'FunctionExpressionArgumentComma';
 					$expect = 0;
 					$expected = 'FunctionExpressionArgumentIdentifier';
@@ -1400,21 +1388,21 @@ class MentalJS {
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($isObjectLiteral[$lookupSquare.''.$lookupCurly.''.$lookupParen]) {
+				} else if($this->isObjectLiteral[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen]) {
 					$this->state = 'ObjectLiteralComma';
 					$expect = 0;
 					$expected = 'ObjectLiteralIdentifier';
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
-				} else if($isVar[$lookupSquare.''.$lookupCurly.''.$lookupParen]) {
+				} else if($this->isVar[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen]) {
 					$this->state = 'VarComma';
 					$expected = 'Identifier';
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
 					$expect = 0;	
-				} else if($isTernary[$lookupSquare.''.$lookupCurly.''.$lookupParen]) {
+				} else if($this->isTernary[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen]) {
 					error("Syntax error $expected :");				
 				} else {
 					$this->state = 'Comma';
@@ -1431,7 +1419,7 @@ class MentalJS {
 				if($this->left) {							
 					$this->state = 'IdentifierDot';								
 				} else {
-					error('Unexpected . Cannot follow '.$lastState.'.output:'.$output);
+					error('Unexpected . Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$expected = 'Identifier';
 				$expected2 = 0;
@@ -1442,22 +1430,22 @@ class MentalJS {
 				$this->pos++;
 				$this->left = 0;
 			} else if($this->chr === self::COLON) {
-				$this->parentState = $this->parentStates[$lookupSquare.''.$lookupCurly.''.$lookupParen];								
-				if($isTernary[$lookupSquare.''.$lookupCurly.''.$lookupParen]) {
+				$this->parentState = $this->parentStates[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen];								
+				if($this->isTernary[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen]) {
 					$this->state = 'TernaryColon';
-					$isTernary[$lookupSquare.''.$lookupCurly.''.$lookupParen]--;
-					$ternaryCount--;
-				} else if($rules['ObjectLiteralColon'][$lastState]) {
+					$this->isTernary[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen]--;
+					$this->ternaryCount--;
+				} else if($rules['ObjectLiteralColon'][$this->lastState]) {
 					$this->state = 'ObjectLiteralColon';
 					$expected = 0;
 					$expected1 = '';
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;																								
-					$isObjectLiteral[$lookupSquare.''.$lookupCurly.''.$lookupParen] = 1;				
-				} else if($isCase[$lookupSquare.''.$lookupCurly.''.$lookupParen] || $lastState === 'Default') {
+					$this->isObjectLiteral[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = 1;				
+				} else if($this->isCase[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] || $this->lastState === 'Default') {
 					$this->state = 'SwitchColon';
-					if($lastState === 'Case') {
+					if($this->lastState === 'Case') {
 						error("Syntax error");
 					}
 					$expected = 0;
@@ -1465,35 +1453,35 @@ class MentalJS {
 					$expected2 = 0;
 					$expected3 = 0;
 					$expected4 = 0;
-					if($lastState !== 'Default') {
-						$isCase[$lookupSquare.''.$lookupCurly.''.$lookupParen] = 0;
-						$caseCount--;	
+					if($this->lastState !== 'Default') {
+						$this->isCase[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = 0;
+						$this->caseCount--;	
 					}						
 				} else if(!$this->parentState) {
 					$this->state = 'LabelColon';
 				} else {
-					error('Unexpected : Cannot follow '.$lastState.'.output:'.$output);
+					error('Unexpected : Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->outputLine = $this->outputLine . ':';
 				$this->pos++;
 				$this->left = 0;
 				$last = self::COLON;												
 			} else if($this->chr === self::SEMI_COLON) {				
-				$this->parentState = $this->parentStates[$lookupSquare.''.$lookupCurly.''.$lookupParen];									
-				if($isFor[$lookupSquare.''.$lookupCurly.''.($lookupParen-1)] && !$isForIn[$lookupSquare.''.$lookupCurly.''.($lookupParen-1)]) {
+				$this->parentState = $this->parentStates[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen];									
+				if($this->isFor[$this->lookupSquare.''.$this->lookupCurly.''.($this->lookupParen-1)] && !$this->isForIn[$this->lookupSquare.''.$this->lookupCurly.''.($this->lookupParen-1)]) {
 					$this->state = 'ForSemi';
 					$this->outputLine = $this->outputLine . ';';
-					if($isFor[$lookupSquare.''.$lookupCurly.''.($lookupParen-1)] > 2) {
+					if($this->isFor[$this->lookupSquare.''.$this->lookupCurly.''.($this->lookupParen-1)] > 2) {
 						error("Syntax error unexpected for semi ;");
 					}
-					$isFor[$lookupSquare.''.$lookupCurly.''.($lookupParen-1)]++;
-					$isVar[$lookupSquare.''.$lookupCurly.''.$lookupParen] = 0;																						
+					$this->isFor[$this->lookupSquare.''.$this->lookupCurly.''.($this->lookupParen-1)]++;
+					$this->isVar[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = 0;																						
 				} else {								
 					$this->state = 'EndStatement';
-					if($lastState !== 'EndStatement') {
+					if($this->lastState !== 'EndStatement') {
 						$this->outputLine = $this->outputLine . ';';	
 					}
-					$isVar[$lookupSquare.''.$lookupCurly.''.$lookupParen] = 0;					
+					$this->isVar[$this->lookupSquare.''.$this->lookupCurly.''.$this->lookupParen] = 0;					
 				}						
 				$this->pos++;
 				$this->left = 0;
@@ -1513,7 +1501,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . '!==';
 					$this->pos+=3;							
 				} else {
-					error('Unexpected !. Cannot follow '.$lastState.'.output:'.$output);
+					error('Unexpected !. Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}			
 				$this->left = 0;				
 			} else if($this->chr === self::TILDE) {
@@ -1522,7 +1510,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . '~';
 					$this->pos++;												
 				} else {
-					error('Unexpected ~ Cannot follow '.$lastState.'.output:'.$output);
+					error('Unexpected ~ Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;	
 			} else if($this->chr === self::PLUS) {
@@ -1547,7 +1535,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . '+';
 					$this->pos++;																	
 				} else {
-					error('Unexpected + Cannot follow '.$lastState.'.output:'.$output);
+					error('Unexpected + Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;
 			} else if($this->chr === self::PIPE) {
@@ -1564,7 +1552,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . ' | ';
 					$this->pos++;						
 				} else {
-					error('Unexpected | Cannot follow '.$lastState.'.output:'.$output);
+					error('Unexpected | Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;
 			} else if($this->chr === self::CARET) {	
@@ -1577,7 +1565,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . ' ^ ';
 					$this->pos++;						
 				} else {
-					error('Unexpected ^. Cannot follow '.$lastState.'.output:'.$output);
+					error('Unexpected ^. Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;
 			} else if($this->chr === self::PERCENT) {
@@ -1590,7 +1578,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . ' % ';
 					$this->pos++;						
 				} else {
-					error('Unexpected % Cannot follow '.$lastState.'.output:'.$output);
+					error('Unexpected % Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;								
 			} else if($this->chr === self::AMPERSAND) {
@@ -1607,7 +1595,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . ' & ';
 					$this->pos++;						
 				} else {
-					error('Unexpected & Cannot follow '.$lastState.'.output:'.$output);
+					error('Unexpected & Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;	
 			} else if($this->chr === self::EQUAL) {
@@ -1625,7 +1613,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . '===';
 					$this->pos+=3;
 				} else {
-					error('Unexpected = Cannot follow '.$lastState.'.output:'.$output);
+					error('Unexpected = Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;																											
 			} else if($this->chr === self::GREATER_THAN) {
@@ -1656,7 +1644,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . '>=';
 					$this->pos+=2;						
 				} else {
-					error('Unexpected > Cannot follow '.$lastState.'.output:'.$output);
+					error('Unexpected > Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;		
 			} else if($this->chr === self::LESS_THAN) {
@@ -1678,7 +1666,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . '<=';
 					$this->pos+=2;						
 				} else {
-					error('Unexpected < Cannot follow '.$lastState.'.output:'.$output);
+					error('Unexpected < Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;
 			} else if($this->chr === self::ASTERIX) {											
@@ -1691,7 +1679,7 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . '*=';
 					$this->pos+=2;						
 				} else {
-					error('Unexpected * Cannot follow '.$lastState.'.output:'.$output);
+					error('Unexpected * Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;																						
 			} else if($this->chr === self::MINUS) {
@@ -1716,11 +1704,11 @@ class MentalJS {
 					$this->outputLine = $this->outputLine . '-';
 					$this->pos++;																	
 				} else {					
-					error('Unexpected - Cannot follow '.$lastState.'.output:'.$output);
+					error('Unexpected - Cannot follow '.$this->lastState.'.output:'.$this->output);
 				}
 				$this->left = 0;																			
 			} else if($this->chr === self::SINGLE_QUOTE || $this->chr === self::DOUBLE_QUOTE) {															
-				if($lastState === 'ObjectLiteralCurlyOpen' || $lastState === 'ObjectLiteralComma') {
+				if($this->lastState === 'ObjectLiteralCurlyOpen' || $this->lastState === 'ObjectLiteralComma') {
 					$this->state = 'ObjectLiteralIdentifierString';
 					$this->left = 0;
 					$expected = 'ObjectLiteralColon';
@@ -1786,14 +1774,14 @@ class MentalJS {
 				error("state does not exist in the rules:" . $this->state);
 			}												                       
 			
-			if(!$rules[$this->state][$lastState] && $newLineFlag) {						    						    						    
-				asi();												
+			if(!$rules[$this->state][$this->lastState] && $newLineFlag) {						    						    						    
+				$this->asi();												
 			}
 			
-			$output = $output . '' . $this->outputLine;						
+			$this->output = $this->output . '' . $this->outputLine;						
 			 
-			if(!$rules[$this->state][$lastState]) {																							
-				error("Unexpected " . $this->state . '. Cannot follow '.$lastState.'.output:'.$output);
+			if(!$rules[$this->state][$this->lastState]) {																							
+				error("Unexpected " . $this->state . '. Cannot follow '.$this->lastState.'.output:'.$this->output);
 			} else if((($expected && $expected !== $this->state) || ($expected2 && $expected2 !== $this->state) || ($expected3 && $expected3 !== $this->state) || ($expected4 && $expected4 !== $this->state)) && $expect === 1) {
 				$this->msg = "expected " . $expected;
 				if($expected2) {
@@ -1805,14 +1793,14 @@ class MentalJS {
 				if($expected4) {
 					$this->msg = $this->msg . ' or ' . $expected4;
 				}
-				$this->msg = $this->msg . '. But got '.$this->state . ' with $last $this->state:'.$lastState.', output:'.$output;
+				$this->msg = $this->msg . '. But got '.$this->state . ' with $last $this->state:'.$this->lastState.', output:'.$this->output;
 				error($this->msg);
 			}
 			
 			if($parseTree){							
 				$parseTreeOutput = $parseTreeOutput . '<'.$this->state.'>' . $this->outputLine . '</'.$this->state.'>';
 			}
-			$lastState = $this->state;																				
+			$this->lastState = $this->state;																				
 			$newLineFlag = 0;																									
 		}	
 		if((($expected && $expected !== $this->state) || ($expected2 && $expected2 !== $this->state) || ($expected3 && $expected3 !== $this->state) || ($expected4 && $expected4 !== $this->state))) {
@@ -1826,21 +1814,21 @@ class MentalJS {
 			if($expected4) {
 				$this->msg = $this->msg . ' or ' . $expected4;
 			}
-			$this->msg = $this->msg . '. But got '.$this->state . ' with $last state:'.$lastState . ', output:'.$output;
+			$this->msg = $this->msg . '. But got '.$this->state . ' with $last state:'.$this->lastState . ', output:'.$this->output;
 			error($this->msg);
 		}
 						
-		if($lastState === 'IfStatementParenClose') {
+		if($this->lastState === 'IfStatementParenClose') {
 			error("Syntax error");	
 		}
 		
-		if($lookupSquare) {
+		if($this->lookupSquare) {
 			error("Syntax error unmatched [");
-		} else if($lookupCurly) {
+		} else if($this->lookupCurly) {
 			error("Syntax error unmatched {");
-		} else if($lookupParen) {
+		} else if($this->lookupParen) {
 			error("Syntax error unmatched (");
-		} else if($caseCount) {
+		} else if($this->caseCount) {
 			error("Syntax error unmatched case");
 		}
 		
@@ -1848,15 +1836,15 @@ class MentalJS {
         	$this->parseTree = $parseTreeOutput;
         }	
 		$this->valid = true;	                             													
-		return $output;
+		return $this->output;
 	}
 }
 $js = new MentalJS;
 try {
 	$start = microtime();
-	echo $js->parse("!x") . '<br>';
+	echo $js->rewrite(file_get_contents("javascript/Mental.js")) . '<br>';
 	$end = microtime();
-	echo ($end - $start) . 'ms';
+	echo abs($end - $start) . 'ms';
 } catch (Exception $e) {
     echo 'Caught exception: ',  $e->getMessage(), "\n";
 }
