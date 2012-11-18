@@ -337,7 +337,7 @@
                                                 attrs.push({name:element.attributes[j].name,value:element.attributes[j].value});
                                             }                                                                                                                                                                                                                                                                     
                                         } 
-                                        for (j= element.attributes.length; j-->0;)
+                                        for (j= element.attributes.length; --j>0;)
                                         element.removeAttributeNode(element.attributes[i]);
                                         
                                         for(j=0;j<attrs.length;j++) {
