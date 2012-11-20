@@ -322,7 +322,7 @@
                         };
                         function createSandboxedNode(node) {
                             Object.defineProperties(node, {
-                                '$innerText$': {configurable:true, get:function(){return this.innerText;},set:function(innerText){this.innerText = innerText;}},
+                                '$innerText$': {configurable:true, get:function(){return this.innerText;},set:function(innerText){if(this.tagName.toLowerCase()==='style'){/*todo css parsing*/return false;};this.innerText = innerText;}},
                                 '$innerHTML$': {configurable:true, get:function(){return this.innerHTML}, set:function(innerHTML){
                                     var doc, elements, element, i, j, tags, attrs;
                                     doc = document.implementation.createHTMLDocument('');
@@ -337,8 +337,8 @@
                                                 attrs.push({name:element.attributes[j].name,value:element.attributes[j].value});
                                             }                                                                                                                                                                                                                                                                     
                                         } 
-                                        for (j= element.attributes.length; --j>0;)
-                                        element.removeAttributeNode(element.attributes[i]);
+                                        for (j= element.attributes.length; --j>=0;)
+                                        element.removeAttributeNode(element.attributes[j]);
                                         
                                         for(j=0;j<attrs.length;j++) {
                                            element.setAttribute(attrs[j].name, attrs[j].name);                                                                                                                                       
@@ -351,7 +351,7 @@
                                     }                                                                                                                                                                                                                      
                                     return this.innerHTML = doc.body.innerHTML; 
                                  }},
-                                '$textContent$': {configurable:true, get:function(){return this.textContent;},set:function(textContent){this.textContent = textContent;}},
+                                '$textContent$': {configurable:true, get:function(){return this.textContent;},set:function(textContent){if(this.tagName.toLowerCase()==='style'){/*todo css parsing*/return false;};this.textContent = textContent;}},
                                 '$style$': {configurable:true, get:function(){ 
                                         var style = this.style;
                                         Object.defineProperties(style,{ 
