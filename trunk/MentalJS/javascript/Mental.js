@@ -687,8 +687,10 @@
 					EXCLAMATION_MARK = 33, 	TILDE = 126, PLUS = 43, MINUS = 45,
 					AMPERSAND = 38, PIPE = 124, GREATER_THAN = 62, LESS_THAN = 60,
 					PERCENT = 37,
-					NEWLINE = 10, CARRIAGE_RETURN = 13, LINE_SEPARATOR = 8232, PARAGRAPH_SEPARATOR = 8233;								
-				
+					NEWLINE = 10, CARRIAGE_RETURN = 13, LINE_SEPARATOR = 8232, PARAGRAPH_SEPARATOR = 8233,
+					timers = [], start, end, parseTreeFlag = !!that.parseTree, completeFlag = !!that.complete,
+					convertedFlag = !!that.converted, parseTimesFlag = !!that.parseTimes, 
+					browserCheckSyntaxFlag = !!that.options.browserCheckSyntax;												    
 					function checkSyntax(code){                                        
                         try {
                             throw new Error();
@@ -756,11 +758,14 @@
 				    	}
 				    }	
 					
-					if(that.options.browserCheckSyntax) {
+					if(browserCheckSyntaxFlag) {
 					   checkSyntax(code);
 					}
 									
 					for(;;) {
+					    if(parseTimesFlag) {   
+					       start = +new Date;
+					    }
 						outputLine = '';					
 						if(pos === length) {						
 							break;
@@ -2395,7 +2400,11 @@
 							parseTreeOutput = parseTreeOutput + '<'+state+'>' + outputLine + '</'+state+'>';
 						}
 						lastState = state;																				
-						newLineFlag = 0;																									
+						newLineFlag = 0;
+						if(parseTimesFlag) {   
+                           end = +new Date;
+                           timers.push({state:state, time: end-start});
+                        }																									
 					}	
 					if(((expected && expected !== state) || (expected2 && expected2 !== state) || (expected3 && expected3 !== state) || (expected4 && expected4 !== state))) {
 						msg = "Expected " + expected;
@@ -2425,17 +2434,19 @@
 					} else if(caseCount) {
 						error("Syntax error unmatched case");
 					}
-					
-					if(that.parseTree) {						
+					if(completeFlag) {
+                        that.complete();
+                    }
+					if(parseTreeFlag) {						
                     	that.parseTree(parseTreeOutput);
-                    }
-					if(that.complete) {
-                    	that.complete();
-                    }
-                    if(that.converted) {                    
+                    }					
+                    if(convertedFlag) {                    
                     	that.converted(output);
                     }
-                    if(that.options.browserCheckSyntax) {      
+                    if(parseTimesFlag) {                    
+                        that.parseTimes(timers);
+                    }
+                    if(browserCheckSyntaxFlag) {      
                         checkSyntax(output);                 
                     }                      													
 					return output;
@@ -2461,6 +2472,9 @@
                 }
                 if(obj.converted) {
                     this.converted = obj.converted;
+                }
+                if(obj.parseTimes) {
+                    this.parseTimes = obj.parseTimes;
                 }
                 if(obj.result) {
                     this.result = obj.result;
