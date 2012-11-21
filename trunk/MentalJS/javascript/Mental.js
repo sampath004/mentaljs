@@ -420,7 +420,7 @@
                             if(typeof str != 'function') {                           
                                 converted = eval(js.parse({options:{eval:false},code:'('+converted+')'}));                                                                                                                                                                   
                             } else {
-                                converted = eval(converted)
+                                converted = eval(converted);
                             }
                             if(that.functionCode) {
                                 that.functionCode(converted);
