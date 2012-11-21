@@ -691,10 +691,10 @@
 				
 					function checkSyntax(code){                                        
                         try {
-                            throw new Error()
+                            throw new Error();
                         }
                         catch (e) {
-                            var relativeLineNumber = e.lineNumber
+                            var relativeLineNumber = e.lineNumber;
                         }
                         try {
                             code = new Function(code);
