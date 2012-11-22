@@ -1347,7 +1347,10 @@
 								}					
 								states = {first:0};							
 								outputLine = outputLine + scoping;
-								for(;;) {																		
+								for(;;) {	
+								    if(pos === length) {                        
+                                        break;
+                                    }																	
 									chr = code.charCodeAt(pos);
 									if(chr === BACKSLASH) {
 										next = code.charCodeAt(pos+1);
