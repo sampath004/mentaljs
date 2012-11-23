@@ -992,18 +992,16 @@
 				                error("Expected exponent");
 				            }                                                                                                                                                                                    
 						} else if((chr >= LOWER_A && chr <= LOWER_Z) || chr === DOLLAR || (chr >= UPPER_A && chr <= UPPER_Z) || chr === UNDERSCORE || chr === BACKSLASH || isValidVariable(chr)) {							
-							foundKeyword = 0;
-							next2 = code.charCodeAt(pos+2);
-							next3 = code.charCodeAt(pos+3);
-							next4 = code.charCodeAt(pos+4);
-							next5 = code.charCodeAt(pos+5);
-							next6 = code.charCodeAt(pos+6);
-							next7 = code.charCodeAt(pos+7);
-							next8 = code.charCodeAt(pos+8);
-							next9 = code.charCodeAt(pos+9);
-							next10 = code.charCodeAt(pos+10);														
+							foundKeyword = 0;																					
 							if(chr === LOWER_F) {
 							    if(next === LOWER_U) {
+							        next2 = code.charCodeAt(pos+2);
+                                    next3 = code.charCodeAt(pos+3);
+                                    next4 = code.charCodeAt(pos+4);
+                                    next5 = code.charCodeAt(pos+5);
+                                    next6 = code.charCodeAt(pos+6);
+                                    next7 = code.charCodeAt(pos+7);
+                                    next8 = code.charCodeAt(pos+8);
 							        //function keyword
                                     if(next2 === LOWER_N && next3 === LOWER_C && next4 === LOWER_T && next5 === LOWER_I && next6 === LOWER_O && next7 === LOWER_N && !isValidVariablePart(next8) && next8 !== BACKSLASH) {                               
                                         foundKeyword = 1;
@@ -1039,6 +1037,8 @@
                                         outputLine = outputLine + 'function'; 
                                     }  
 							    } else if(next === LOWER_O) {
+							        next2 = code.charCodeAt(pos+2);
+                                    next3 = code.charCodeAt(pos+3);
 							        //for keyword
                                     if(next2 === LOWER_R && !isValidVariablePart(next3) && next3 !== BACKSLASH) {
                                         foundKeyword = 1;
@@ -1054,6 +1054,10 @@
                                         isFor[lookupSquare+''+lookupCurly+''+lookupParen] = 1;
                                     }  
 							    } else if(next === LOWER_A) {
+							        next2 = code.charCodeAt(pos+2);
+                                    next3 = code.charCodeAt(pos+3);
+                                    next4 = code.charCodeAt(pos+4);
+                                    next5 = code.charCodeAt(pos+5);
 							        // false keyword
                                     if(chr === LOWER_F && next === LOWER_A && next2 === LOWER_L && next3 === LOWER_S && next4 === LOWER_E && !isValidVariablePart(next5) && next5 !== BACKSLASH) {
                                         foundKeyword = 1;
@@ -1067,6 +1071,12 @@
                                         outputLine = outputLine + 'false';
                                     }  
 							    } else if(next === LOWER_I) {
+							        next2 = code.charCodeAt(pos+2);
+                                    next3 = code.charCodeAt(pos+3);
+                                    next4 = code.charCodeAt(pos+4);
+                                    next5 = code.charCodeAt(pos+5);
+                                    next6 = code.charCodeAt(pos+6);
+                                    next7 = code.charCodeAt(pos+7);
 							        // finally keyword          
                                     if(chr === LOWER_F && next === LOWER_I && next2 === LOWER_N && next3 === LOWER_A && next4 === LOWER_L && next5 === LOWER_L && next6 === LOWER_Y && !isValidVariablePart(next7) && next7 !== BACKSLASH) {
                                         foundKeyword = 1;
@@ -1082,7 +1092,8 @@
                                      }
 							    }
 						} else if(chr === LOWER_I) {
-							    if(next === LOWER_F) {   
+							    if(next === LOWER_F) {
+							        next2 = code.charCodeAt(pos+2);   
 							        // if keyword
     							    if(chr === LOWER_I && next === LOWER_F && !isValidVariablePart(next2) && next2 !== BACKSLASH) {
                                     foundKeyword = 1;
@@ -1100,6 +1111,7 @@
                                     isIf[lookupSquare+''+lookupCurly+''+lookupParen] = 1;
                                  }    
 						       } else if(next === LOWER_N) {
+						           next2 = code.charCodeAt(pos+2);
 						           // in keyword      
                                     if(chr === LOWER_I && next === LOWER_N && !isValidVariablePart(next2) && next2 !== BACKSLASH) {
                                         foundKeyword = 1;
@@ -1115,19 +1127,35 @@
                                             isForIn[lookupSquare+''+lookupCurly+''+lookupParen] = 1;        
                                         }                                                                                                                              
                                     // instanceof keyword       
-                                    } else if(next2 === LOWER_S && next3 === LOWER_T && next4 === LOWER_A && next5 === LOWER_N && next6 === LOWER_C && next7 === LOWER_E && next8 === LOWER_O && next9 === LOWER_F && !isValidVariablePart(next10) && next10 !== BACKSLASH) {
-                                        foundKeyword = 1;
-                                        state = 'InstanceOf';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
-                                        left = 1;   
-                                        pos+=10;
-                                        outputLine = outputLine + ' instanceof ';
+                                    } else if(next2 === LOWER_S) {
+                                        next2 = code.charCodeAt(pos+2);
+                                        next3 = code.charCodeAt(pos+3);
+                                        next4 = code.charCodeAt(pos+4);
+                                        next5 = code.charCodeAt(pos+5);
+                                        next6 = code.charCodeAt(pos+6);
+                                        next7 = code.charCodeAt(pos+7);
+                                        next8 = code.charCodeAt(pos+8);
+                                        next9 = code.charCodeAt(pos+9);
+                                        next10 = code.charCodeAt(pos+10);
+                                        if(next3 === LOWER_T && next4 === LOWER_A && next5 === LOWER_N && next6 === LOWER_C && next7 === LOWER_E && next8 === LOWER_O && next9 === LOWER_F && !isValidVariablePart(next10) && next10 !== BACKSLASH) {
+                                            foundKeyword = 1;
+                                            state = 'InstanceOf';
+                                            expected = 0;
+                                            expected2 = 0;
+                                            expected3 = 0;
+                                            expected4 = 0;
+                                            left = 1;   
+                                            pos+=10;
+                                            outputLine = outputLine + ' instanceof ';
+                                        }
                                     }  
 						       }
-						} else if(chr === LOWER_T) {						    
+						} else if(chr === LOWER_T) {
+			                  next2 = code.charCodeAt(pos+2);
+                              next3 = code.charCodeAt(pos+3);
+                              next4 = code.charCodeAt(pos+4);
+                              next5 = code.charCodeAt(pos+5);
+                              next6 = code.charCodeAt(pos+6);						    
 						      if(next === LOWER_H) {
     						         // this keyword
                                      if(next2 === LOWER_I && next3 === LOWER_S && !isValidVariablePart(next4) && next4 !== BACKSLASH) {
@@ -1193,6 +1221,13 @@
                                     }
 						      }
 						} else if(chr === LOWER_C) {
+						    next2 = code.charCodeAt(pos+2);
+                            next3 = code.charCodeAt(pos+3);
+                            next4 = code.charCodeAt(pos+4);
+                            next5 = code.charCodeAt(pos+5);
+                            next6 = code.charCodeAt(pos+6);
+                            next7 = code.charCodeAt(pos+7);
+                            next8 = code.charCodeAt(pos+8);
 				              if(next === LOWER_A) {
 				                    // case keyword
                                     if(next2 === LOWER_S && next3 === LOWER_E && !isValidVariablePart(next4) && next4 !== BACKSLASH) {
@@ -1235,6 +1270,12 @@
     			                    }
 				              }
 						} else if(chr === LOWER_D) {
+						    next2 = code.charCodeAt(pos+2);
+                            next3 = code.charCodeAt(pos+3);
+                            next4 = code.charCodeAt(pos+4);
+                            next5 = code.charCodeAt(pos+5);
+                            next6 = code.charCodeAt(pos+6);
+                            next7 = code.charCodeAt(pos+7);
 						    if(next === LOWER_O) {
 						        // do keyword     
                                 if(!isValidVariablePart(next2) && next2 !== BACKSLASH) {
@@ -1276,6 +1317,13 @@
                                 } 
 						    }
 						} else if(chr === UPPER_I) {
+        					    next2 = code.charCodeAt(pos+2);
+                                next3 = code.charCodeAt(pos+3);
+                                next4 = code.charCodeAt(pos+4);
+                                next5 = code.charCodeAt(pos+5);
+                                next6 = code.charCodeAt(pos+6);
+                                next7 = code.charCodeAt(pos+7);
+                                next8 = code.charCodeAt(pos+8);
 					            // Infinity keyword     
                                 if(next === LOWER_N && next2 === LOWER_F && next3 === LOWER_I && next4 === LOWER_N && next5 === LOWER_I && next6 === LOWER_T && next7 === LOWER_Y && !isValidVariablePart(next8) && next8 !== BACKSLASH) {
                                     foundKeyword = 1;
@@ -1289,6 +1337,9 @@
                                     outputLine = outputLine + 'Infinity'; 
                                 }
 						} else if(chr === LOWER_V) {
+						    next2 = code.charCodeAt(pos+2);
+                            next3 = code.charCodeAt(pos+3);
+                            next4 = code.charCodeAt(pos+4);
 						    if(next === LOWER_A) {
 						        //var keyword
                                 if(next2 === LOWER_R && !isValidVariablePart(next3) && next3 !== BACKSLASH) {                                                                                                                             
@@ -1322,6 +1373,10 @@
                                 }
 						    }
 						} else if(chr === LOWER_W) {
+						    next2 = code.charCodeAt(pos+2);
+                            next3 = code.charCodeAt(pos+3);
+                            next4 = code.charCodeAt(pos+4);
+                            next5 = code.charCodeAt(pos+5);                                
 						    if(next === LOWER_H) {
 					            // while keyword
                                 if(chr === LOWER_W && next === LOWER_H && next2 === LOWER_I && next3 === LOWER_L && next4 === LOWER_E && !isValidVariablePart(next5) && next5 !== BACKSLASH) {
@@ -1352,6 +1407,9 @@
                                 }   
 						    }
 						} else if(chr === LOWER_N) {
+						    next2 = code.charCodeAt(pos+2);
+                            next3 = code.charCodeAt(pos+3);
+                            next4 = code.charCodeAt(pos+4);
 						    if(next === LOWER_U) {
 						        // null keyword
                                 if(next2 === LOWER_L && next3 === LOWER_L && !isValidVariablePart(next4) && next4 !== BACKSLASH) {
@@ -1380,6 +1438,9 @@
                                 }
 						    }
 						} else if(chr === LOWER_E) {
+						    next2 = code.charCodeAt(pos+2);
+                            next3 = code.charCodeAt(pos+3);
+                            next4 = code.charCodeAt(pos+4);
 						    // else keyword
                             if(next === LOWER_L && next2 === LOWER_S && next3 === LOWER_E && !isValidVariablePart(next4) && next4 !== BACKSLASH) {                                                            
                                 if(!isIf[lookupSquare+''+lookupCurly+''+lookupParen]) {
@@ -1396,6 +1457,11 @@
                                 outputLine = outputLine + 'else ';  
                             }
 						} else if(chr === LOWER_S) {
+						    next2 = code.charCodeAt(pos+2);
+                            next3 = code.charCodeAt(pos+3);
+                            next4 = code.charCodeAt(pos+4);
+                            next5 = code.charCodeAt(pos+5);
+                            next6 = code.charCodeAt(pos+6);
 						    // switch keyword
                             if(next === LOWER_W && next2 === LOWER_I && next3 === LOWER_T && next4 === LOWER_C && next5 === LOWER_H && !isValidVariablePart(next6) && next6 !== BACKSLASH) {
                                 foundKeyword = 1;
@@ -1410,6 +1476,8 @@
                                 outputLine = outputLine + 'switch'; 
                             }
 						} else if(chr === UPPER_N) {
+						    next2 = code.charCodeAt(pos+2);
+                            next3 = code.charCodeAt(pos+3);
 						    // NaN keyword
                             if(chr === UPPER_N && next === LOWER_A && next2 === UPPER_N && !isValidVariablePart(next3) && next3 !== BACKSLASH) {
                                 foundKeyword = 1;
@@ -1423,6 +1491,14 @@
                                 outputLine = outputLine + 'NaN';
                             }
 						} else if(chr === LOWER_U) {
+						    next2 = code.charCodeAt(pos+2);
+                            next3 = code.charCodeAt(pos+3);
+                            next4 = code.charCodeAt(pos+4);
+                            next5 = code.charCodeAt(pos+5);
+                            next6 = code.charCodeAt(pos+6);
+                            next7 = code.charCodeAt(pos+7);
+                            next8 = code.charCodeAt(pos+8);
+                            next9 = code.charCodeAt(pos+9);
 						    // undefined keyword
                             if(lastState !== 'FunctionArgumentComma' && lastState !== 'FunctionExpressionArgumentComma' && next === LOWER_N && next2 === LOWER_D && next3 === LOWER_E && next4 === LOWER_F && next5 === LOWER_I && next6 === LOWER_N && next7 === LOWER_E && next8 === LOWER_D && !isValidVariablePart(next9) && next9 !== BACKSLASH) {
                                 foundKeyword = 1;
@@ -1436,6 +1512,10 @@
                                 outputLine = outputLine + 'undefined';
                              }
 						} else if(chr === LOWER_B) {
+						    next2 = code.charCodeAt(pos+2);
+                            next3 = code.charCodeAt(pos+3);
+                            next4 = code.charCodeAt(pos+4);
+                            next5 = code.charCodeAt(pos+5);                                        
 						    // break keyword
                             if(next === LOWER_R && next2 === LOWER_E && next3 === LOWER_A && next4 === LOWER_K && !isValidVariablePart(next5) && next5 !== BACKSLASH) {
                                 foundKeyword = 1;
@@ -1449,6 +1529,11 @@
                                 outputLine = outputLine + 'break ';     
                              }
 						} else if(chr === LOWER_R) {
+						    next2 = code.charCodeAt(pos+2);
+                            next3 = code.charCodeAt(pos+3);
+                            next4 = code.charCodeAt(pos+4);
+                            next5 = code.charCodeAt(pos+5);
+                            next6 = code.charCodeAt(pos+6);                                        
 						    // return keyword         
                             if(next === LOWER_E && next2 === LOWER_T && next3 === LOWER_U && next4 === LOWER_R && next5 === LOWER_N && !isValidVariablePart(next6) && next6 !== BACKSLASH) {
                                 foundKeyword = 1;
@@ -1462,6 +1547,14 @@
                                 outputLine = outputLine + 'return ';
                             }
 						} else if(chr === LOWER_P) {
+						    next2 = code.charCodeAt(pos+2);
+                            next3 = code.charCodeAt(pos+3);
+                            next4 = code.charCodeAt(pos+4);
+                            next5 = code.charCodeAt(pos+5);
+                            next6 = code.charCodeAt(pos+6);
+                            next7 = code.charCodeAt(pos+7);
+                            next8 = code.charCodeAt(pos+8);
+                            next9 = code.charCodeAt(pos+9);
 						    // prototype keyword
                             if(lastState === 'IdentifierDot' && chr === LOWER_P && next === LOWER_R && next2 === LOWER_O && next3 === LOWER_T && next4 === LOWER_O && next5 === LOWER_T && next6 === LOWER_Y && next7 === LOWER_P && next8 === LOWER_E && !isValidVariablePart(next9) && next9 !== BACKSLASH) {                                                                                                                                                                                                                                  
                                 foundKeyword = 1;
@@ -1475,6 +1568,11 @@
                                 outputLine = outputLine + 'prototype';
                             }
 						} else if(chr === LOWER_L) {
+						    next2 = code.charCodeAt(pos+2);
+                            next3 = code.charCodeAt(pos+3);
+                            next4 = code.charCodeAt(pos+4);
+                            next5 = code.charCodeAt(pos+5);
+                            next6 = code.charCodeAt(pos+6);                            
                             // length keyword
                             if(lastState === 'IdentifierDot' && next === LOWER_E && next2 === LOWER_N && next3 === LOWER_G && next4 === LOWER_T && next5 === LOWER_H && !isValidVariablePart(next6) && next6 !== BACKSLASH) {                                                                                                                                                                                                                                 
                                 foundKeyword = 1;
