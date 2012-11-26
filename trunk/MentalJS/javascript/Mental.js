@@ -321,8 +321,17 @@
                         };
                         function createSandboxedNode(node) {
                             Object.defineProperties(node, {
-                                '$innerText$': {configurable:true, get:function(){return this.innerText;},set:function(innerText){if(this.tagName.toLowerCase()==='style'){/*todo css parsing*/return false;};this.innerText = innerText;}},
+                                '$innerText$': {configurable:true, get:function(){return this.innerText;},set:function(innerText){
+                                        if(this.tagName.toLowerCase()==='style'){
+                                            /*todo css parsing*/return false;
+                                         };
+                                         this.innerText = innerText;
+                                        }
+                                },
                                 '$innerHTML$': {configurable:true, get:function(){return this.innerHTML}, set:function(innerHTML){
+                                    if(this.tagName.toLowerCase()==='style'){
+                                        /*todo css parsing*/return false;
+                                     };
                                     var doc, elements, element, i, j, tags, attrs;
                                     doc = document.implementation.createHTMLDocument('');
                                     doc.body.innerHTML = innerHTML;                                    
@@ -330,8 +339,15 @@
                                                                        
                                     for(i = 0; i < tags.length;i++) {
                                         element = tags[i];                                        
+                                        if(!(element.attributes instanceof NamedNodeMap)) {
+                                           doc.body.removeChild(element);
+                                           continue; 
+                                        }                                        
+                                        if(element.tagName.toLowerCase() === 'style') {
+                                            while ( element.firstChild ) element.removeChild( element.firstChild );
+                                        }                                         
                                         attrs = [];                                        
-                                        for(j=0;j<element.attributes.length;j++) {
+                                        for(j=0;j<element.attributes.length;j++) {                                            
                                             if(attributeWhitelist.test(element.attributes[j].name)) {
                                                 attrs.push({name:element.attributes[j].name,value:element.attributes[j].value});
                                             }                                                                                                                                                                                                                                                                     
@@ -340,15 +356,15 @@
                                         element.removeAttributeNode(element.attributes[j]);
                                         
                                         for(j=0;j<attrs.length;j++) {
-                                           element.setAttribute(attrs[j].name, attrs[j].name);                                                                                                                                       
+                                           element.setAttribute(attrs[j].name, attrs[j].value);                                                                                                                                       
                                         }
                                         if(element.firstChild && element.firstChild.nodeType === 3) {
                                            element.firstChild.nodeValue = ' ';
                                         } else {                                        
                                             element.appendChild(doc.createTextNode(' '));
                                         }                                                                                                                                                                                                                                              
-                                    }                                                                                                                                                                                                                      
-                                    return this.innerHTML = doc.body.innerHTML; 
+                                    }                                                                                                                                                                                            
+                                    return this.innerHTML = new XMLSerializer().serializeToString(doc.body); 
                                  }},
                                 '$textContent$': {configurable:true, get:function(){return this.textContent;},set:function(textContent){if(this.tagName.toLowerCase()==='style'){/*todo css parsing*/return false;};this.textContent = textContent;}},
                                 '$style$': {configurable:true, get:function(){ 
@@ -360,7 +376,12 @@
                                         return style;
                                     }
                                  },
-                                '$appendChild$': {configurable:true, writable:false, value:function(){return this.appendChild.apply(this, arguments);}},
+                                '$appendChild$': {configurable:true, writable:false, value:function(){
+                                    if(this.tagName.toLowerCase()==='style'){
+                                        /*todo css parsing*/return false;
+                                     };
+                                    return this.appendChild.apply(this, arguments);}
+                                 },
                                 '$firstChild$': {configurable:true, get:function(){return this.firstChild}},
                                 '$lastChild$': {configurable:true, get:function(){return this.lastChild}},
                                 '$nextSibling$': {configurable:true, get:function(){return this.nextSibling}},
@@ -596,8 +617,7 @@
                                 '$href$': {configurable: true, get:function(){return 'http://sandboxed'}},
                                 '$replace$': {configurable: true, get:function(){return function(){}}},
                                 '$reload$': {configurable: true, get:function(){return function(){}}},
-                                '$assign$': {configurable: true, get:function(){return function(){}}},
-                                '$constructor$': {configurable: true, get:function(){return location}},
+                                '$assign$': {configurable: true, get:function(){return function(){}}},                                
                                 '$hash$': {configurable: true, set:function(hash){ location.hash=hash;},get:function(){return location.hash}},
                                 '$host$': {configurable: true, get:function(){return 'sandboxed'}},
                                 '$hostname$': {configurable: true, get:function(){return 'sandboxed'}},
@@ -792,11 +812,11 @@
 						next = code.charCodeAt(pos+1);
 						
 						if(chr === FORWARD_SLASH) {
-                            if(!left && next !== ASTERIX && next !== FORWARD_SLASH) {                                                                                               
+                            if(!left && next !== ASTERIX && next !== FORWARD_SLASH && lastState !== 'VarIdentifier') {                                                                                                                               
                                 states = {escaping: 0, complete: 0, open: 0, square: 0, flags: {}};       
                                 state = 'RegExp';
                                 left = 1;               
-                                states.open = 1;                                
+                                states.open = 1;                                                               
                                 outputLine = outputLine + '/';                              
                                 pos++;                  
                                 while(1) {
@@ -884,7 +904,7 @@
                                     pos++;                              
                                 } 
                                 continue;  
-                            } else if(left && next !== FORWARD_SLASH) {
+                            } else if((lastState === 'VarIdentifier' || left) && next !== FORWARD_SLASH) {
                                 left = 0;
                                 if(next === EQUAL) {
                                     state = 'AssignmentDivide';
@@ -2737,7 +2757,8 @@
                                     expected2 = 0;
                                     expected3 = 0;
                                     expected4 = 0;
-                                    expect = 0;                                                                                                                 
+                                    expect = 0;
+                                    left = 1;                                                                                                                 
                                 } else if(rules.Identifier[lastState]) {
                                     state = 'Identifier';
                                     expected = 0;
