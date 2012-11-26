@@ -377,7 +377,7 @@
                                     }
                                  },
                                 '$appendChild$': {configurable:true, writable:false, value:function(){
-                                    if(this.tagName.toLowerCase()==='style'){
+                                    if(this.tagName && this.tagName.toLowerCase()==='style'){
                                         /*todo css parsing*/return false;
                                      };
                                     return this.appendChild.apply(this, arguments);}
