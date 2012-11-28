@@ -55,11 +55,11 @@ function parse(obj) {
 		NOTHING = 0, SINGLE_LINE_COMMENT = 1, MULTI_LINE_COMMENT = 2, REGEX = 3, NUMBER = 4, IDENTIFIER_DOT = 5, 
 		ASSIGNMENT_DIVIDE = 6, DIVIDE_OPERATOR = 7, IDENTIFIER = 8, STRING_SINGLE = 9, STRING_DOUBLE = 10, OPERATOR = 11,
 		BITWISE_NOT = 12, UNKNOWN = 13;			
-	
 	while(pos < len) {
 		if(state === NOTHING) {		
 			if(cached) {
 				chr = cached;
+				cached = 0;
 			} else {
 				chr = code.charCodeAt(pos);
 			}																									
@@ -152,9 +152,7 @@ function parse(obj) {
 				} else {
 					throw'Unknown state.';
 				}
-			} else {
-				output+=String.fromCharCode(last);
-			}					
+			} 				
 			switch(state) {				
 				case NUMBER:
 					if(chr >= DIGIT_0 && chr <= DIGIT_9) {
@@ -168,23 +166,23 @@ function parse(obj) {
 					states.operatorComplete = 0;
 				break;
 				case IDENTIFIER:
-					states = {currentIdentifierString:''};
-					states.currentIdentifier = [chr];
-					last = chr;												
-					state = IDENTIFIER;
-					pos++;
-					states.identifierComplete = 0;
-					states.unicodeEscape = 0;
-					states.identifierStart = 1;
-					if(chr === BACKSLASH) {
-						states.unicodeEscape = 1;
-						states.identifierStart = 0;
-					}
-					while(pos < len) {												
+					states = {u:0,currentIdentifier:String.fromCharCode(last),currentUnicode:'',unicodeEscape:0,identifierStart:1};																				
+					state = IDENTIFIER;					
+					if(chr === BACKSLASH) {												
+						states.identifierStart = 0;						
+					}									
+					cached = chr;														
+					while(pos < len) {
+						if(cached) {
+							chr = cached;
+							cached = 0;
+						} else {
+							chr = code.charCodeAt(pos);
+						}												
 						if(states.unicodeEscape > 1) {
 							if(states.currentUnicode.length === 3) {
-								states.currentUnicode.push(chr);
-								states.u = +('0x'+String.fromCharCode.apply(window,states.currentUnicode));																		
+								states.currentUnicode+=code.charAt(pos);
+								states.u = +('0x'+currentUnicode);																		
 								if(!identifierStart) {						
 									if(states.u >= LOWER_A && u <= LOWER_Z) {						                            
 									} else if(states.u >= UPPER_A && u <= UPPER_Z) {			                				                			                	                  
@@ -209,12 +207,7 @@ function parse(obj) {
 					                	throw'illegal unicode escape';
 					                }
 					            }
-					            if(states.identifierStart) {
-					            	states.currentIdentifier.push(BACKSLASH);
-					            }			            
-					            states.currentIdentifier.push(LOWER_U);
-					            states.currentIdentifier.push.apply(states.currentIdentifier,states.currentUnicode);            
-								states.currentUnicode = [];
+					            states.currentUnicode = '';
 								states.unicodeEscape = 0;
 								states.identifierStart = 1;
 							} else if(chr >= DIGIT_0 && chr <= DIGIT_9) {
@@ -224,21 +217,17 @@ function parse(obj) {
 								throw'Unexpected "'+(isNaN(chr)?'(end)':chr)+'" character. Expected unicode escape.';
 							}
 							if(states.currentUnicode.length<4) {
-								cstates.urrentUnicode.push(chr);
+								states.currentUnicode+=code.charAt(pos);
 							}
 						} else if(states.unicodeEscape === 1) {
 			            	if(chr !== LOWER_U) {
 			            		throw'Unexpected "'+(isNaN(chr)?'(end)':chr)+'" character. Expected unicode escape.';
 			            	}
 			            	states.unicodeEscape = 2;
-						} else if(chr >= LOWER_A && chr <= LOWER_Z) {					
-							states.currentIdentifier.push(chr);                            
-			            } else if(chr >= UPPER_A && chr <= UPPER_Z) {
-			            	states.currentIdentifier.push(chr);
-			            } else if(chr >= DIGIT_0 && chr <= DIGIT_9) {
-			            	states.currentIdentifier.push(chr);                           
-			            } else if(chr === UNDERSCORE || chr === DOLLAR) {
-			            	states.currentIdentifier.push(chr);                                                            
+						} else if(chr >= LOWER_A && chr <= LOWER_Z) {												                            
+			            } else if(chr >= UPPER_A && chr <= UPPER_Z) {			            	
+			            } else if(chr >= DIGIT_0 && chr <= DIGIT_9) {			            	                     
+			            } else if(chr === UNDERSCORE || chr === DOLLAR) {			            	                                                      
 			            } else if(chr === BACKSLASH && states.unicodeEscape) {
 			            	throw'Unexpected unicode escape';
 			            } else if(chr === BACKSLASH && !states.unicodeEscape) {
@@ -247,15 +236,14 @@ function parse(obj) {
 			                if(!isValidVariablePart(chr)) {
 			                   cached = chr;
 			                   break;
-			                } else {
-			                	states.currentIdentifier.push(chr);
-			                }                                      
+			                }                                    
 			            } else {
 			            	cached = chr;                	                
 			            	break;
 			            }
+			            states.currentIdentifier+=code.charAt(pos);
 			            pos++;
-		            }		            
+		            }		            		            
 	            	states.identifierLen = states.currentIdentifier.length;
 	            	state = NOTHING;
 	    			lastState = IDENTIFIER;	    			
@@ -350,7 +338,8 @@ function parse(obj) {
 	            				lastState = UNDEFINED;
 	            			}
 	            		break;                		
-	            	}	            	               	                	                	                	        			                			                   		                     		            
+	            	}
+	            	output+=states.currentIdentifier;	            	               	                	                	                	        			                			                   		                     		            
 				break;
 				case REGEX:
 					left = 1;
