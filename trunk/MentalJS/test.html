@@ -23,13 +23,15 @@ function isValidVariablePart(c) {
 }	
 function parse(obj) {
 	var code = obj.code, len = code.length, onComplete = obj.onComplete, onStateChange = obj.onStateChange,
-		pos = 0, last, output = '', left = 0, state = 0, lastState, states = {}, start = 0, end = 0,
+		pos = 0, last, output = '', left = 0, state = 0, nextState = 0, lastState, states = {}, start = 0, end = 0,
 		cached = 0, newLineFlag = 0,		
 		statesLookup = {
 				0: 'Nothing',1: 'SingleLineComment',2:'MultilineComment',3:'Regex',
 				4: 'Number', 5: 'IdentifierDot', 6: 'AssignmentDivide', 7: 'DivideOperator',
 				8: 'Identifier', 9: 'StringSingleQuote', 10: 'StringDoubleQuote', 11: 'Operator',
-				12: 'BitwiseNot', 13: 'Unknown', 14: 'Typeof', 15: 'Hex'
+				12: 'BitwiseNot', 13: 'Unknown', 14: 'Typeof', 15: 'Hex', 16: 'Ternary', 17: 'EqualAssignment',
+				18: 'Not', 19: 'UnaryPlus', 20: 'Addition', 21: 'BitwiseOr', 22: 'Xor', 23: 'Modulus', 24: 'BitwiseAnd',
+				25: 'EqualAssignment', 26: 'GreaterThan', 27: 'LessThan', 28: 'Multiply', 29: 'UnaryMinus', 30: 'Minus'
 		},
 		lookupSquare = 0, lookupCurly, lookupParen = 0, lookup, parentStates = {},
 		ternaryCount = 0, isTernary = {}, caseCount = 0, isCase = {}, isVar = {},
@@ -54,7 +56,9 @@ function parse(obj) {
 		//states
 		NOTHING = 0, SINGLE_LINE_COMMENT = 1, MULTI_LINE_COMMENT = 2, REGEX = 3, NUMBER = 4, IDENTIFIER_DOT = 5, 
 		ASSIGNMENT_DIVIDE = 6, DIVIDE_OPERATOR = 7, IDENTIFIER = 8, STRING_SINGLE = 9, STRING_DOUBLE = 10, OPERATOR = 11,
-		BITWISE_NOT = 12, UNKNOWN = 13, TYPEOF = 14, HEX = 15;			
+		BITWISE_NOT = 12, UNKNOWN = 13, TYPEOF = 14, HEX = 15, TERNARY = 16, EQUAL_ASSIGNMENT = 17, NOT = 18,
+		UNARY_PLUS = 19, ADDITION = 20, BITWISE_OR = 21, XOR = 22, MODULUS = 23, BITWISE_AND = 24, EQUAL_ASSIGNMENT = 25,
+		GREATER_THAN_OPERATOR = 26, LESS_THAN_OPERATOR = 27, MULTIPLY = 28, UNARY_MINUS = 29, MINUS_OPERATOR = 30;			
 	while(pos < len) {
 			if(state === NOTHING) {		
 				if(cached) {
@@ -84,11 +88,15 @@ function parse(obj) {
 				} else if(chr === SQUARE_OPEN) {
 				} else if(chr === SQUARE_CLOSE) {
 				} else if(chr === DIGIT_0) {
-					state = UNKNOWN;
-					pos++;
-					last = chr;
+					if(pos + 1 === len) {
+						state = NUMBER;
+					} else {
+						state = UNKNOWN;
+						pos++;
+						last = chr;
+					}
 					continue;			
-				} else if(chr <= DIGIT_1 && chr >= DIGIT_9) {
+				} else if(chr >= DIGIT_1 && chr <= DIGIT_9) {
 					state = NUMBER;					
 				} else if(chr === SINGLE_QUOTE) {
 					state = STRING_SINGLE;					
@@ -97,10 +105,10 @@ function parse(obj) {
 				} else if(chr === PERIOD) {
 					if(left) {
 						left = 0;
-						state = IDENTIFIER_DOT;
+						state = IDENTIFIER_DOT;						
 					} else {
 						state = NUMBER;
-					}
+					}					
 				} else if(chr === FORWARD_SLASH) {
 					state = UNKNOWN;
 					pos++;
@@ -109,26 +117,45 @@ function parse(obj) {
 				} else if(chr === COLON) {	
 				} else if(chr === COMMA) {						
 				} else if(chr === PLUS) {
+					if(!left) {
+						newState = UNARY_PLUS;	
+					} else {
+						newState = ADDITION;
+					}										
 					state = OPERATOR;
-				} else if(chr === EXCLAMATION_MARK) {
+				} else if(chr === EXCLAMATION_MARK) {					
+					newState = NOT;					
 					state = OPERATOR;
 				} else if(chr === PIPE) {
+					newState = BITWISE_OR;
 					state = OPERATOR;
 				} else if(chr === CARET) {
+					newState = XOR;
 					state = OPERATOR;
 				} else if(chr === PERCENT) {
+					newState = MODULUS;
 					state = OPERATOR;
 				} else if(chr === AMPERSAND) {
+					newState = BITWISE_AND;
 					state = OPERATOR;
 				} else if(chr === EQUAL) {
+					newState = EQUAL_ASSIGNMENT;
 					state = OPERATOR;
 				} else if(chr === GREATER_THAN) {
+					newState = GREATER_THAN_OPERATOR;
 					state = OPERATOR;
 				} else if(chr === LESS_THAN) {
+					newState = LESS_THAN_OPERATOR;
 					state = OPERATOR;
 				} else if(chr === ASTERIX) {
+					newState = MULTIPLY;
 					state = OPERATOR;
 				} else if(chr === MINUS) {
+					if(!left) {
+						newState = UNARY_MINUS;
+					} else {
+						newState = MINUS_OPERATOR;
+					}
 					state = OPERATOR;
 				} else if(chr === TILDE) {
 					if(!left) {
@@ -137,7 +164,7 @@ function parse(obj) {
 						throw'Unexpected ~ Cannot follow '+lastState+'.';
 					}
 				} else if(chr === QUESTION_MARK) {
-					
+						state = TERNARY;
 				} else if(chr > 0x80) {
 					if(!isValidVariable(chr)) {
 						throw'illegal character.';
@@ -147,7 +174,7 @@ function parse(obj) {
 					throw'Unexpected character';
 				}											
 			}
-			if(state === UNKNOWN) {
+			if(state === UNKNOWN) {				
 				chr = code.charCodeAt(pos);				
 				if(last === FORWARD_SLASH) {
 					if(chr === FORWARD_SLASH) {
@@ -174,7 +201,35 @@ function parse(obj) {
 				}								
 			} 				
 			switch(state) {
+				case TERNARY:
+					lastState = state;
+					output+='?';
+					if(onStateChange) {
+	            		onStateChange(statesLookup[lastState],"?");
+	            	}
+					state = NOTHING;
+					pos++;
+				break;
+				case BITWISE_NOT:
+					lastState = state;
+					output+='~';					
+					if(onStateChange) {
+	            		onStateChange(statesLookup[lastState],"~");
+	            	}
+					state = NOTHING;
+					pos++;
+				break;
+				case IDENTIFIER_DOT:
+					lastState = state;
+					output+='.';					
+					if(onStateChange) {
+	            		onStateChange(statesLookup[lastState],".");
+	            	}
+					state = NOTHING;
+					pos++;
+				break;
 				case HEX:
+					left = 1;
 					states = {output:'0x'};
 					lastState = HEX;
 					pos++;
@@ -195,32 +250,128 @@ function parse(obj) {
 					if(onStateChange) {
 	            		onStateChange(statesLookup[lastState],states.output);
 	            	}
+	            	output+=states.output;
 	            	cached = chr;
 	            	state = NOTHING;
 				break;											
-				case NUMBER:					
-					states = {dot: 0, e:0, complete:0,output:''};
+				case NUMBER:
+					left = 1;										
+					states = {dot: 0, e:0, e2:0, complete:0,output:'', zeroFirst: 0, dotFirst: 0};
 					if(chr === PERIOD) {
-						states.output = '0.';
+						states.output = '.';
 						states.dot = 1;
-						pos++;
+						states.dotFirst = 1;						
+					} else if(chr === DIGIT_0) {
+						states.zeroFirst = 1;																		
+					} else {
+						states.output = code.charAt(pos);						
 					}
+					pos++;
 					while(pos < len) {
 						chr = code.charCodeAt(pos);
-						if(chr >= DIGIT_0 && chr <= DIGIT_9) {
+						if(chr >= DIGIT_1 && chr <= DIGIT_9) {
+							states.zeroFirst = 0;
+							if(states.e) {
+								states.e = 2;
+							}
+							if(states.e2) {
+								states.e2 = 2;
+							}								
+						} else if(chr === DIGIT_0) {
+							if(states.zeroFirst) {
+								pos++;
+								continue;								
+							}
+							if(states.e) {
+								states.e = 2;
+							}
+							if(states.e2) {
+								states.e2 = 2;
+							}
+						} else if(chr === LOWER_E || chr === UPPER_E) {
+							if(states.e) {
+								break;
+							} else {
+								states.e = 1;
+							}
+						} else if(chr === PLUS || chr === MINUS) {
+							if(states.e === 1 && !states.e2) {
+								states.e = 2;
+								states.e2 = 1;								
+							} else {
+								cached = chr;
+								break;
+							}
+						} else if(chr === PERIOD) {
+							if(states.dot || states.e) {
+								break;
+							}
+							states.dot = 1;
+						} else {
+							cached = chr;
+							break;
 						}
+						last = chr;
+						states.output+=code.charAt(pos);
 						pos++;
 					}
+					if(states.zeroFirst && !states.output.length) {
+						states.output = '0';
+					} else if(states.dotFirst) {
+						if(states.output.length === 1) {
+							throw'Expected digit';
+						}
+						states.output = '0' + states.output;
+					} else if(states.e === 1 || states.e2 === 1) {
+						throw'Expected exponent';
+					}
+					output += states.output;					
+					lastState = NUMBER;
+					state = NOTHING;
 					if(onStateChange) {
 	            		onStateChange(statesLookup[lastState],states.output);
 	            	}
 				break;
-				case OPERATOR:
-					states = {};
-					state = OPERATOR;
-					states.currentOperator = [chr];
-					pos++;
-					states.operatorComplete = 0;
+				case OPERATOR:					
+					states = {output:code.charAt(pos)};
+					last = chr;
+					pos++;																			
+					while(pos < len) {						
+						chr = code.charCodeAt(pos);
+						switch(newState) {
+							case ADDITION:
+								if(chr === PLUS) {
+									lastState = POSTFIX_INCREMENT;
+									pos++;
+									break;
+								} else if(chr === EQUAL) {
+									lastState = ADDITION_ASSIGNMENT;
+									pos++;
+									break;
+								} else {
+									lastState = ADDITION;
+									cached = chr;
+									break;
+								}
+							break;
+							case UNARY_PLUS:
+								if(chr === PLUS) {
+									lastState = PREFIX_INCREMENT;
+									pos++;
+									break;								
+								} else {
+									lastState = UNARY_PLUS;
+									cached = chr;
+									break;
+								}
+							break;
+						}
+						pos++;												
+					} 
+					state = NOTHING;
+					if(onStateChange) {
+	            		onStateChange(statesLookup[lastState],states.output);
+	            	}
 				break;
 				case IDENTIFIER:
 					states = {cc:[],u:0,currentIdentifier:'',currentUnicode:'',unicodeEscape:0,identifierStart:1};																				
@@ -457,10 +608,7 @@ function parse(obj) {
 	            	}
 	            	state = NOTHING;
 	            	output+=states.output;	
-				break;
-				case OPERATOR:
-					left = 0;
-				break;
+				break;				
 				case MULTI_LINE_COMMENT:
 					pos=code.indexOf('*/',pos)+2;
 					if(pos) {
