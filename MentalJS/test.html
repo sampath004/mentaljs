@@ -31,7 +31,7 @@ function parse(obj) {
 				8: 'Identifier', 9: 'StringSingleQuote', 10: 'StringDoubleQuote', 11: 'Operator',
 				12: 'BitwiseNot', 13: 'Unknown', 14: 'Typeof', 15: 'Hex', 16: 'Ternary', 17: 'EqualAssignment',
 				18: 'Not', 19: 'UnaryPlus', 20: 'Addition', 21: 'BitwiseOr', 22: 'Xor', 23: 'Modulus', 24: 'BitwiseAnd',
-				25: 'EqualAssignment', 26: 'GreaterThan', 27: 'LessThan', 28: 'Multiply', 29: 'UnaryMinus', 30: 'Minus',
+				25: 'EqualAssignment', 26: 'GreaterThan', 27: 'LessThan', 28: 'Multiply', 29: 'UnaryMinus', 30: 'Subtraction',
 				31: 'PrefixIncrement', 32: 'NotEqual'
 		},
 		lookupSquare = 0, lookupCurly, lookupParen = 0, lookup, parentStates = {},
@@ -59,7 +59,7 @@ function parse(obj) {
 		ASSIGNMENT_DIVIDE = 6, DIVIDE_OPERATOR = 7, IDENTIFIER = 8, STRING_SINGLE = 9, STRING_DOUBLE = 10, OPERATOR = 11,
 		BITWISE_NOT = 12, UNKNOWN = 13, TYPEOF = 14, HEX = 15, TERNARY = 16, EQUAL_ASSIGNMENT = 17, NOT = 18,
 		UNARY_PLUS = 19, ADDITION = 20, BITWISE_OR = 21, XOR = 22, MODULUS = 23, BITWISE_AND = 24, EQUAL_ASSIGNMENT = 25,
-		GREATER_THAN_OPERATOR = 26, LESS_THAN_OPERATOR = 27, MULTIPLY = 28, UNARY_MINUS = 29, MINUS_OPERATOR = 30,
+		GREATER_THAN_OPERATOR = 26, LESS_THAN_OPERATOR = 27, MULTIPLY = 28, UNARY_MINUS = 29, SUBTRACTION = 30,
 		PREFIX_INCREMENT = 31, NOT_EQUAL = 32;			
 	while(pos < len) {
 			if(state === NOTHING) {		
@@ -156,7 +156,7 @@ function parse(obj) {
 					if(!left) {
 						newState = UNARY_MINUS;
 					} else {
-						newState = MINUS_OPERATOR;
+						newState = SUBTRACTION;						
 					}
 					state = OPERATOR;
 				} else if(chr === TILDE) {
@@ -341,6 +341,37 @@ function parse(obj) {
 					operatorLoop:while(pos < len) {						
 						chr = code.charCodeAt(pos);
 						switch(newState) {
+							case GREATER_THAN_OPERATOR:
+								if(chr === GREATER_THAN) {
+									lastState = PREFIX_INCREMENT;
+									pos++;
+									states.output += '-';
+									break operatorLoop;								
+								} else {
+									lastState = UNARY_MINUS;
+									cached = chr;									
+									break operatorLoop;
+								}
+							break;
+							case LESS_THAN_OPERATOR:
+							break;
+							case SUBTRACTION:
+								if(chr === PLUS) {
+									lastState = POSTFIX_DECREMENT;
+									pos++;
+									states.output += '-';
+									break operatorLoop;
+								} else if(chr === EQUAL) {
+									lastState = SUBTRACTION_ASSIGNMENT;
+									pos++;
+									states.output += '=';
+									break operatorLoop;
+								} else {
+									lastState = SUBTRACTION;
+									cached = chr;																		
+									break operatorLoop;
+								}
+							break;
 							case ADDITION:
 								if(chr === PLUS) {
 									lastState = POSTFIX_INCREMENT;
