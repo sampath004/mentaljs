@@ -32,7 +32,10 @@ function parse(obj) {
 				12: 'BitwiseNot', 13: 'Unknown', 14: 'Typeof', 15: 'Hex', 16: 'Ternary', 17: 'EqualAssignment',
 				18: 'Not', 19: 'UnaryPlus', 20: 'Addition', 21: 'BitwiseOr', 22: 'Xor', 23: 'Modulus', 24: 'BitwiseAnd',
 				25: 'EqualAssignment', 26: 'GreaterThan', 27: 'LessThan', 28: 'Multiply', 29: 'UnaryMinus', 30: 'Subtraction',
-				31: 'PrefixIncrement', 32: 'NotEqual'
+				31: 'PrefixIncrement', 32: 'NotEqual', 33: 'BitwiseLeftShift', 34: 'BitwiseLeftShiftAssignment',
+				35: 'LessThanEqual', 36: 'LessThan', 37: 'BitwiseRightShift', 38: 'BitwiseZeroRightShift',
+				39: 'BitwiseRightShiftAssignment', 40: 'GreaterThanEqual', 41: 'GreaterThan', 42: 'BitwiseRightZeroShift',
+				43: 'BitwiseRightZeroShiftAssignment'
 		},
 		lookupSquare = 0, lookupCurly, lookupParen = 0, lookup, parentStates = {},
 		ternaryCount = 0, isTernary = {}, caseCount = 0, isCase = {}, isVar = {},
@@ -60,7 +63,10 @@ function parse(obj) {
 		BITWISE_NOT = 12, UNKNOWN = 13, TYPEOF = 14, HEX = 15, TERNARY = 16, EQUAL_ASSIGNMENT = 17, NOT = 18,
 		UNARY_PLUS = 19, ADDITION = 20, BITWISE_OR = 21, XOR = 22, MODULUS = 23, BITWISE_AND = 24, EQUAL_ASSIGNMENT = 25,
 		GREATER_THAN_OPERATOR = 26, LESS_THAN_OPERATOR = 27, MULTIPLY = 28, UNARY_MINUS = 29, SUBTRACTION = 30,
-		PREFIX_INCREMENT = 31, NOT_EQUAL = 32;			
+		PREFIX_INCREMENT = 31, NOT_EQUAL = 32, BITWISE_LEFT_SHIFT = 33, BITWISE_LEFT_SHIFT_ASSIGNMENT = 34,
+		LESS_THAN_EQUAL = 35, LESS_THAN_OPERATOR = 36, BITWISE_RIGHT_SHIFT = 37, BITWISE_ZERO_RIGHT_SHIFT = 38,
+		BITWISE_RIGHT_SHIFT_ASSIGNMENT = 39, GREATER_THAN_EQUAL = 40, GREATER_THAN_OPERATOR = 41,
+		BITWISE_RIGHT_ZERO_SHIFT = 42, BITWISE_RIGHT_ZERO_SHIFT_ASSIGNMENT = 43;			
 	while(pos < len) {
 			if(state === NOTHING) {		
 				if(cached) {
@@ -341,20 +347,75 @@ function parse(obj) {
 					operatorLoop:while(pos < len) {						
 						chr = code.charCodeAt(pos);
 						switch(newState) {
-							case GREATER_THAN_OPERATOR:
-								if(chr === GREATER_THAN) {
-									lastState = PREFIX_INCREMENT;
-									pos++;
-									states.output += '-';
-									break operatorLoop;								
-								} else {
-									lastState = UNARY_MINUS;
-									cached = chr;									
+							case BITWISE_LEFT_SHIFT:
+								if(chr === EQUAL) {
+									lastState = BITWISE_LEFT_SHIFT_ASSIGNMENT;
+									pos++;									
+									states.output += '=';
+									break operatorLoop;
+								} else {									
+									lastState = BITWISE_LEFT_SHIFT;
+									cached = chr;																		
 									break operatorLoop;
 								}
 							break;
 							case LESS_THAN_OPERATOR:
+								if(chr === LESS_THAN) {
+									newState = BITWISE_LEFT_SHIFT;									
+									states.output += '<';																									
+								} else if(chr === EQUAL) {
+									lastState = LESS_THAN_EQUAL;
+									pos++;
+									states.output += '=';									
+									break operatorLoop;
+								} else {
+									lastState = LESS_THAN_OPERATOR;
+									cached = chr;																		
+									break operatorLoop;
+								}
 							break;
+							case BITWISE_RIGHT_ZERO_SHIFT:
+								if(chr === EQUAL) {
+									lastState = BITWISE_RIGHT_ZERO_SHIFT_ASSIGNMENT;
+									pos++;									
+									states.output += '=';
+									break operatorLoop;
+								} else {									
+									lastState = BITWISE_RIGHT_ZERO_SHIFT;
+									cached = chr;																		
+									break operatorLoop;
+								}
+							break;	
+							case BITWISE_RIGHT_SHIFT:
+								if(chr === GREATER_THAN) {									
+									newState = BITWISE_RIGHT_ZERO_SHIFT;									
+									states.output += '>';																										
+								} else if(chr === EQUAL) {									
+									lastState = BITWISE_RIGHT_SHIFT_ASSIGNMENT;
+									states.output += '=';
+									pos++;									
+									break operatorLoop;
+								} else {
+									lastState = BITWISE_RIGHT_SHIFT;
+									cached = chr;																		
+									break operatorLoop;
+								}
+							break;
+							case GREATER_THAN_OPERATOR:
+								if(chr === GREATER_THAN) {
+									newState = BITWISE_RIGHT_SHIFT;									
+									states.output += '>';																										
+								} else if(chr === EQUAL) {
+									lastState = GREATER_THAN_EQUAL;
+									pos++;
+									states.output += '=';									
+									break operatorLoop;
+								} else {
+									lastState = GREATER_THAN_OPERATOR;
+									cached = chr;																		
+									break operatorLoop;
+								}
+							break;							
 							case SUBTRACTION:
 								if(chr === PLUS) {
 									lastState = POSTFIX_DECREMENT;
