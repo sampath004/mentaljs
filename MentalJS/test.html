@@ -38,12 +38,13 @@ function parse(obj) {
 				43: 'BitwiseRightZeroShiftAssignment', 44: 'SubtractionAssignment', 45: 'AdditionAssignment', 46: 'LogicalOr',
 				47: 'LogicalAnd', 48: 'MultiplyAssignment', 49: 'ModulusAssignment', 50: 'LogicalAndAssignment',
 				51: 'LogicalOrAssignment', 52: 'XorAssignment', 53: 'EndStatement', 54: 'LabelColon', 55: 'CommaOperator',
-				56: 'ArrayOpen', 57: 'AccessorOpen', 58: 'ArrayClose', 59: 'AccessorClose'
+				56: 'ArrayOpen', 57: 'AccessorOpen', 58: 'ArrayClose', 59: 'AccessorClose', 60: 'PostfixDecrement',
+				61: 'PostfixIncrement', 62: 'Function'
 		},
 		lookupSquare = 0, lookupCurly, lookupParen = 0, lookup, parentStates = {},
 		ternaryCount = 0, isTernary = {}, caseCount = 0, isCase = {}, isVar = {},
 		isFor = {}, isForIn = {},  isIf = {}, isObjectLiteral = {},	expected = {},
-		expectedObj,	
+		expectedObj = {},	
 		//constants
 		SQUARE_OPEN = 91, SQUARE_CLOSE = 93, PAREN_OPEN = 40, PAREN_CLOSE = 41,
 		CURLY_OPEN = 123, CURLY_CLOSE = 125,LOWER_A = 97, LOWER_B = 98, LOWER_C = 99, LOWER_D = 100, 
@@ -73,7 +74,8 @@ function parse(obj) {
 		BITWISE_RIGHT_ZERO_SHIFT = 42, BITWISE_RIGHT_ZERO_SHIFT_ASSIGNMENT = 43, SUBTRACTION_ASSIGNMENT = 44,
 		ADDITION_ASSIGNMENT = 45, LOGICAL_OR = 46, LOGICAL_AND = 47, MULTIPLY_ASSIGNMENT = 48, MODULUS_ASSIGNMENT = 49,
 		LOGICAL_AND_ASSIGNMENT = 50, LOGICAL_OR_ASSIGNMENT = 51, XOR_ASSIGNMENT = 52, END_STATEMENT = 53, LABEL_COLON = 54,
-		COMMA_OPERATOR = 55, ARRAY_OPEN = 56, ACCESSOR_OPEN = 57, ARRAY_CLOSE = 58, ACCESSOR_CLOSE = 59;			
+		COMMA_OPERATOR = 55, ARRAY_OPEN = 56, ACCESSOR_OPEN = 57, ARRAY_CLOSE = 58, ACCESSOR_CLOSE = 59,
+		POSTFIX_DECREMENT = 60, POSTFIX_INCREMENT = 61, FUNCTION = 62;			
 	while(pos < len) {
 			if(state === NOTHING) {		
 				if(cached) {
@@ -509,7 +511,9 @@ function parse(obj) {
 									break operatorLoop;								
 								} else {
 									lastState = BITWISE_AND;
-									cached = chr;									
+									cached = chr;
+									states.output += ' ';
+									output += ' ';									
 									break operatorLoop;
 								}
 							break;							
@@ -526,7 +530,9 @@ function parse(obj) {
 									break operatorLoop;							
 								} else {
 									lastState = BITWISE_OR;
-									cached = chr;									
+									cached = chr;
+									states.output += ' ';
+									output += ' ';									
 									break operatorLoop;
 								}
 							break;
@@ -553,7 +559,9 @@ function parse(obj) {
 									break operatorLoop;
 								} else {
 									lastState = LESS_THAN_OPERATOR;
-									cached = chr;																		
+									cached = chr;
+									states.output += ' ';
+									output += ' ';																		
 									break operatorLoop;
 								}
 							break;
@@ -595,7 +603,9 @@ function parse(obj) {
 									break operatorLoop;
 								} else {
 									lastState = GREATER_THAN_OPERATOR;
-									cached = chr;																		
+									cached = chr;
+									states.output += ' ';
+									output += ' ';																		
 									break operatorLoop;
 								}
 							break;	
@@ -607,8 +617,8 @@ function parse(obj) {
 									break operatorLoop;							
 								} else {
 									lastState = DIVIDE_OPERATOR;
-									cached = chr;
-									states.output += '/';																											
+									cached = chr;																		
+									states.output += ' / ';																											
 									break operatorLoop;
 								}
 							break;	
@@ -620,7 +630,9 @@ function parse(obj) {
 									break operatorLoop;							
 								} else {
 									lastState = XOR;
-									cached = chr;																		
+									cached = chr;
+									states.output += ' ';
+									output += ' ';																		
 									break operatorLoop;
 								}
 							break;																
@@ -632,7 +644,9 @@ function parse(obj) {
 									break operatorLoop;							
 								} else {
 									lastState = MODULUS;
-									cached = chr;																		
+									cached = chr;
+									states.output += ' ';
+									output += ' ';																		
 									break operatorLoop;
 								}
 							break;
@@ -644,12 +658,14 @@ function parse(obj) {
 									break operatorLoop;							
 								} else {
 									lastState = MULTIPLY;
-									cached = chr;																		
+									cached = chr;
+									states.output += ' ';
+									output += ' ';																		
 									break operatorLoop;
 								}
 							break;				
 							case SUBTRACTION:
-								if(chr === PLUS) {
+								if(chr === MINUS) {
 									lastState = POSTFIX_DECREMENT;
 									pos++;
 									states.output += '-';
@@ -662,6 +678,8 @@ function parse(obj) {
 								} else {
 									lastState = SUBTRACTION;
 									cached = chr;																		
+									states.output += ' ';
+									output += ' ';
 									break operatorLoop;
 								}
 							break;
@@ -678,7 +696,9 @@ function parse(obj) {
 									break operatorLoop;
 								} else {
 									lastState = ADDITION;
-									cached = chr;																		
+									cached = chr;
+									states.output += ' ';
+									output += ' ';																		
 									break operatorLoop;
 								}
 							break;
@@ -710,6 +730,8 @@ function parse(obj) {
 									states.output += '=';
 									newState = NOT_EQUAL;							
 								} else {
+									states.output += ' ';
+									output += ' ';
 									lastState = NOT;
 									cached = chr;									
 									break operatorLoop;
