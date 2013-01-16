@@ -27,7 +27,7 @@ function parse(obj) {
 		cached = 0, newLineFlag = 0,		
 		statesLookup = {
 				0: 'Nothing',1: 'SingleLineComment',2:'MultilineComment',3:'Regex',
-				4: 'Number', 5: 'IdentifierDot', 6: 'AssignmentDivide', 7: 'DivideOperator',
+				4: 'Number', 5: 'IdentifierDot', 6: 'DivideAssignment', 7: 'DivideOperator',
 				8: 'Identifier', 9: 'StringSingleQuote', 10: 'StringDoubleQuote', 11: 'Operator',
 				12: 'BitwiseNot', 13: 'Unknown', 14: 'Typeof', 15: 'Hex', 16: 'Ternary', 17: 'EqualAssignment',
 				18: 'Not', 19: 'UnaryPlus', 20: 'Addition', 21: 'BitwiseOr', 22: 'Xor', 23: 'Modulus', 24: 'BitwiseAnd',
@@ -35,11 +35,15 @@ function parse(obj) {
 				31: 'PrefixIncrement', 32: 'NotEqual', 33: 'BitwiseLeftShift', 34: 'BitwiseLeftShiftAssignment',
 				35: 'LessThanEqual', 36: 'LessThan', 37: 'BitwiseRightShift', 38: 'BitwiseZeroRightShift',
 				39: 'BitwiseRightShiftAssignment', 40: 'GreaterThanEqual', 41: 'GreaterThan', 42: 'BitwiseRightZeroShift',
-				43: 'BitwiseRightZeroShiftAssignment'
+				43: 'BitwiseRightZeroShiftAssignment', 44: 'SubtractionAssignment', 45: 'AdditionAssignment', 46: 'LogicalOr',
+				47: 'LogicalAnd', 48: 'MultiplyAssignment', 49: 'ModulusAssignment', 50: 'LogicalAndAssignment',
+				51: 'LogicalOrAssignment', 52: 'XorAssignment', 53: 'EndStatement', 54: 'LabelColon', 55: 'CommaOperator',
+				56: 'ArrayOpen', 57: 'AccessorOpen', 58: 'ArrayClose', 59: 'AccessorClose'
 		},
 		lookupSquare = 0, lookupCurly, lookupParen = 0, lookup, parentStates = {},
 		ternaryCount = 0, isTernary = {}, caseCount = 0, isCase = {}, isVar = {},
-		isFor = {}, isForIn = {},  isIf = {}, isObjectLiteral = {},		
+		isFor = {}, isForIn = {},  isIf = {}, isObjectLiteral = {},	expected = {},
+		expectedObj,	
 		//constants
 		SQUARE_OPEN = 91, SQUARE_CLOSE = 93, PAREN_OPEN = 40, PAREN_CLOSE = 41,
 		CURLY_OPEN = 123, CURLY_CLOSE = 125,LOWER_A = 97, LOWER_B = 98, LOWER_C = 99, LOWER_D = 100, 
@@ -59,14 +63,17 @@ function parse(obj) {
 		PARAGRAPH_SEPARATOR = 8233,
 		//states
 		NOTHING = 0, SINGLE_LINE_COMMENT = 1, MULTI_LINE_COMMENT = 2, REGEX = 3, NUMBER = 4, IDENTIFIER_DOT = 5, 
-		ASSIGNMENT_DIVIDE = 6, DIVIDE_OPERATOR = 7, IDENTIFIER = 8, STRING_SINGLE = 9, STRING_DOUBLE = 10, OPERATOR = 11,
+		DIVIDE_ASSIGNMENT = 6, DIVIDE_OPERATOR = 7, IDENTIFIER = 8, STRING_SINGLE = 9, STRING_DOUBLE = 10, OPERATOR = 11,
 		BITWISE_NOT = 12, UNKNOWN = 13, TYPEOF = 14, HEX = 15, TERNARY = 16, EQUAL_ASSIGNMENT = 17, NOT = 18,
 		UNARY_PLUS = 19, ADDITION = 20, BITWISE_OR = 21, XOR = 22, MODULUS = 23, BITWISE_AND = 24, EQUAL_ASSIGNMENT = 25,
 		GREATER_THAN_OPERATOR = 26, LESS_THAN_OPERATOR = 27, MULTIPLY = 28, UNARY_MINUS = 29, SUBTRACTION = 30,
 		PREFIX_INCREMENT = 31, NOT_EQUAL = 32, BITWISE_LEFT_SHIFT = 33, BITWISE_LEFT_SHIFT_ASSIGNMENT = 34,
 		LESS_THAN_EQUAL = 35, LESS_THAN_OPERATOR = 36, BITWISE_RIGHT_SHIFT = 37, BITWISE_ZERO_RIGHT_SHIFT = 38,
 		BITWISE_RIGHT_SHIFT_ASSIGNMENT = 39, GREATER_THAN_EQUAL = 40, GREATER_THAN_OPERATOR = 41,
-		BITWISE_RIGHT_ZERO_SHIFT = 42, BITWISE_RIGHT_ZERO_SHIFT_ASSIGNMENT = 43;			
+		BITWISE_RIGHT_ZERO_SHIFT = 42, BITWISE_RIGHT_ZERO_SHIFT_ASSIGNMENT = 43, SUBTRACTION_ASSIGNMENT = 44,
+		ADDITION_ASSIGNMENT = 45, LOGICAL_OR = 46, LOGICAL_AND = 47, MULTIPLY_ASSIGNMENT = 48, MODULUS_ASSIGNMENT = 49,
+		LOGICAL_AND_ASSIGNMENT = 50, LOGICAL_OR_ASSIGNMENT = 51, XOR_ASSIGNMENT = 52, END_STATEMENT = 53, LABEL_COLON = 54,
+		COMMA_OPERATOR = 55, ARRAY_OPEN = 56, ACCESSOR_OPEN = 57, ARRAY_CLOSE = 58, ACCESSOR_CLOSE = 59;			
 	while(pos < len) {
 			if(state === NOTHING) {		
 				if(cached) {
@@ -89,12 +96,19 @@ function parse(obj) {
 					pos++;
 					continue;
 				} else if(chr === SEMI_COLON) {
+					state = END_STATEMENT;
 				} else if(chr === PAREN_OPEN) {
+					state = PAREN_OPEN;
 				} else if(chr === PAREN_CLOSE) {
+					state = PAREN_CLOSE;
 				} else if(chr === CURLY_OPEN) {
+					state = CURLY_OPEN;
 				} else if(chr === CURLY_CLOSE) {
+					state = CURLY_CLOSE;
 				} else if(chr === SQUARE_OPEN) {
+					state = SQUARE_OPEN;
 				} else if(chr === SQUARE_CLOSE) {
+					state = SQUARE_CLOSE;
 				} else if(chr === DIGIT_0) {
 					if(pos + 1 === len) {
 						state = NUMBER;
@@ -122,8 +136,10 @@ function parse(obj) {
 					pos++;
 					last = chr;
 					continue;
-				} else if(chr === COLON) {	
-				} else if(chr === COMMA) {						
+				} else if(chr === COLON) {
+					state = LABEL_COLON;	
+				} else if(chr === COMMA) {
+					state = COMMA_OPERATOR;						
 				} else if(chr === PLUS) {
 					if(!left) {
 						newState = UNARY_PLUS;	
@@ -191,8 +207,9 @@ function parse(obj) {
 						state = MULTI_LINE_COMMENT;
 					} else if(!left) {
 						state = REGEX;											
-					} else if(left) {							
-						state = OPERATOR;						
+					} else if(left) {						
+						newState = DIVIDE_OPERATOR;													
+						state = OPERATOR;																																														
 					} else {
 						throw'Unknown state.';
 					}
@@ -209,12 +226,140 @@ function parse(obj) {
 				}								
 			} 				
 			switch(state) {
+				case PAREN_OPEN:
+					expectedObj = expected[lastState];
+					lookupParen++;
+					left = 0;
+					pos++;
+					output+='(';
+					if(onStateChange) {
+	            		onStateChange(statesLookup[lastState],'(');
+	            	}
+	            	lastState = expectedObj.state;
+					parentStates[""+lookupSquare+lookupCurly+lookupParen] = lastState;
+					last = PAREN_OPEN;
+					state = NOTHING;
+				break;
+				case PAREN_CLOSE:
+					parentState = parentStates[""+lookupSquare+lookupCurly+lookupParen];
+					expectedObj = expected[parentState];
+					pos++;
+					output+=')';
+					if(onStateChange) {
+	            		onStateChange(statesLookup[lastState],')');
+	            	}
+	            	lastState = expectedObj.state;
+					parentStates[""+lookupSquare+lookupCurly+lookupParen] = '';
+					lookupParen--;
+					last = PAREN_CLOSE;
+					state = NOTHING;								
+				break;
+				case CURLY_OPEN:
+					expectedObj = expected[lastState];
+					lookupCurly++;
+					left = 0;
+					pos++;
+					output+='(';
+					if(onStateChange) {
+	            		onStateChange(statesLookup[lastState],'{');
+	            	}
+	            	lastState = expectedObj.state;
+					parentStates[""+lookupSquare+lookupCurly+lookupParen] = lastState;
+					last = CURLY_OPEN;
+					state = NOTHING;
+				break;
+				case CURLY_CLOSE:
+					parentState = parentStates[""+lookupSquare+lookupCurly+lookupParen];
+					expectedObj = expected[parentState];
+					pos++;
+					output+='}';
+					if(onStateChange) {
+	            		onStateChange(statesLookup[lastState],'}');
+	            	}
+	            	lastState = expectedObj.state;
+					parentStates[""+lookupSquare+lookupCurly+lookupParen] = '';
+					lookupCurly--;
+					last = CURLY_CLOSE;
+					state = NOTHING;								
+				break;					
+				case SQUARE_CLOSE:								
+					parentState = parentStates[""+lookupSquare+lookupCurly+lookupParen];										
+					if(parentState === ARRAY_OPEN) {
+						lastState = ARRAY_CLOSE;						
+					} else if(parentState === ACCESSOR_OPEN) {
+						lastState = ACCESSOR_CLOSE;																		
+					} else {				
+						throw'Unexpected ]. Cannot follow '+lastState+'.Output:'+output;
+					}	
+					left = 1;
+					pos++;
+					output+=']';
+					if(onStateChange) {
+	            		onStateChange(statesLookup[lastState],']');
+	            	}
+					last = SQUARE_CLOSE;
+					state = NOTHING;
+					parentStates[""+lookupSquare+lookupCurly+lookupParen] = '';
+					lookupSquare--;
+				break;
+				case SQUARE_OPEN:
+					if(!left) {
+						lastState = ARRAY_OPEN;
+					} else {
+						lastState = ACCESSOR_OPEN;
+					}
+					output+='[';
+					pos++;					
+					if(onStateChange) {
+	            		onStateChange(statesLookup[lastState],'[');
+	            	}
+	            	lookupSquare++;	            	
+	            	parentStates[""+lookupSquare+lookupCurly+lookupParen] = lastState;
+	            	left = 0;
+	            	last = SQUARE_OPEN;
+	            	state = NOTHING;
+				break;
+				case END_STATEMENT:
+					lastState = state;
+					output+=';';
+					pos++;					
+					if(onStateChange) {
+	            		onStateChange(statesLookup[lastState],';');
+	            	}
+					left = 0;
+					last = SEMI_COLON;
+					lastState = END_STATEMENT;
+					state = NOTHING;
+				break;
+				case COMMA_OPERATOR:
+					lastState = state;
+					output+=',';
+					pos++;					
+					if(onStateChange) {
+	            		onStateChange(statesLookup[lastState],',');
+	            	}		
+	            	left = 0;
+					last = COMMA;
+					state = NOTHING;			
+				break;
+				case LABEL_COLON:
+					lastState = state;
+					output+=':';
+					pos++;										
+					if(onStateChange) {
+	            		onStateChange(statesLookup[lastState],':');
+	            	}
+	            	left = 0;
+					last = COLON;
+					state = NOTHING;					
+				break;
 				case TERNARY:
 					lastState = state;
 					output+='?';
 					if(onStateChange) {
 	            		onStateChange(statesLookup[lastState],"?");
 	            	}
+					left = 0;
 					state = NOTHING;
 					pos++;
 				break;
@@ -340,13 +485,51 @@ function parse(obj) {
 	            		onStateChange(statesLookup[lastState],states.output);
 	            	}
 				break;
-				case OPERATOR:									
-					states = {output:code.charAt(pos)};
+				case OPERATOR:																													
 					last = chr;
-					pos++;																								
+					if(newState !== DIVIDE_OPERATOR) {
+						states = {output:code.charAt(pos)};
+						pos++;
+					} else {
+						states = {output:''};
+					}																													
 					operatorLoop:while(pos < len) {						
 						chr = code.charCodeAt(pos);
 						switch(newState) {
+							case BITWISE_AND:
+								if(chr === AMPERSAND) {																		
+									states.output += '&';
+									lastState = LOGICAL_AND;
+									pos++;
+									break operatorLoop;
+								}else if(chr === EQUAL) {																		
+									states.output += '=';
+									lastState = LOGICAL_AND_ASSIGNMENT;
+									pos++;
+									break operatorLoop;								
+								} else {
+									lastState = BITWISE_AND;
+									cached = chr;									
+									break operatorLoop;
+								}
+							break;							
+							case BITWISE_OR:
+								if(chr === PIPE) {																		
+									states.output += '|';
+									lastState = LOGICAL_OR;
+									pos++;
+									break operatorLoop;	
+								} else if(chr === EQUAL) {																		
+									states.output += '=';
+									lastState = LOGICAL_OR_ASSIGNMENT;
+									pos++;
+									break operatorLoop;							
+								} else {
+									lastState = BITWISE_OR;
+									cached = chr;									
+									break operatorLoop;
+								}
+							break;
 							case BITWISE_LEFT_SHIFT:
 								if(chr === EQUAL) {
 									lastState = BITWISE_LEFT_SHIFT_ASSIGNMENT;
@@ -415,7 +598,56 @@ function parse(obj) {
 									cached = chr;																		
 									break operatorLoop;
 								}
-							break;							
+							break;	
+							case DIVIDE_OPERATOR:																																			
+								if(chr === EQUAL) {
+									lastState = DIVIDE_ASSIGNMENT;
+									pos++;
+									states.output += '/=';
+									break operatorLoop;							
+								} else {
+									lastState = DIVIDE_OPERATOR;
+									cached = chr;
+									states.output += '/';																											
+									break operatorLoop;
+								}
+							break;	
+							case XOR:
+								if(chr === EQUAL) {
+									lastState = XOR_ASSIGNMENT;
+									pos++;
+									states.output += '=';
+									break operatorLoop;							
+								} else {
+									lastState = XOR;
+									cached = chr;																		
+									break operatorLoop;
+								}
+							break;																
+							case MODULUS:
+								if(chr === EQUAL) {
+									lastState = MODULUS_ASSIGNMENT;
+									pos++;
+									states.output += '=';
+									break operatorLoop;							
+								} else {
+									lastState = MODULUS;
+									cached = chr;																		
+									break operatorLoop;
+								}
+							break;
+							case MULTIPLY:
+								if(chr === EQUAL) {
+									lastState = MULTIPLY_ASSIGNMENT;
+									pos++;
+									states.output += '=';
+									break operatorLoop;							
+								} else {
+									lastState = MULTIPLY;
+									cached = chr;																		
+									break operatorLoop;
+								}
+							break;				
 							case SUBTRACTION:
 								if(chr === PLUS) {
 									lastState = POSTFIX_DECREMENT;
