@@ -154,7 +154,8 @@
 			XorAssignment:createRule('Expression'),		
 			ZeroRightShift:createRule('Expression,Postfix'),
 			ZeroRightShiftAssignment:createRule('Expression')										
-	};
+	};		
+	
 	function createRule(rules) {
 		rules = rules.split(',');
 		var expression = {
@@ -194,7 +195,7 @@
 			ArrayOpen:1,AccessorOpen:1,Case:1,Return:1,New:1,TypeOf:1,Delete:1,Void:1,ObjectLiteralColon:1,
 			TernaryQuestionMark:1,TernaryColon:1,ForSemi:1,Continue:1,Break:1,Throw:1
 		},	 
-		obj = {}, i, k;		
+		obj = Object.create(null), i, k;		
 		for(i=0;i<rules.length;i++) {
 			if(rules[i] === 'Expression') {
 				for(k in expression) {
@@ -236,8 +237,8 @@
 				obj[rules[i]] = 1;
 			}
 		}
-		return Object.create(obj);		
-	};	
+		return obj;		
+	};			
 	  
     window.MentalJS = function() {
         function Mental() {
@@ -1851,7 +1852,7 @@
 								error('Unexpected - Cannot follow '+lastState+'.Output:'+output);
 							}
 							left = 0;																																									
-						} else {						
+						} else if((chr >= LOWER_A && chr <= LOWER_Z) || (chr >= UPPER_A && chr <= UPPER_Z) || (chr === UNDERSCORE || chr === DOLLAR || chr === BACKSLASH) || (chr > 0x80)) {						
 							foundKeyword = 0; 
 							states = {}; 
 							
