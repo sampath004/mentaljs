@@ -252,7 +252,7 @@
                     functionKeyword = false, result, replaceScoping = new RegExp('['+scoping+']'),
                     allowedProperties = /^(?:length|prototype)$/, expressions = [], currentExpression,
                     functionParenOpen = false,                                         
-                    attributeWhitelist = /^(?:alt|title)$/i,                           
+                    attributeWhitelist = /^(?:alt|title)$/i,                                               
                     setTimeoutIDS = {},
                     setIntervalIDS = {},            
                     lookups = {
@@ -785,11 +785,8 @@
 					while(pos < length) {					    
 						outputLine = '';												
 						state = 'Nothing';
-						if(expected||expected2||expected3||expected4) {
-							expect = 1;
-						}									
-						chr = code.charCodeAt(pos);
-						next = code.charCodeAt(pos+1);												
+						if(expected||expected2||expected3||expected4)expect = 1;															
+						chr = code.charCodeAt(pos);																	
 					    if(chr===10||chr===13) {                                                   
                             newLineFlag = 1;
                             pos++;                            
@@ -819,7 +816,17 @@
                         }                       
                         pos++;
                         left = 0;
-                        last = SEMI_COLON;						    
+                        last = SEMI_COLON;	
+                        } else if(chr >=160 && (chr === 160||chr===5760||chr===6158||chr===8192||chr===8193||chr===8194||chr===8195||chr===8196||chr===8197||chr===8198||chr===8199||chr===8200||chr===8201||chr===8202||chr===8239||chr===8287||chr===12288)) {
+                            pos++;
+                            continue;
+                        } else if(chr > 8000 && (chr===8232||chr==8233)) {
+                            newLineFlag = 1;
+                            pos++;                            
+                            if(lastState === 'Break' || lastState === 'Continue' || lastState === 'Return') {
+                                asi(true);
+                            }
+                            continue;                          					    
 						} else if((chr >= LOWER_A && chr <= LOWER_Z) || (chr >= UPPER_A && chr <= UPPER_Z) || (chr === UNDERSCORE || chr === DOLLAR || chr === BACKSLASH) || (chr > 0x80)) {                      
                             states = {u:0,currentIdentifier:'',currentUnicode:'',unicodeEscape:0,identifierStart:1};                                                                                                                           
                             if(chr === BACKSLASH) {                                             
@@ -1325,7 +1332,8 @@
                                     asi();
                                 }                                                                          
                             } 																						
-						} else if((chr >= DIGIT_0 && chr <= DIGIT_9) || (!left && chr === PERIOD)) {																														
+						} else if((chr >= DIGIT_0 && chr <= DIGIT_9) || (!left && chr === PERIOD)) {
+						    next = code.charCodeAt(pos+1);																														
 							if(rules.ObjectLiteralIdentifierNumber[lastState]) {
 								state = 'ObjectLiteralIdentifierNumber';
 								expected = 'ObjectLiteralColon';
@@ -1412,6 +1420,7 @@
 				                error("Expected exponent");
 				            }  
 				        } else if(chr === FORWARD_SLASH) {
+				            next = code.charCodeAt(pos+1);
                             if(!left && next !== ASTERIX && next !== FORWARD_SLASH && lastState !== 'VarIdentifier') {                                                                                                                               
                                 states = {escaping: 0, complete: 0, open: 0, square: 0, flags: {}};       
                                 state = 'RegExp';
@@ -1514,6 +1523,7 @@
                                 error('Unexpected /. Cannot follow '+lastState+'.Output:'+output);
                             }                                                                                                                                                                                  																				                                                                                   																																																																			                                                                                                                                                                                                                                                                                     						
                         } else if(chr === PLUS) {
+                            next = code.charCodeAt(pos+1);
                             if(next === PLUS && left) {
                                 state = 'PostfixIncrement';
                                 outputLine = outputLine + '++';
@@ -2133,6 +2143,7 @@
                                 }                           
                             }       				
 						} else if(chr === EXCLAMATION_MARK) {
+						    next = code.charCodeAt(pos+1);
 							next2 = code.charCodeAt(pos+2);						
 							if(next !== EQUAL && !left) {
 								state = 'Not';
@@ -2160,6 +2171,7 @@
 							}
 							left = 0;							
 						} else if(chr === PIPE) {
+						    next = code.charCodeAt(pos+1);
 							if(next === PIPE) {
 								state = 'LogicalOr';
 								outputLine = outputLine + '||';
@@ -2176,7 +2188,8 @@
 								error('Unexpected | Cannot follow '+lastState+'.Output:'+output);
 							}
 							left = 0;
-						} else if(chr === CARET) {	
+						} else if(chr === CARET) {
+						    next = code.charCodeAt(pos+1);	
 							if(next === EQUAL) {
 								state = 'XorAssignment';
 								outputLine = outputLine + '^=';
@@ -2190,6 +2203,7 @@
 							}
 							left = 0;
 						} else if(chr === PERCENT) {
+						    next = code.charCodeAt(pos+1);
 							if(next === EQUAL) {
 								state = 'ModulusAssignment';
 								outputLine = outputLine + '%=';
@@ -2203,6 +2217,7 @@
 							}
 							left = 0;								
 						} else if(chr === AMPERSAND) {
+						    next = code.charCodeAt(pos+1);
 							if(next === AMPERSAND) {
 								state = 'LogicalAnd';
 								outputLine = outputLine + '&&';
@@ -2220,6 +2235,7 @@
 							}
 							left = 0;	
 						} else if(chr === EQUAL) {
+						    next = code.charCodeAt(pos+1);
 							next2 = code.charCodeAt(pos+2);						
 							if(next !== EQUAL) {
 								state = 'EqualAssignment';
@@ -2238,6 +2254,7 @@
 							}
 							left = 0;																											
 						} else if(chr === GREATER_THAN) {
+						    next = code.charCodeAt(pos+1);
 							next2 = code.charCodeAt(pos+2);
 							next3 = code.charCodeAt(pos+3);
 							if(next === GREATER_THAN && next2 === GREATER_THAN && next3 === EQUAL) {
@@ -2269,6 +2286,7 @@
 							}
 							left = 0;		
 						} else if(chr === LESS_THAN) {
+						    next = code.charCodeAt(pos+1);
 							next2 = code.charCodeAt(pos+2);	
 							if(next === LESS_THAN && next2 === EQUAL) {
 								state = 'LeftShiftAssignment';
@@ -2290,7 +2308,8 @@
 								error('Unexpected < Cannot follow '+lastState+'.Output:'+output);
 							}
 							left = 0;
-						} else if(chr === ASTERIX) {											
+						} else if(chr === ASTERIX) {
+						    next = code.charCodeAt(pos+1);											
 							if(next !== EQUAL) {
 								state = 'Multiply';
 								outputLine = outputLine + ' * ';
@@ -2304,6 +2323,7 @@
 							}
 							left = 0;																						
 						} else if(chr === MINUS) {
+						    next = code.charCodeAt(pos+1);
 							if(next === MINUS && left) {
 								state = 'PostfixDeincrement';
 								outputLine = outputLine + '--';
@@ -2328,17 +2348,7 @@
 								error('Unexpected - Cannot follow '+lastState+'.Output:'+output);
 							}
 							left = 0;																																															
-						} else if(chr >=160 && (chr === 160||chr===5760||chr===6158||chr===8192||chr===8193||chr===8194||chr===8195||chr===8196||chr===8197||chr===8198||chr===8199||chr===8200||chr===8201||chr===8202||chr===8239||chr===8287||chr===12288)) {
-                            pos++;
-                            continue;
-                        } else if(chr > 8000 && (chr===8232||chr==8233)) {
-                            newLineFlag = 1;
-                            pos++;                            
-                            if(lastState === 'Break' || lastState === 'Continue' || lastState === 'Return') {
-                                asi(true);
-                            }
-                            continue;  
-                        }															
+						}														
 						
 						if(state === 'Nothing') {						    
 							error("No state defined for char:" +String.fromCharCode(chr) + ', left: '+left+', last state: '+lastState+',output:'+output);
