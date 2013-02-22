@@ -293,10 +293,10 @@
                                         continue;
                                     }
                                     if(/^[$](?:toString|valueOf|constructor|hasOwnProperty)[$]$/.test(key)) {
-                                        Object.defineProperty(obj,key.replace(new RegExp(replaceScoping.source+'$','i'),''), {enumerable: false});
+                                        Object.defineProperty(obj,key.replace(new RegExp('^'+replaceScoping.source,'i'),'').replace(new RegExp(replaceScoping.source+'$','i'),''), {enumerable: false});
                                         Object.defineProperty(obj,key,{value:obj[key],enumerable: false, writable: false, configurable: true});
                                     } else {
-                                        Object.defineProperty(obj,key.replace(new RegExp(replaceScoping.source+'$','i'),''), {enumerable: true});
+                                        Object.defineProperty(obj,key.replace(new RegExp('^'+replaceScoping.source,'i'),'').replace(new RegExp(replaceScoping.source+'$','i'),''), {enumerable: true});
                                         Object.defineProperty(obj,key,{value:obj[key],enumerable: false});
                                     }                                                                                                                       
                                 }
@@ -308,7 +308,7 @@
                                        return null;
                                     }                        
                                     if((/[^\d]/.test(exp) || exp === '') && !allowedProperties.test(exp)) {                                                        
-                                        return exp + scoping;
+                                        return scoping + exp + scoping;
                                     } else {                                    
                                         return +exp;
                                     }
@@ -404,9 +404,9 @@
                             for(var i=0;i<list.length;i++) {
                                 var prop = list[i];
                                 if(noprototype) {
-                                    Object.defineProperty(obj,prop+scoping, {value:obj[prop], configurable:true, enumerable:false, writable: false});                               
+                                    Object.defineProperty(obj,scoping+prop+scoping, {value:obj[prop], configurable:true, enumerable:false, writable: false});                               
                                 } else {                                     
-                                    Object.defineProperty(obj.prototype,prop+scoping, {configurable:true, enumerable:false, value:(function(obj, prop){ 
+                                    Object.defineProperty(obj.prototype,scoping+prop+scoping, {configurable:true, enumerable:false, value:(function(obj, prop){ 
                                     function func() {
                                         if(!this[prop]) {
                                             return false;
@@ -429,9 +429,9 @@
                             for(var i=0;i<list.length;i++) {
                                 var prop = list[i];  
                                 if(transObj) {                              
-                                    Object.defineProperty(transObj,prop+scoping, {value:obj[prop], configurable:true, enumerable:false, writable: false});
+                                    Object.defineProperty(transObj,scoping+prop+scoping, {value:obj[prop], configurable:true, enumerable:false, writable: false});
                                 } else {
-                                    Object.defineProperty(obj,prop+scoping, {value:obj[prop], configurable:true, enumerable:false, writable: false});                               
+                                    Object.defineProperty(obj,scoping+prop+scoping, {value:obj[prop], configurable:true, enumerable:false, writable: false});                               
                                 }
                             }           
                         }; 
@@ -687,7 +687,7 @@
                                  }                                
                             });
                                                                                                                                                                                                                                                                                                                             
-                            window['window'+scoping] = this;                                                                       
+                            window[scoping+'window'+scoping] = this;                                                                       
                         }                   
                         result = eval(code);                                                                  
                         if(that.result) {
@@ -1320,7 +1320,7 @@
                                     expected4 = 0;
                                     left = 1;
                                 }                                                                                   
-                                outputLine = outputLine + states.currentIdentifier + scoping;
+                                outputLine = outputLine + scoping + states.currentIdentifier + scoping;
                                                                                   
                             }
                             
@@ -2109,7 +2109,7 @@
                             outputLine = outputLine + code.charAt(pos);
                             pos++;
                             if(state === 'ObjectLiteralIdentifierString') {
-                                outputLine = outputLine;  
+                                outputLine = outputLine + scoping;  
                             }
                             for(;;) {                               
                                 chr = code.charCodeAt(pos);
