@@ -196,7 +196,7 @@
 			TernaryQuestionMark:true,TernaryColon:true,ForSemi:true,Continue:true,Break:true,Throw:true
 		},	 
 		obj = Object.create(null), i, k;		
-		for(i=0;i<rules.length;i++) {
+		for(i=0;i<rules.length;i+=1) {
 			if(rules[i] === 'Expression') {
 				for(k in expression) {
 					if(expression.hasOwnProperty(k)) {
@@ -238,8 +238,7 @@
 			}
 		}
 		return obj;		
-	};			
-	  
+	}
     window.MentalJS = function() {
         function Mental() {
             this.parse = function(obj) {
@@ -248,8 +247,8 @@
                     error("MentalJS requires ES5. Please upgrade your browser.");
                 }
                             
-                var parseTreeOutput = '', converted, result, that = this,                                         
-                	pos = 0, chr, output = '', left = 0, lastState, scoping = '$', lastParseChr, parseResult,  lastChr = '', states = [],
+                var parseTreeOutput = '', converted, that = this,                                         
+                    pos = 0, chr, output = '', left = 0, lastState, scoping = '$', lastParseChr, parseResult,  lastChr = '', states = [],
                     functionKeyword = false, result, replaceScoping = new RegExp('['+scoping+']'),
                     allowedProperties = /^(?:length|prototype)$/, expressions = [], currentExpression,
                     functionParenOpen = false,                                         
@@ -274,7 +273,7 @@
                                     }                                                                                       
                     };                                                      
                     function error(str) {
-                        var e = Error();                                                                                       
+                        var e = new Error();                                                                                       
                         throw {
                             msg: str+(e.stack?' - '+e.stack:''),
                             pos: pos,
@@ -288,8 +287,8 @@
                     var result, hiddenProperties,
                         M = {
                             O: function(obj) {
-                                var keys = Object.keys(obj);
-                                for(var key in obj) {
+                                var keys = Object.keys(obj), key;
+                                for(key in obj) {
                                     if(!/^[$].+[$]$/.test(key)) {
                                         continue;
                                     }
@@ -315,7 +314,7 @@
                                     }
                             },
                             A: function(args) {
-                                var args = [].slice.call(args,0);
+                                args = [].slice.call(args,0);
                                 args.$callee$=arguments.callee.caller;
                                 return args;
                             }                
@@ -325,20 +324,20 @@
                                 '$innerText$': {configurable:true, get:function(){return this.innerText;},set:function(innerText){
                                         if(this.tagName.toLowerCase()==='style'){
                                             /*todo css parsing*/return false;
-                                         };
+                                         }
                                          this.innerText = innerText;
                                         }
                                 },
-                                '$innerHTML$': {configurable:true, get:function(){return this.innerHTML}, set:function(innerHTML){
+                                '$innerHTML$': {configurable:true, get:function(){return this.innerHTML;}, set:function(innerHTML){
                                     if(this.tagName.toLowerCase()==='style'){
                                         /*todo css parsing*/return false;
-                                     };
+                                     }
                                     var doc, elements, element, i, j, tags, attrs;
                                     doc = document.implementation.createHTMLDocument('');
                                     doc.body.innerHTML = innerHTML;                                    
                                     tags = doc.body.getElementsByTagName('*'); 
                                                                        
-                                    for(i = 0; i < tags.length;i++) {
+                                    for(i = 0; i < tags.length;i+=1) {
                                         element = tags[i];                                        
                                         if(!(element.attributes instanceof NamedNodeMap)) {
                                            doc.body.removeChild(element);
@@ -350,13 +349,14 @@
                                             }
                                         }                                         
                                         attrs = [];                                        
-                                        for(j=0;j<element.attributes.length;j++) {                                            
+                                        for(j=0;j<element.attributes.length;j+=1) {                                            
                                             if(attributeWhitelist.test(element.attributes[j].name)) {
                                                 attrs.push({name:element.attributes[j].name,value:element.attributes[j].value});
                                             }                                                                                                                                                                                                                                                                     
                                         } 
-                                        for (j= element.attributes.length; --j>=0;)
-                                        element.removeAttributeNode(element.attributes[j]);
+                                        for (j=element.attributes.length; --j>=0;) {
+                                            element.removeAttributeNode(element.attributes[j]);
+                                        }
                                         
                                         for(j=0;j<attrs.length;j++) {
                                            element.setAttribute(attrs[j].name, attrs[j].value);                                                                                                                                       
@@ -367,7 +367,7 @@
                                             element.appendChild(doc.createTextNode(' '));
                                         }                                                                                                                                                                                                                                              
                                     }                                                                                                                                                                                            
-                                    return this.innerHTML = new XMLSerializer().serializeToString(doc.body); 
+                                    return this.innerHTML = (new XMLSerializer()).serializeToString(doc.body); 
                                  }},
                                 '$textContent$': {configurable:true, get:function(){return this.textContent;},set:function(textContent){if(this.tagName.toLowerCase()==='style'){/*todo css parsing*/return false;};this.textContent = textContent;}},
                                 '$style$': {configurable:true, get:function(){ 
