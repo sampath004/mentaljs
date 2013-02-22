@@ -698,7 +698,7 @@
                 
             	function sandbox(code) {	
             		this.code = code; 													
-					var scoping = '$', pos = 0, chr, parentState, parentStates = {}, states, msg, state = 'Nothing', left = 0, output = '', outputLine = '', 
+					var scoping = '$', pos = 0, chr, parentState, parentStates = {}, states, msg, state = 'Nothing', left = 0, output = '', outputLine = '', 					
 					last, next, next2, next3,
 					unicodeChr1, unicodeChr2, unicodeChr3, unicodeChr4,								
 					length = code.length, parseTree = that.parseTree,
@@ -786,7 +786,7 @@
 						outputLine = '';												
 						state = 'Nothing';
 						if(expected||expected2||expected3||expected4)expect = 1;															
-						chr = code.charCodeAt(pos);																	
+						chr = code.charCodeAt(pos);																							
 					    if(chr===10||chr===13) {                                                   
                             newLineFlag = 1;
                             pos++;                            
@@ -831,7 +831,7 @@
                             states = {u:0,currentIdentifier:'',currentUnicode:'',unicodeEscape:0,identifierStart:1};                                                                                                                           
                             if(chr === BACKSLASH) {                                             
                                 states.identifierStart = 0;                     
-                            }                                                                                                                                                  
+                            }                                                                                                                                                                             
                             do {                                
                                 chr = code.charCodeAt(pos);                                                                               
                                 if(states.unicodeEscape > 1) {
@@ -888,16 +888,14 @@
                                 } else if(chr === BACKSLASH && !states.unicodeEscape) {
                                     states.unicodeEscape = 1;
                                 } else if(chr > 0x80) {
-                                    if(!validVarPart(chr)) {
-                                       cached = chr;
+                                    if(!validVarPart(chr)) {                                       
                                        break;
                                     }                                    
-                                } else {
-                                    cached = chr;                                   
+                                } else {                                                                      
                                     break;
                                 }
                                 states.currentIdentifier = states.currentIdentifier + code.charAt(pos);                                
-                                pos++;
+                                pos++;                                
                             } while(pos < length);                                     
                             states.identifierLen = states.currentIdentifier.length;
                             foundKeyword = 0;                                                                                                                            
@@ -1333,7 +1331,7 @@
                                 }                                                                          
                             } 																						
 						} else if((chr >= DIGIT_0 && chr <= DIGIT_9) || (!left && chr === PERIOD)) {
-						    next = code.charCodeAt(pos+1);																														
+						    next = code.charCodeAt(pos+1);						    					    																													
 							if(rules.ObjectLiteralIdentifierNumber[lastState]) {
 								state = 'ObjectLiteralIdentifierNumber';
 								expected = 'ObjectLiteralColon';
@@ -1361,7 +1359,7 @@
 				            }                  
 				            for(;;) {				            					            	
 				                chr = code.charCodeAt(pos);                
-				                next = code.charCodeAt(pos+1);                
+				                next = code.charCodeAt(pos+1);				                                
 				                if(states.len === 0 && chr === DIGIT_0 && (next >= DIGIT_0 && next <= DIGIT_9)) {
 				                   pos++;
 				                   continue; 
@@ -1420,7 +1418,7 @@
 				                error("Expected exponent");
 				            }  
 				        } else if(chr === FORWARD_SLASH) {
-				            next = code.charCodeAt(pos+1);
+				            next = code.charCodeAt(pos+1);				            
                             if(!left && next !== ASTERIX && next !== FORWARD_SLASH && lastState !== 'VarIdentifier') {                                                                                                                               
                                 states = {escaping: 0, complete: 0, open: 0, square: 0, flags: {}};       
                                 state = 'RegExp';
