@@ -278,12 +278,12 @@
                         throw {
                             msg: str+(e.stack?' - '+e.stack:''),
                             pos: pos,
-                            chr: typeof chr == 'undefined' ? '(end)' : chr,
+                            chr: typeof chr === 'undefined' ? '(end)' : chr,
                             state: parseTreeOutput,
                             text: code.slice(pos-10, pos+10),
                             code: this.code
-                        }           
-                    };                    
+                        };           
+                    }                    
                     function execute(code) {
                     var result, hiddenProperties,
                         M = {
@@ -294,10 +294,10 @@
                                         continue;
                                     }
                                     if(/^[$](?:toString|valueOf|constructor|hasOwnProperty)[$]$/.test(key)) {
-                                        Object.defineProperty(obj,key.replace(new RegExp('^'+replaceScoping.source,'i'),'').replace(new RegExp(replaceScoping.source+'$','i'),''), {enumerable: false});
+                                        Object.defineProperty(obj,key.replace(new RegExp(replaceScoping.source+'$','i'),''), {enumerable: false});
                                         Object.defineProperty(obj,key,{value:obj[key],enumerable: false, writable: false, configurable: true});
                                     } else {
-                                        Object.defineProperty(obj,key.replace(new RegExp('^'+replaceScoping.source,'i'),'').replace(new RegExp(replaceScoping.source+'$','i'),''), {enumerable: true});
+                                        Object.defineProperty(obj,key.replace(new RegExp(replaceScoping.source+'$','i'),''), {enumerable: true});
                                         Object.defineProperty(obj,key,{value:obj[key],enumerable: false});
                                     }                                                                                                                       
                                 }
@@ -305,11 +305,11 @@
                             },
                             P: function() {                               
                                     var exp = arguments[arguments.length-1];                                                                                                                                    
-                                    if(typeof exp == 'undefined') {
+                                    if(typeof exp === 'undefined') {
                                        return null;
                                     }                        
                                     if((/[^\d]/.test(exp) || exp === '') && !allowedProperties.test(exp)) {                                                        
-                                        return scoping + exp + scoping;
+                                        return exp + scoping;
                                     } else {                                    
                                         return +exp;
                                     }
@@ -345,7 +345,9 @@
                                            continue; 
                                         }                                        
                                         if(element.tagName.toLowerCase() === 'style') {
-                                            while ( element.firstChild ) element.removeChild( element.firstChild );
+                                            while ( element.firstChild ) {
+                                                element.removeChild( element.firstChild );
+                                            }
                                         }                                         
                                         attrs = [];                                        
                                         for(j=0;j<element.attributes.length;j++) {                                            
@@ -402,9 +404,9 @@
                             for(var i=0;i<list.length;i++) {
                                 var prop = list[i];
                                 if(noprototype) {
-                                    Object.defineProperty(obj,scoping+prop+scoping, {value:obj[prop], configurable:true, enumerable:false, writable: false});                               
+                                    Object.defineProperty(obj,prop+scoping, {value:obj[prop], configurable:true, enumerable:false, writable: false});                               
                                 } else {                                     
-                                    Object.defineProperty(obj.prototype,scoping+prop+scoping, {configurable:true, enumerable:false, value:(function(obj, prop){ 
+                                    Object.defineProperty(obj.prototype,prop+scoping, {configurable:true, enumerable:false, value:(function(obj, prop){ 
                                     function func() {
                                         if(!this[prop]) {
                                             return false;
@@ -427,9 +429,9 @@
                             for(var i=0;i<list.length;i++) {
                                 var prop = list[i];  
                                 if(transObj) {                              
-                                    Object.defineProperty(transObj,scoping+prop+scoping, {value:obj[prop], configurable:true, enumerable:false, writable: false});
+                                    Object.defineProperty(transObj,prop+scoping, {value:obj[prop], configurable:true, enumerable:false, writable: false});
                                 } else {
-                                    Object.defineProperty(obj,scoping+prop+scoping, {value:obj[prop], configurable:true, enumerable:false, writable: false});                               
+                                    Object.defineProperty(obj,prop+scoping, {value:obj[prop], configurable:true, enumerable:false, writable: false});                               
                                 }
                             }           
                         }; 
@@ -489,7 +491,7 @@
                         constWhitelist(window,'decodeURI,decodeURIComponent,encodeURI,encodeURIComponent,escape,isFinite,isNaN,parseFloat,parseInt,unescape', window);                                        
                         function CLEAR_INTERVAL(id){                
                             id = +id;
-                            if (typeof setIntervalIDS[id] == 'undefined') {
+                            if (typeof setIntervalIDS[id] === 'undefined') {
                                 return null;
                             }
                             return clearInterval(id);
@@ -497,7 +499,7 @@
                         $clearInterval$ = CLEAR_INTERVAL;                      
                         var CLEAR_TIMEOUT = function(id){               
                             id = +id;
-                            if (typeof setTimeoutIDS[id] == 'undefined') {
+                            if (typeof setTimeoutIDS[id] === 'undefined') {
                                 return null;
                             }
                             return clearTimeout(id);
@@ -685,7 +687,7 @@
                                  }                                
                             });
                                                                                                                                                                                                                                                                                                                             
-                            window[scoping+'window'+scoping] = this;                                                                       
+                            window['window'+scoping] = this;                                                                       
                         }                   
                         result = eval(code);                                                                  
                         if(that.result) {
@@ -1311,7 +1313,7 @@
                                     expected4 = 0;
                                     left = 1;
                                 }                                                                                   
-                                outputLine = outputLine + scoping + states.currentIdentifier + scoping;
+                                outputLine = outputLine + states.currentIdentifier + scoping;
                                                                                   
                             }
                             
@@ -2097,7 +2099,7 @@
                             outputLine = outputLine + code.charAt(pos);
                             pos++;
                             if(state === 'ObjectLiteralIdentifierString') {
-                                outputLine = outputLine + scoping;  
+                                outputLine = outputLine;  
                             }
                             for(;;) {                               
                                 chr = code.charCodeAt(pos);
@@ -2238,19 +2240,19 @@
 						} else if(chr === GREATER_THAN) {
 							next2 = code.charCodeAt(pos+2);
 							next3 = code.charCodeAt(pos+3);
-							if(next == GREATER_THAN && next2 == GREATER_THAN && next3 === EQUAL) {
+							if(next === GREATER_THAN && next2 === GREATER_THAN && next3 === EQUAL) {
 								state = 'ZeroRightShiftAssignment';
 								outputLine = outputLine + '>>>=';
 								pos+=4;												
-							} else if(next == GREATER_THAN && next2 == GREATER_THAN) {
+							} else if(next === GREATER_THAN && next2 === GREATER_THAN) {
 								state = 'ZeroRightShift';
 								outputLine = outputLine + '>>>';
 								pos+=3;	
-							} else if(next == GREATER_THAN && next2 == EQUAL) {
+							} else if(next === GREATER_THAN && next2 === EQUAL) {
 								state = 'RightShiftAssignment';
 								outputLine = outputLine + '>>=';
 								pos+=3;												
-							} else if(next == GREATER_THAN) {
+							} else if(next === GREATER_THAN) {
 								state = 'RightShift';
 								outputLine = outputLine + '>>';
 								pos+=2;
@@ -2350,7 +2352,7 @@
 							asi();												
 						}
 						
-						output = output + '' + outputLine;
+						output = output + outputLine;
 						 
 						if(!rules[state][lastState]) {																							
 							error("Unexpected " + state + '. Cannot follow '+lastState+'.Output:'+output);
