@@ -2379,7 +2379,7 @@
 							error(msg);
 						}
 						
-						if(parseTree){							
+						if(parseTreeFlag){							
 							parseTreeOutput = parseTreeOutput + '<'+state+'>' + outputLine + '</'+state+'>';
 						}
 						lastState = state;																				
