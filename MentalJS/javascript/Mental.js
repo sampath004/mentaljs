@@ -2109,37 +2109,40 @@
                             if(state === 'ObjectLiteralIdentifierString') {
                                 outputLine = outputLine + scoping;  
                             }
-                            for(;;) {                               
-                                chr = code.charCodeAt(pos);
-                                next = code.charCodeAt(pos+1);                          
+                            while(pos < length) {                               
+                                chr = code.charCodeAt(pos);                                                          
                                 if(chr === SINGLE_QUOTE && !states.escaping && states[SINGLE_QUOTE]) {
                                     states.complete = 1;                 
                                 } else if(chr === DOUBLE_QUOTE && !states.escaping && states[DOUBLE_QUOTE]) {
                                     states.complete = 1;
-                                } else if(chr === BACKSLASH && !states.escaping && (next===10||next===13||next===8232||next==8233) ) {                                    
-                                    pos+=2;
+                                } else if(states.escaping && (chr===10||chr===13||chr===8232||chr==8233) ) {                                    
+                                    pos++;
+                                    states.escaping = 0;
                                     continue;                                                
                                 } else if(chr === BACKSLASH && !states.escaping) {
-                                    states.escaping = 1;                                
+                                    states.escaping = 1;
+                                    pos++;
+                                    continue;                                
                                 } else if(chr === BACKSLASH && states.escaping) {
                                     states.escaping = 0;                                
                                 } else if((chr===10||chr===13||chr===8232||chr==8233) && !states.escaping) {
                                     error("Unterminated string literal");
                                 } else if(states.escaping) {
+                                    outputLine = outputLine + '\\';
                                     states.escaping = 0;
-                                }                            
-                                if(pos + 1 > length) {
-                                    error("Unterminated string literal");
-                                }
+                                }                                                            
                                 if(states.complete && state === 'ObjectLiteralIdentifierString') {
-                                outputLine = outputLine + scoping;  
+                                    outputLine = outputLine + scoping;  
                                 }                                                                       
                                 outputLine = outputLine + code.charAt(pos);
                                 pos++;
                                 if(states.complete) {                                                               
                                     break;
                                 }                           
-                            }       				
+                            }  
+                            if(!states.complete) {
+                               error("Unterminated string literal"); 
+                            }
 						} else if(chr === EXCLAMATION_MARK) {
 						    next = code.charCodeAt(pos+1);
 							next2 = code.charCodeAt(pos+2);						
