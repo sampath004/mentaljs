@@ -2124,7 +2124,8 @@
                                     pos++;
                                     continue;                                
                                 } else if(chr === BACKSLASH && states.escaping) {
-                                    states.escaping = 0;                                
+                                    states.escaping = 0;
+                                    outputLine = outputLine + '\\';                                
                                 } else if((chr===10||chr===13||chr===8232||chr==8233) && !states.escaping) {
                                     error("Unterminated string literal");
                                 } else if(states.escaping) {
