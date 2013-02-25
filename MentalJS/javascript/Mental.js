@@ -1263,6 +1263,7 @@
 					}
 					function plus() {
 					    next = code.charCodeAt(pos+1);
+					    cached = -1;
                         if(next === PLUS && left) {
                             state = 107;
                             outputLine += '++';
@@ -1279,10 +1280,12 @@
                             state = 5;
                             outputLine += ' + ';
                             pos++;
+                            cached = next;
                         } else if(next !== EQUAL && next !== PLUS && !left) {
                             state = 133;
                             outputLine += '+';
-                            pos++;                                                                  
+                            pos++;
+                            cached = next;                                                                  
                         } else {
                             error('Unexpected + Cannot follow '+lastState+'.Output:'+output);
                         }
@@ -1296,6 +1299,7 @@
                                 break;
                             }                                                                                                                   
                         }
+                        cached = -1;
 					}
 					function multiComment() {
 					    pos=code.indexOf('*/',pos);
@@ -1304,17 +1308,24 @@
                         } else {                                                
                             error('Unterminated comment');
                         }       
+                        cached = -1;
 					}
 					function regex() {
-					    var states = {escaping: 0, complete: 0, open: 0, square: 0, flags: {}};       
+					    var states = {escaping: 0, complete: 0, open: 0, square: 0, flags: {}};
+					    cached = -1;       
                         state = 112;
                         left = 1;               
                         states.open = 1;                                                               
                         outputLine += '/';                              
                         pos++;                  
-                        while(1) {
-                            chr = code.charCodeAt(pos);
-                            next = code.charCodeAt(pos+1);                            
+                        while(pos < len) {
+                        	if(cached >= 0) {
+                        		chr = cached;
+                        	} else {
+                            	chr = code.charCodeAt(pos);
+                           	}
+                            next = code.charCodeAt(pos+1);
+                            cached = -1;                            
                             if(chr === FORWARD_SLASH && !states.escaping && !states.square) {
                                 states.open = 0;
                                 if(next !== LOWER_I && next !== LOWER_M && next !== LOWER_G) {
@@ -1351,20 +1362,16 @@
                                 states.complete = 1;
                             } else if(!states.open && (chr === LOWER_I || chr === LOWER_M || chr === LOWER_G) && !states.flags[chr]) {
                                 states.flags[chr] = 1;
-                            } 
-                            if(pos + 1 > len && states.open) {               
-                                error("Unterminated regex literal");
-                            }
-                            
-                            if(pos + 1 > len) { 
-                                break;
-                            }                               
-                            outputLine += code.charAt(pos);                             
-                            pos++;
-                            if(states.complete) {                                                     
+                            }                                                                                                                    
+                            outputLine += code.charAt(pos++);                                                         
+                            cached = next;
+                            if(states.complete) {                            	                                                     
                                 break;
                             }
                         }   
+                        if(states.open) {               
+                            error("Unterminated regex literal");
+                        }
 					}
 					function numberOrHex() {
 					    function number() {
@@ -1486,6 +1493,7 @@
 					}
 					function divide() {
 					    left = 0;
+					    cached = -1;
                         if(next === EQUAL) {
                             state = 7;
                             pos+=2;                                    
@@ -1493,7 +1501,8 @@
                         } else {
                             state = 21;
                             pos++;                                    
-                            outputLine += ' / ';    
+                            outputLine += ' / ';
+                            cached = next;    
                         }
 					}
 					function arrayOrAccessorOpen() {
@@ -2079,7 +2088,7 @@
                                 outputLine += scoping;  
                             }
                             while(pos < len) {                               
-                                chr = code.charCodeAt(pos);                                                          
+                                chr = code.charCodeAt(pos);                                                                                          
                                 if(chr === SINGLE_QUOTE && !states.escaping && states[SINGLE_QUOTE]) {
                                     states.complete = 1;                 
                                 } else if(chr === DOUBLE_QUOTE && !states.escaping && states[DOUBLE_QUOTE]) {
@@ -2115,16 +2124,19 @@
                             }
 					}
 					function exclamation() {
+						cached = -1;
 					    next = code.charCodeAt(pos+1);
                         next2 = code.charCodeAt(pos+2);                     
                         if(next !== EQUAL && !left) {
                             state = 88;
                             outputLine += ' ! ';
                             pos++;
+                            cached = next;
                         } else if(next === EQUAL && next2 !== EQUAL) {
                             state = 87;
                             outputLine += '!=';
                             pos+=2;
+                            cached = next2;
                         } else if(next === EQUAL && next2 === EQUAL) {
                             state = 117;
                             outputLine += '!==';
@@ -2146,6 +2158,7 @@
 					}
 					function pipe() {
 					    next = code.charCodeAt(pos+1);
+					    cached = -1;
                         if(next === PIPE) {
                             state = 81;
                             outputLine += '||';
@@ -2157,14 +2170,16 @@
                         } else if(next !== PIPE && next !== EQUAL) {
                             state = 12;
                             outputLine += ' | ';
-                            pos++;                      
+                            pos++; 
+                            cached = next;                     
                         } else {
                             error('Unexpected | Cannot follow '+lastState+'.Output:'+output);
                         }
                         left = 0;
 					}
 					function caret() {
-					    next = code.charCodeAt(pos+1); 
+					    next = code.charCodeAt(pos+1);
+					    cached = -1; 
                         if(next === EQUAL) {
                             state = 151;
                             outputLine += '^=';
@@ -2172,7 +2187,8 @@
                         } else if(next !== EQUAL) {
                             state = 150;
                             outputLine += ' ^ ';
-                            pos++;                      
+                            pos++;  
+                            cached = next;                    
                         } else {
                             error('Unexpected ^. Cannot follow '+lastState+'.Output:'+output);
                         }
@@ -2180,6 +2196,7 @@
 					}
 					function percent() {
 					    next = code.charCodeAt(pos+1);
+					    cached = -1;
                         if(next === EQUAL) {
                             state = 93;
                             outputLine += '%=';
@@ -2187,7 +2204,8 @@
                         } else if(next !== EQUAL) {
                             state = 92;
                             outputLine += ' % ';
-                            pos++;                      
+                            pos++; 
+                            cached = next;                     
                         } else {
                             error('Unexpected % Cannot follow '+lastState+'.Output:'+output);
                         }
@@ -2195,6 +2213,7 @@
 					}
 					function ampersand() {
 					    next = code.charCodeAt(pos+1);
+					    cached = -1;
                         if(next === AMPERSAND) {
                             state = 82;
                             outputLine += '&&';
@@ -2206,7 +2225,8 @@
                         } else if(next !== AMPERSAND && next !== EQUAL) {
                             state = 13;
                             outputLine += ' & ';
-                            pos++;                      
+                            pos++;  
+                            cached = next;                    
                         } else {
                             error('Unexpected & Cannot follow '+lastState+'.Output:'+output);
                         }
@@ -2214,19 +2234,22 @@
 					}
 					function equal() {
 					    next = code.charCodeAt(pos+1);
-                        next2 = code.charCodeAt(pos+2);                     
+                        next2 = code.charCodeAt(pos+2);
+                        cached = -1;                     
                         if(next !== EQUAL) {
                             state = 30;
                             outputLine += ' = ';
                             pos++;
+                            cached = next;
                         } else if(next === EQUAL && next2 !== EQUAL) {
                             state = 31;
                             outputLine += '==';
                             pos+=2;
+                            cached = next2;
                         } else if(next === EQUAL && next2 === EQUAL) {
                             state = 116;
                             outputLine += '===';
-                            pos+=3;
+                            pos+=3;                           
                         } else {
                             error('Unexpected = Cannot follow '+lastState+'.Output:'+output);
                         }
@@ -2236,6 +2259,7 @@
 					    next = code.charCodeAt(pos+1);
                         next2 = code.charCodeAt(pos+2);
                         next3 = code.charCodeAt(pos+3);
+                        cached = -1;
                         if(next === GREATER_THAN && next2 === GREATER_THAN && next3 === EQUAL) {
                             state = 153;
                             outputLine += '>>>=';
@@ -2243,23 +2267,28 @@
                         } else if(next === GREATER_THAN && next2 === GREATER_THAN) {
                             state = 152;
                             outputLine += '>>>';
-                            pos+=3; 
+                            pos+=3;
+                            cached = next3; 
                         } else if(next === GREATER_THAN && next2 === EQUAL) {
                             state = 114;
                             outputLine += '>>=';
-                            pos+=3;                                             
+                            pos+=3;
+                            cached = next3;                                             
                         } else if(next === GREATER_THAN) {
                             state = 113;
                             outputLine += '>>';
                             pos+=2;
+                            cached = next2;
                         } else if(next !== EQUAL) {
                             state = 64;
                             outputLine += ' > ';
                             pos++;
+                            cached = next;
                         } else if(next === EQUAL) {
                             state = 65;
                             outputLine += '>=';
-                            pos+=2;                     
+                            pos+=2;
+                            cached = next2;                     
                         } else {
                             error('Unexpected > Cannot follow '+lastState+'.Output:'+output);
                         }
@@ -2267,7 +2296,8 @@
 					}
 					function lessThan() {
 					    next = code.charCodeAt(pos+1);
-                        next2 = code.charCodeAt(pos+2); 
+                        next2 = code.charCodeAt(pos+2);
+                        cached = -1; 
                         if(next === LESS_THAN && next2 === EQUAL) {
                             state = 80;
                             outputLine += '<<=';
@@ -2276,25 +2306,30 @@
                             state = 79;
                             outputLine += '<<';
                             pos+=2;
+                            cached = next2;
                         } else if(next !== EQUAL) {
                             state = 77;
                             outputLine += ' < ';
                             pos++;
+                            cached = next;
                         } else if(next === EQUAL) {
                             state = 78;
                             outputLine += '<=';
-                            pos+=2;                     
+                            pos+=2;
+                            cached = next2;                     
                         } else {
                             error('Unexpected < Cannot follow '+lastState+'.Output:'+output);
                         }
                         left = 0;
 					}
 					function asterix() {
-					    next = code.charCodeAt(pos+1);                                         
+					    next = code.charCodeAt(pos+1);
+					    cached = -1;                                         
                         if(next !== EQUAL) {
                             state = 94;
                             outputLine += ' * ';
                             pos++;
+                            cached = next;
                         } else if(next === EQUAL) {
                             state = 95;
                             outputLine += '*=';
@@ -2306,6 +2341,7 @@
 					}
 					function minus() {
 					    next = code.charCodeAt(pos+1);
+					    cached = -1;
                         if(next === MINUS && left) {
                             state = 108;
                             outputLine += '--';
@@ -2322,10 +2358,12 @@
                             state = 90;
                             outputLine += ' - ';
                             pos++;
+                            cached = next;
                         } else if(next !== EQUAL && next !== MINUS && !left) {
                             state = 134;
                             outputLine += '-';
-                            pos++;                                                                  
+                            pos++;      
+                            cached = next;                                                            
                         } else {                    
                             error('Unexpected - Cannot follow '+lastState+'.Output:'+output);
                         }
@@ -2335,11 +2373,17 @@
 					   checkSyntax(code);
 					}
 									
-					while(pos < len) {					    
-						outputLine = '';                                               
+					while(pos < len) {					    						                                               
                         state = 89;
-                        if(expected>-1||expected2>-1||expected3>-1||expected4>-1)expect = 1;															
-						chr = code.charCodeAt(pos);									              																				
+                        if(expected>-1||expected2>-1||expected3>-1||expected4>-1) {
+                        	expect = 1;
+                       	}															
+						if(cached >= 0) {
+							chr = cached;
+						} else {
+							chr = code.charCodeAt(pos);
+						}
+						cached = -1;									              																				
 					    if(chr===10||chr===13) {                                                   
                             newLine();
                             continue;                         
@@ -2444,9 +2488,7 @@
                         
                         if(!rules[state][lastState] && newLineFlag) {                                                                                   
                             asi();                                              
-                        }
-                        
-                        output += outputLine;
+                        }                                                
                          
                         if(!rules[state][lastState]) {                                                                                          
                             error("Unexpected " + state + '. Cannot follow '+lastState+'.Output:'+output);
@@ -2472,7 +2514,9 @@
                         newLineFlag = 0;
                         if(lookupSquare === 1 && lookupCurly === 1 && lookupParen === 1) {
                             parentStates = {};
-                        }																													
+                        }
+                        output += outputLine;
+                        outputLine = '';																													
 					}	
 					if(((expected>=0 && expected !== state) || (expected2>=0 && expected2 !== state) || (expected3>=0 && expected3 !== state) || (expected4>=0 && expected4 !== state))) {						
 						msg = "Expected " + expected;
