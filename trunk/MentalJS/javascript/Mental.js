@@ -2373,7 +2373,7 @@
                             error('Unexpected - Cannot follow '+lastState+'.Output:'+output);
                         }
                         left = 0;   
-					}															
+					}																				
 					if(browserCheckSyntaxFlag) {
 					   checkSyntax(code);
 					}
@@ -2382,25 +2382,21 @@
 						outputLine = '';                                               
                         state = 'Nothing';
                         if(expected||expected2||expected3||expected4)expect = 1;															
-						chr = code.charCodeAt(pos);																							
+						chr = code.charCodeAt(pos);									              																				
 					    if(chr===10||chr===13) {                                                   
                             newLine();
                             continue;                         
 						} else if(chr===9||chr===11||chr===12||chr===32) {
 							pos++;
-							continue;						
+							continue;												
                         } else if(chr === SEMI_COLON) {             
-                            semicolon();                      	
-                        } else if(chr === 160||chr===5760||chr===6158||chr===8192||chr===8193||chr===8194||chr===8195||chr===8196||chr===8197||chr===8198||chr===8199||chr===8200||chr===8201||chr===8202||chr===8239||chr===8287||chr===12288) {
-                            pos++;
-                            continue;
-                        } else if(chr===8232||chr==8233) {
-                             newLine();
-                            continue;                          					    
-						} else if((chr >= LOWER_A && chr <= LOWER_Z) || (chr >= UPPER_A && chr <= UPPER_Z) || (chr === UNDERSCORE || chr === DOLLAR || chr === BACKSLASH) || chr > 0x80) {                      
-                            identifier();																						
+                            semicolon();                      	                                                        					    						
+						} else if(chr >= LOWER_A && chr <= LOWER_Z) {                      
+                            identifier();
+                        } else if(chr === DOLLAR) {
+                            identifier();          
 						} else if((chr >= DIGIT_0 && chr <= DIGIT_9) || (!left && chr === PERIOD)) {						    						    					    																													
-							numberOrHex();                                                      
+							numberOrHex();                                              							        
 				        } else if(chr === FORWARD_SLASH) {
 				            next = code.charCodeAt(pos+1);				            
                             if(!left && next !== ASTERIX && next !== FORWARD_SLASH && lastState !== 'VarIdentifier') {                                                                                                                               
@@ -2438,7 +2434,9 @@
 							period();
 						} else if(chr === COLON) {
 							colon();																								
-                      } else if(chr === SINGLE_QUOTE || chr === DOUBLE_QUOTE) {                                           
+                        } else if(chr === SINGLE_QUOTE) {                                           
+                            string();
+                        } else if(chr === DOUBLE_QUOTE) {
                             string();
 						} else if(chr === EXCLAMATION_MARK) {
 						    exclamation();						    				
@@ -2461,8 +2459,24 @@
 						} else if(chr === ASTERIX) {
 						    asterix();																						
 						} else if(chr === MINUS) {
-						    minus();																																														
-						}																				
+						    minus();
+						} else if(chr === UNDERSCORE) {
+                            identifier();                        
+                        } else if(chr === BACKSLASH) {
+                            identifier();
+                        } else if(chr >= UPPER_A && chr <= UPPER_Z) {
+                            identifier();																																																				
+						} else if(chr > 159) {
+                            if(chr === 160||chr===5760||chr===6158||chr===8192||chr===8193||chr===8194||chr===8195||chr===8196||chr===8197||chr===8198||chr===8199||chr===8200||chr===8201||chr===8202||chr===8239||chr===8287||chr===12288) {
+                                pos++;
+                                continue;
+                            } else if(chr===8232||chr==8233) {
+                                newLine();
+                                continue;                  
+                            } else {
+                                identifier();
+                            } 
+                        }																				
 						if(state === 'Nothing') {                          
                             error("No state defined for char:" +String.fromCharCode(chr) + ', left: '+left+', last state: '+lastState+',output:'+output);
                         }
