@@ -11,7 +11,7 @@
 		margin-top:10px;
 		border:1px solid #ccc;
 	}					
-	#code, #converted, #result, #evalCode, #functionCode, #globalsCheck, #errorLog, #parseTreeTxt, #source, #correctedOutput,#parseTimes {
+	#code, #converted, #result, #evalCode, #functionCode, #globalsCheck, #errorLog, #parseTreeTxt, #source, #correctedOutput {
 		width:500px;
 		height:200px;				
 	}
@@ -208,7 +208,7 @@ function inception() {
 	xhr.send();
 	document.getElementById('code').value = 'function Error(){return {};};Object.defineProperty=function(){};Object.create=function(obj){return obj;};' + xhr.responseText + 'eval("js=MentalJS();alert(js.parse(\'1+1\'))");';
 }
-function exec(runProfile) {
+function exec(runProfile) {		
 	var js = MentalJS(),
 		start = new Date(), end, elapsedTime;		 
 	try {		
@@ -218,59 +218,14 @@ function exec(runProfile) {
 		js.parse({
 			global: true,
 			thisObject: window,
-			options: {eval:true, stealth: true, browserCheckSyntax: document.getElementById('browser').checked },
+			options: {eval:document.getElementById('executeCode').checked, stealth: true, browserCheckSyntax: document.getElementById('browser').checked },
 			code:document.getElementById('code').value,
 			converted: function(converted) {
 				document.getElementById('converted').value = converted;					
 			},
 			result: function(result) {
 				document.getElementById('result').value = 'type:' + typeof result + '\n' + result;
-			},
-			parseTimes: document.getElementById('enableParseTimes').checked 
-				? function(array) {									
-					var output = [], obj, avg = {}, state, sum, totals = [];
-					array = array.sort(function(a,b) {
-						if(a.time < b.time) {
-							return 1;
-						 } else if (a.time > b.time) {
-				            return -1;
-				        } else {
-				            return 0;
-				        }
-					});
-					for(var i=0;i<array.length;i++) {
-						obj = array[i];
-						if(avg[obj.state]) {
-							avg[obj.state].push(obj.time);
-						} else {
-							avg[obj.state] = [];
-							avg[obj.state].push(obj.time);
-						}
-					}
-					for(state in avg) {
-						if(!avg.hasOwnProperty(state)) {
-							continue;
-						}						
-						sum = avg[state].reduce(function(a,b){return a+b;});
-						totals.push({state:state, count: avg[state].length, avg:(sum/avg[state].length)});
-					}
-					totals = totals.sort(function(a,b){
-						if(a.avg < b.avg) {
-							return 1;
-						 } else if (a.avg > b.avg) {
-				            return -1;
-				        } else {
-				            return 0;
-				        }
-					});
-					for(var i=0;i<totals.length;i++) {
-						obj = totals[i];
-						output.push(obj.state+'='+obj.avg + '('+obj.count+')');
-					}
-					
-					document.getElementById('parseTimes').value = output.join('\n');
-				}
-				:false
+			}
 			,
 			complete: function() {
 				if(runProfile) {
@@ -278,7 +233,7 @@ function exec(runProfile) {
 				}
 				end = new Date();
 				elapsedTime = (end - start);
-				document.getElementById('timeTaken').innerHTML = elapsedTime + 'ms';					
+				document.getElementById('timeTaken').textContent = elapsedTime + 'ms';					
 			},
 			evalCode: document.getElementById('enableEvalCode').checked 
 				? function(converted) {
@@ -315,7 +270,7 @@ function exec(runProfile) {
 		<legend>MentalJS Parser</legend>				
 		<div class="clear">
 			<span class="column">
-				<label>Your Code: Browser syntax check? <input type="checkbox" id="browser" checked="checked"><br></label>				
+				<label>Your Code: Browser syntax check? <input type="checkbox" id="browser"> Execute code? <input type="checkbox" id="executeCode"><br></label>				
 				<textarea id="code"></textarea>
 			</span>
 			<span class="column">
@@ -352,11 +307,7 @@ function exec(runProfile) {
 			<span class="column">
 				<label>Parse tree:<input type=checkbox id=enableParseTree></label>
 				<textarea id="parseTreeTxt"></textarea>
-			</span>	
-			<span class="column">
-				<label>Parse times:<input type=checkbox id=enableParseTimes></label>
-				<textarea id="parseTimes"></textarea>
-			</span>						
+			</span>								
 		</div>				
 		</fieldset>					
 		</form>			
