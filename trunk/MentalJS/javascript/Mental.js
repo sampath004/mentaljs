@@ -1127,68 +1127,124 @@
                                 break;                     
                             }  
 				        }
-				        function unicode() {
-				            if(states.currentUnicode.length === 3) {                                
-                                states.currentUnicode = states.currentUnicode + code.charAt(pos);
-                                states.u = +('0x'+states.currentUnicode);                                                                       
-                                if(!states.identifierStart) {                       
-                                    if(states.u >= LOWER_A && states.u <= LOWER_Z) {                                                    
-                                    } else if(states.u >= UPPER_A && states.u <= UPPER_Z) {                                                                                                           
-                                    } else if(states.u === UNDERSCORE || states.u === DOLLAR){                              
-                                    } else if(states.u > 0x80){
-                                        if(!isValidVariable(states.u)) {
-                                          error('illegal unicode escape');
-                                        } 
-                                    } else {
-                                        error('illegal unicode escape');
-                                    }                           
+				        function checkRules() {
+				            expected = expected2 = expected3 = expected4 = expect = 0;
+				            if(!foundKeyword) {                                                                                                                                                                                                                                                                                                                             
+                                if(rules.FunctionIdentifier[lastState]) {
+                                    state = 'FunctionIdentifier';
+                                    expected = 'FunctionParenOpen';                                    
+                                    outputLine = outputLine + ' ';
+                                } else if(rules.CatchStatementIdentifier[lastState]) {
+                                    state = 'CatchStatementIdentifier';
+                                    expected = 'CatchStatementParenClose';                                    
+                                } else if(rules.ObjectLiteralIdentifier[lastState]) {
+                                    state = 'ObjectLiteralIdentifier';
+                                    expected = 'ObjectLiteralColon';                                                                     
+                                } else if(rules.FunctionExpressionIdentifier[lastState]) {
+                                    state = 'FunctionExpressionIdentifier';
+                                    expected = 'FunctionExpressionParenOpen';                                    
+                                    outputLine = outputLine + ' ';
+                                } else if(rules.FunctionArgumentIdentifier[lastState]) {
+                                    state = 'FunctionArgumentIdentifier';
+                                    expected = 'FunctionParenClose';
+                                    expected2 = 'FunctionArgumentComma';                                                 
+                                } else if(rules.FunctionExpressionArgumentIdentifier[lastState]) {
+                                    state = 'FunctionExpressionArgumentIdentifier';
+                                    expected = 'FunctionExpressionParenClose';
+                                    expected2 = 'FunctionExpressionArgumentComma';                                    
+                                } else if(rules.VarIdentifier[lastState]) {                                 
+                                    state = 'VarIdentifier';                                    
+                                    left = 1;                                                                                                                 
+                                } else if(rules.Identifier[lastState]) {
+                                    state = 'Identifier';                                    
+                                    left = 1;                               
                                 } else {
-                                    if(states.u >= LOWER_A && states.u <= LOWER_Z) {                                                    
-                                    } else if(states.u >= UPPER_A && states.u <= UPPER_Z) {                             
-                                    } else if(states.u >= DIGIT_0 && states.u <= DIGIT_9) {                                               
-                                    } else if(states.u === UNDERSCORE || states.u === DOLLAR){                              
-                                    } else if(states.u > 0x80){
-                                        if(!isValidVariablePart(states.u)) {
-                                          error('illegal unicode escape');
-                                        } 
-                                    } else {
-                                        error('illegal unicode escape');
+                                    if(!rules['Identifier'][lastState] && newLineFlag) {                                                                                    
+                                        asi();                                              
                                     }
+                                    state = 'Identifier';                                    
+                                    left = 1;
+                                }                                                                                   
+                                outputLine = outputLine + scoping + states.currentIdentifier + scoping;                                                                                  
+                            }
+                            
+                            if(!rules[state][lastState] && newLineFlag) {                                                                                                                    
+                                if(left) {
+                                    asi();
+                                    left = 1;    
+                                } else {
+                                    asi();
+                                }                                                                          
+                            } 
+				        }
+				        function unicode() {
+				            pos++;
+				            states.unicodeEscape = 1;
+				            while(pos < len) {
+				                chr = code.charCodeAt(pos); 				              				                
+				                if(states.unicodeEscape === 1) {
+                                    if(chr !== LOWER_U) {                                        
+                                        error('Unexpected "'+(isNaN(chr)?'(end)':chr)+'" character. Expected unicode escape.');
+                                    }
+                                    states.unicodeEscape = 2;
+                                    pos++;
+                                    continue;                                                                                                           
+    				            } else if(states.currentUnicode.length === 3) {                                                                    
+                                    states.currentUnicode = states.currentUnicode + code.charAt(pos);
+                                    states.u = +('0x'+states.currentUnicode);                                                                                                          
+                                    if(!states.identifierStart) {                       
+                                        if(states.u >= LOWER_A && states.u <= LOWER_Z) {                                                    
+                                        } else if(states.u >= UPPER_A && states.u <= UPPER_Z) {                                                                                                           
+                                        } else if(states.u === UNDERSCORE || states.u === DOLLAR){                              
+                                        } else if(states.u > 0x80){
+                                            if(!isValidVariable(states.u)) {
+                                              error('illegal unicode escape');
+                                            } 
+                                        } else {                                            
+                                            error('illegal unicode escape');
+                                        }                           
+                                    } else {
+                                        if(states.u >= LOWER_A && states.u <= LOWER_Z) {                                                    
+                                        } else if(states.u >= UPPER_A && states.u <= UPPER_Z) {                             
+                                        } else if(states.u >= DIGIT_0 && states.u <= DIGIT_9) {                                               
+                                        } else if(states.u === UNDERSCORE || states.u === DOLLAR){                              
+                                        } else if(states.u > 0x80){
+                                            if(!isValidVariablePart(states.u)) {
+                                              error('illegal unicode escape');
+                                            } 
+                                        } else {
+                                            error('illegal unicode escape');
+                                        }
+                                    }
+                                    states.currentIdentifier = states.currentIdentifier + '\\u'+states.currentUnicode;
+                                    states.currentUnicode = '';
+                                    states.unicodeEscape = 0;
+                                    states.identifierStart = 1;
+                                } else if(chr >= DIGIT_0 && chr <= DIGIT_9) {
+                                } else if(chr >= LOWER_A && chr <= LOWER_F) {                   
+                                } else if(chr >= UPPER_A && chr <= UPPER_F) {
+                                } else {
+                                    error('Unexpected "'+(isNaN(chr)?'(end)':chr)+'" character. Expected unicode escape.');
                                 }
-                                states.currentUnicode = '';
-                                states.unicodeEscape = 0;
-                                states.identifierStart = 1;
-                            } else if(chr >= DIGIT_0 && chr <= DIGIT_9) {
-                            } else if(chr >= LOWER_A && chr <= LOWER_F) {                   
-                            } else if(chr >= UPPER_A && chr <= UPPER_F) {
-                            } else {
-                                error('Unexpected "'+(isNaN(chr)?'(end)':chr)+'" character. Expected unicode escape.');
-                            }
-                            if(states.currentUnicode.length<4) {
-                                states.currentUnicode = states.currentUnicode + code.charAt(pos);
-                            }
+                                if(states.currentUnicode.length<4) {
+                                    states.currentUnicode = states.currentUnicode + code.charAt(pos);
+                                }                                                                
+                                pos++;  
+                           }
 				        }
 				        				                                                                                                                                  
                             if(chr === BACKSLASH) {                                             
                                 states.identifierStart = 0;                     
                             }                                                                                                                                                                             
                             while(pos < len) {                                
-                                chr = code.charCodeAt(pos);                                                                               
-                                if(states.unicodeEscape > 1) {
+                                chr = code.charCodeAt(pos);                                                                                                               
+                                if(chr >= LOWER_A && chr <= LOWER_Z) {
+                                } else if(chr >= DIGIT_0 && chr <= DIGIT_9) {
+                                } else if(chr >= UPPER_A && chr <= UPPER_Z) {
+                                } else if(chr === UNDERSCORE || chr === DOLLAR) {                                
+                                } else if(chr === BACKSLASH) {                                    
                                     unicode();
-                                } else if(states.unicodeEscape === 1) {
-                                    if(chr !== LOWER_U) {
-                                        error('Unexpected "'+(isNaN(chr)?'(end)':chr)+'" character. Expected unicode escape.');
-                                    }
-                                    states.unicodeEscape = 2;
-                                } else if(chr >= LOWER_A && chr <= LOWER_Z) {                                                                           
-                                } else if(chr >= UPPER_A && chr <= UPPER_Z) {                           
-                                } else if(chr >= DIGIT_0 && chr <= DIGIT_9) {                                                
-                                } else if(chr === UNDERSCORE || chr === DOLLAR) {                                                                                 
-                                } else if(chr === BACKSLASH && states.unicodeEscape) {
-                                    error('Unexpected unicode escape');
-                                } else if(chr === BACKSLASH && !states.unicodeEscape) {
-                                    states.unicodeEscape = 1;
+                                    continue;                                                                        
                                 } else if(chr > 0x80) {
                                     if(!isValidVariablePart(chr)) {                                       
                                        break;
@@ -1202,89 +1258,7 @@
                             states.identifierLen = states.currentIdentifier.length;
                             foundKeyword = 0;                                                                                                                                                        
                             keyword();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-                            if(!foundKeyword) {                                                                                                                                                                                                                                                                                                                             
-                                if(rules.FunctionIdentifier[lastState]) {
-                                    state = 'FunctionIdentifier';
-                                    expected = 'FunctionParenOpen';
-                                    expected2 = 0;
-                                    expected3 = 0;
-                                    expected4 = 0;
-                                    expect = 0;
-                                    outputLine = outputLine + ' ';
-                                } else if(rules.CatchStatementIdentifier[lastState]) {
-                                    state = 'CatchStatementIdentifier';
-                                    expected = 'CatchStatementParenClose';
-                                    expected2 = 0;
-                                    expected3 = 0;
-                                    expected4 = 0;
-                                    expect = 0;
-                                } else if(rules.ObjectLiteralIdentifier[lastState]) {
-                                    state = 'ObjectLiteralIdentifier';
-                                    expected = 'ObjectLiteralColon';
-                                    expected2 = 0;
-                                    expected3 = 0;
-                                    expected4 = 0;
-                                    expect = 0;                                 
-                                } else if(rules.FunctionExpressionIdentifier[lastState]) {
-                                    state = 'FunctionExpressionIdentifier';
-                                    expected = 'FunctionExpressionParenOpen';
-                                    expected2 = 0;
-                                    expected3 = 0;
-                                    expected4 = 0;
-                                    expect = 0;
-                                    outputLine = outputLine + ' ';
-                                } else if(rules.FunctionArgumentIdentifier[lastState]) {
-                                    state = 'FunctionArgumentIdentifier';
-                                    expected = 'FunctionParenClose';
-                                    expected2 = 'FunctionArgumentComma';
-                                    expected3 = 0;
-                                    expected4 = 0;
-                                    expect = 0;             
-                                } else if(rules.FunctionExpressionArgumentIdentifier[lastState]) {
-                                    state = 'FunctionExpressionArgumentIdentifier';
-                                    expected = 'FunctionExpressionParenClose';
-                                    expected2 = 'FunctionExpressionArgumentComma';
-                                    expected3 = 0;
-                                    expected4 = 0;
-                                    expect = 0;
-                                } else if(rules.VarIdentifier[lastState]) {                                 
-                                    state = 'VarIdentifier';
-                                    expected = 0;
-                                    expected2 = 0;
-                                    expected3 = 0;
-                                    expected4 = 0;
-                                    expect = 0;
-                                    left = 1;                                                                                                                 
-                                } else if(rules.Identifier[lastState]) {
-                                    state = 'Identifier';
-                                    expected = 0;
-                                    expected2 = 0;
-                                    expected3 = 0;
-                                    expected4 = 0;
-                                    left = 1;                               
-                                } else {
-                                    if(!rules['Identifier'][lastState] && newLineFlag) {                                                                                    
-                                        asi();                                              
-                                    }
-                                    state = 'Identifier';
-                                    expected = 0;
-                                    expected2 = 0;
-                                    expected3 = 0;
-                                    expected4 = 0;
-                                    left = 1;
-                                }                                                                                   
-                                outputLine = outputLine + scoping + states.currentIdentifier + scoping;
-                                                                                  
-                            }
-                            
-                            if(!rules[state][lastState] && newLineFlag) {                                                                                                                    
-                                if(left) {
-                                    asi();
-                                    left = 1;    
-                                } else {
-                                    asi();
-                                }                                                                          
-                            } 
+                            checkRules();
 				    }
 				    function number() {
 				        while(pos < len) {
