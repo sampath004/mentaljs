@@ -242,17 +242,14 @@
 	}
     window.MentalJS = function() {
         function Mental() {
-            this.parse = function(obj) {
-                
+            this.parse = function(obj) {                
                 if(!Object.defineProperty) {
                     error("MentalJS requires ES5. Please upgrade your browser.");
-                }
-                            
+                }                            
                 var parseTreeOutput = '', converted, that = this,                                         
-                    pos = 0, chr, output = '', left = 0, lastState, scoping = '$', lastParseChr, parseResult,  lastChr = '', states = [],
-                    functionKeyword = false, result, replaceScoping = new RegExp('['+scoping+']'),
-                    allowedProperties = /^(?:length|prototype)$/, expressions = [], currentExpression,
-                    functionParenOpen = false,                                         
+                    pos = 0, chr, scoping = '$',
+                    result, replaceScoping = new RegExp('['+scoping+']'),
+                    allowedProperties = /^(?:length|prototype)$/,                                                             
                     attributeWhitelist = /^(?:alt|title)$/i,                                               
                     setTimeoutIDS = {},
                     setIntervalIDS = {};            
@@ -419,9 +416,7 @@
                                     Object.defineProperty(obj,scoping+prop+scoping, {value:obj[prop], configurable:true, enumerable:false, writable: false});                               
                                 }
                             }           
-                        }; 
-                        
-                        
+                        };                                                 
                         function FUNCTION(){                                                                                                                                                                                 
                             var converted = Function.apply(window, arguments) + '',                                             
                                 js = MentalJS();                                                                   
@@ -684,8 +679,7 @@
             	function sandbox(code) {	
             		this.code = code; 													
 					var scoping = '$', pos = 0, chr, parentState, parentStates = {}, states, msg, state = 89, left = 0, output = '', outputLine = '', 					
-					next, next2, next3, cached = -1,  
-					unicodeChr1, unicodeChr2, unicodeChr3, unicodeChr4,								
+					next, next2, next3, cached = -1,  												
 					len = code.length, parseTree = that.parseTree,
 					lookupSquare = 1, lookupCurly = 1, lookupParen = 1, ternaryCount = 0, isTernary = {}, caseCount = 0, isCase = {}, isVar = {},
 					isFor = {}, isForIn = {},  isIf = {}, isObjectLiteral = {},																
@@ -693,27 +687,19 @@
 					SQUARE_OPEN = 91, SQUARE_CLOSE = 93, PAREN_OPEN = 40, PAREN_CLOSE = 41,
 					CURLY_OPEN = 123, CURLY_CLOSE = 125,
 					LOWER_A = 97, LOWER_B = 98, LOWER_C = 99, LOWER_D = 100, LOWER_E = 101,
-					LOWER_F = 102, LOWER_G = 103, LOWER_H = 104, LOWER_I = 105, LOWER_J = 106,
+					LOWER_F = 102, LOWER_G = 103, LOWER_H = 104, LOWER_I = 105,
 					LOWER_K = 107, LOWER_L = 108, LOWER_M = 109, LOWER_N = 110, LOWER_O = 111,
-					LOWER_P = 112, LOWER_Q = 113, LOWER_R = 114, LOWER_S = 115, LOWER_T = 116,
+					LOWER_P = 112, LOWER_R = 114, LOWER_S = 115, LOWER_T = 116,
 					LOWER_U = 117, LOWER_V = 118, LOWER_W = 119, LOWER_X = 120, LOWER_Y = 121,
-					LOWER_Z = 122,
-					UPPER_A = 65, UPPER_B = 66, UPPER_C = 67, UPPER_D = 68, UPPER_E = 69,
-					UPPER_F = 70, UPPER_G = 71, UPPER_H = 72, UPPER_I = 73, UPPER_J = 74,
-					UPPER_K = 75, UPPER_L = 76, UPPER_M = 77, UPPER_N = 78, UPPER_O = 79,
-					UPPER_P = 80, UPPER_Q = 81, UPPER_R = 82, UPPER_S = 83, UPPER_T = 84,
-					UPPER_U = 85, UPPER_V = 86, UPPER_W = 87, UPPER_X = 88, UPPER_Y = 89,
-					UPPER_Z = 90,
-					DIGIT_0 = 48, DIGIT_1 = 49, DIGIT_2 = 50, DIGIT_3 = 51, DIGIT_4 = 52, DIGIT_5 = 53,
-					DIGIT_6 = 54, DIGIT_7 = 55, DIGIT_8 = 56, DIGIT_9 = 57, 
+					LOWER_Z = 122, UPPER_A = 65, UPPER_E = 69, UPPER_F = 70, UPPER_I = 73, 
+					UPPER_N = 78, UPPER_O = 79, UPPER_X = 88, UPPER_Z = 90, DIGIT_0 = 48, DIGIT_1 = 49, DIGIT_9 = 57, 
 					DOLLAR = 36, UNDERSCORE = 95, SINGLE_QUOTE = 39, DOUBLE_QUOTE = 34,
 					FORWARD_SLASH = 47, BACKSLASH = 92, ASTERIX = 42, EQUAL = 61, CARET = 94,
 					COLON = 58, QUESTION_MARK = 63, COMMA = 44, PERIOD = 46, SEMI_COLON = 59,
 					EXCLAMATION_MARK = 33, 	TILDE = 126, PLUS = 43, MINUS = 45,
 					AMPERSAND = 38, PIPE = 124, GREATER_THAN = 62, LESS_THAN = 60,
-					PERCENT = 37,
-					NEWLINE = 10, CARRIAGE_RETURN = 13, LINE_SEPARATOR = 8232, PARAGRAPH_SEPARATOR = 8233,										
-					timers = [], start, end, parseTreeFlag = !!that.parseTree, completeFlag = !!that.complete,
+					PERCENT = 37,															
+					parseTreeFlag = !!that.parseTree, completeFlag = !!that.complete,
 					convertedFlag = !!that.converted,  
 					browserCheckSyntaxFlag = !!that.options.browserCheckSyntax, foundKeyword = 0;												    
 					function checkSyntax(code){                                        
@@ -734,7 +720,7 @@
                     };
                     function asi(useOutput) {
                         var parenIndex = lookupParen-1,
-                            index1 = +(''+lookupSquare+lookupCurly+parenIndex), index2 = +(''+lookupSquare+lookupCurly+lookupParen);                            
+                            index1 = parseFloat(''+lookupSquare+lookupCurly+parenIndex), index2 = parseFloat(''+lookupSquare+lookupCurly+lookupParen);                            
                         if(isFor[index1] && !isForIn[index1]) {
                             lastState = 45;
                             if(useOutput) { 
@@ -767,7 +753,7 @@
 				    function identifier() {
 				        var u = 0, ident = '', currentUnicode = '', unicodeEscape = 0, identifierStart = 1;
 				        function keyword() {
-				            var index = +(''+lookupSquare+lookupCurly+lookupParen);
+				            var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
 				            switch(identifierLen) {
                                 case 2:                         
                                     if(ident.charCodeAt(0) === LOWER_D && ident.charCodeAt(1) === LOWER_O) {                              
@@ -1129,7 +1115,7 @@
                                     continue;                                                                                                           
     				            } else if(currentUnicode.length === 3) {                                                                    
                                     currentUnicode = currentUnicode + code.charAt(pos);
-                                    u = +('0x'+currentUnicode);                                                                                                          
+                                    u = parseInt('0x'+currentUnicode, 16);                                                                                                          
                                     if(!identifierStart) {                       
                                         if(u >= LOWER_A && u <= LOWER_Z) {                                                    
                                         } else if(u >= UPPER_A && u <= UPPER_Z) {                                                                                                           
@@ -1254,9 +1240,9 @@
                         }
 					}
 					function semicolon() {
-					    var index = +(''+lookupSquare+lookupCurly+lookupParen),
+					    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen),
 					        parentState = parentStates[index],
-					        index2 = +(''+lookupSquare+lookupCurly+(lookupParen-1));                                    
+					        index2 = parseFloat(''+lookupSquare+lookupCurly+(lookupParen-1));                                    
                         if(isFor[index2] && !isForIn[index2]) {
                             state = 45;
                             outputLine += ';';
@@ -1511,7 +1497,7 @@
                         }
 					}
 					function arrayOrAccessorOpen() {
-					    var index = +(''+lookupSquare+lookupCurly+lookupParen);
+					    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
 					    if(!left) {
                             state = 1;                
                         } else {
@@ -1525,12 +1511,12 @@
                         left = 0;                           
                         pos++;
                         lookupSquare++;
-                        index = +(''+lookupSquare+lookupCurly+lookupParen);
+                        index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
                         parentStates[index] = state;
 					}
 					function arrayOrAccessorClose() {
 					    lookupSquare--;
-					    var index = +(''+lookupSquare+lookupCurly+lookupParen)           
+					    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen)           
                         parentState = parentStates[index];                                    
                         if(parentState === 1) {
                             state = 2;
@@ -1548,7 +1534,7 @@
                         delete parentStates[index]; 
 					}
 					function parenOpen() {
-					    var index = +(''+lookupSquare+lookupCurly+lookupParen);
+					    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
 					    if(lastState === 50) {
                                 state = 51;
                                 expect = 0;
@@ -1638,10 +1624,10 @@
                             lookupParen++;
 					}
 					function parenClose() {
-					    var index = +(''+lookupSquare+lookupCurly+lookupParen);
+					    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
 					    delete isVar[index];                
                         lookupParen--; 
-                        index = +(''+lookupSquare+lookupCurly+lookupParen);                     
+                        index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);                     
                         parentState = parentStates[index];                                                                                                                                                                                                                    
                         if(rules[57][lastState]) {
                             state = 57;
@@ -1723,7 +1709,7 @@
                         delete parentStates[index]; 
 					}
 					function curlyOpen() {
-					    var index = +(''+lookupSquare+(lookupCurly+1)+lookupParen);
+					    var index = parseFloat(''+lookupSquare+(lookupCurly+1)+lookupParen);
 					    if(lastState === 57) {
                                 state = 61;
                                 expected = -1;
@@ -1839,16 +1825,16 @@
                                 outputLine += 'var $arguments$=M.A(arguments);';
                             }                           
                             pos++;
-                            index = +(''+lookupSquare+lookupCurly+lookupParen);
+                            index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
                             parentStates[index] = state;
                             left = 0;
                             lookupCurly++;
 					}
 					function curlyClose() {
-					    var index = +(''+lookupSquare+lookupCurly+lookupParen);
+					    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
 					    delete isVar[index];
                         lookupCurly--;
-                        index = +(''+lookupSquare+lookupCurly+lookupParen);
+                        index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
                         parentState = parentStates[index];                                                                                                                                                                    
                         outputLine += '}';                                                                                                          
                         if(parentState === 61) {
@@ -1868,7 +1854,7 @@
                             expected3 = -1;
                             expected4 = -1;
                             left = 1;
-                            index = +(''+lookupSquare+(lookupCurly+1)+lookupParen);
+                            index = parseFloat(''+lookupSquare+(lookupCurly+1)+lookupParen);
                             isObjectLiteral[index] = 0;
                             outputLine += ')';
                         } else if(parentState === 43) {
@@ -1951,12 +1937,12 @@
                         } else {                                                                                        
                             error('Unexpected }. Cannot follow '+lastState+'.Output:'+output);
                         }
-                        index = +(''+lookupSquare+lookupCurly+lookupParen);                           
+                        index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);                           
                         delete parentStates[index];                                     
                         pos++;  
 					}
 					function ternaryOpen() {
-					    var index = +(''+lookupSquare+lookupCurly+lookupParen);
+					    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
 					    state = 125;
                         outputLine += '?';                          
                         left = 0;
@@ -1969,7 +1955,7 @@
                         ternaryCount++; 
 					}
 					function comma() {
-					    var index = +(''+lookupSquare+lookupCurly+lookupParen);
+					    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
 					    parentState = parentStates[index];                                                                                                                                                                                                                                                                                                                                                                                               
                         if(lastState === 48) {
                             state = 49;
@@ -2036,7 +2022,7 @@
                         left = 0;
 					}
 					function colon() {
-					    var index = +(''+lookupSquare+lookupCurly+lookupParen);
+					    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
 					    parentState = parentStates[index];                               
                         if(isTernary[index]) {
                             state = 126;
