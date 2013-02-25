@@ -1172,7 +1172,7 @@
                             if(chr === BACKSLASH) {                                             
                                 states.identifierStart = 0;                     
                             }                                                                                                                                                                             
-                            do {                                
+                            while(pos < len) {                                
                                 chr = code.charCodeAt(pos);                                                                               
                                 if(states.unicodeEscape > 1) {
                                     unicode();
@@ -1198,7 +1198,7 @@
                                 }
                                 states.currentIdentifier = states.currentIdentifier + code.charAt(pos);                                
                                 pos++;                                
-                            } while(pos < len);                                     
+                            }                                     
                             states.identifierLen = states.currentIdentifier.length;
                             foundKeyword = 0;                                                                                                                                                        
                             keyword();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
