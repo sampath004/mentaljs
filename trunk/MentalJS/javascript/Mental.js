@@ -255,24 +255,8 @@
                     functionParenOpen = false,                                         
                     attributeWhitelist = /^(?:alt|title)$/i,                                               
                     setTimeoutIDS = {},
-                    setIntervalIDS = {},            
-                    lookups = {
-                                    '[':{
-                                            end:']',
-                                            states:[],
-                                            positions:[]                                                                                                                                                                            
-                                    },
-                                    '{':{
-                                            end:'}',
-                                            states:[],
-                                            positions:[]                                                                                         
-                                    },
-                                    '(':{
-                                            end:')',
-                                            states:[],
-                                            positions:[]
-                                    }                                                                                       
-                    };                                                      
+                    setIntervalIDS = {};            
+                                                                          
                     function error(str) {
                         var e = new Error();                                                                                       
                         throw {
@@ -703,7 +687,7 @@
 					next, next2, next3, cached = -1,  
 					unicodeChr1, unicodeChr2, unicodeChr3, unicodeChr4,								
 					len = code.length, parseTree = that.parseTree,
-					lookupSquare = 0, lookupCurly = 0, lookupParen = 0, ternaryCount = 0, isTernary = {}, caseCount = 0, isCase = {}, isVar = {},
+					lookupSquare = 1, lookupCurly = 1, lookupParen = 1, ternaryCount = 0, isTernary = {}, caseCount = 0, isCase = {}, isVar = {},
 					isFor = {}, isForIn = {},  isIf = {}, isObjectLiteral = {},																
 					expected = -1, expect = 0, expected2 = -1, expected3 = -1, expected4 = -1, lastState = 89, newLineFlag = 0,
 					SQUARE_OPEN = 91, SQUARE_CLOSE = 93, PAREN_OPEN = 40, PAREN_CLOSE = 41,
@@ -749,19 +733,20 @@
                         }
                     };
                     function asi(useOutput) {
-                        var parenIndex = lookupParen-1;
-                        if(isFor[''+lookupSquare+lookupCurly+parenIndex] && !isForIn[''+lookupSquare+lookupCurly+parenIndex]) {
+                        var parenIndex = lookupParen-1,
+                            index1 = +(''+lookupSquare+lookupCurly+parenIndex), index2 = +(''+lookupSquare+lookupCurly+lookupParen);                            
+                        if(isFor[index1] && !isForIn[index1]) {
                             lastState = 45;
                             if(useOutput) { 
                                 output += ';';
                             } else {
                                 outputLine += ';';
                             }
-                            if(isFor[''+lookupSquare+lookupCurly+parenIndex] > 2) {
+                            if(isFor[index1] > 2) {
                                 error("Syntax error unexpected for semi ;");
                             }
-                            isFor[''+lookupSquare+lookupCurly+parenIndex]++;
-                            isVar[''+lookupSquare+lookupCurly+lookupParen] = 0;                             
+                            isFor[index1]++;
+                            isVar[index2] = 0;                             
                           } else { 
                             if(useOutput) {                                                                                      
                                output += ';';
@@ -770,7 +755,7 @@
                             }
                             lastState = 35;
                             left = 0;
-                            isVar[''+lookupSquare+lookupCurly+lookupParen] = 0;                               
+                            isVar[index2] = 0;                               
                           }
                     }; 					
 					function isValidVariable(c) {
@@ -782,6 +767,7 @@
 				    function identifier() {
 				        var u = 0, ident = '', currentUnicode = '', unicodeEscape = 0, identifierStart = 1;
 				        function keyword() {
+				            var index = +(''+lookupSquare+lookupCurly+lookupParen);
 				            switch(identifierLen) {
                                 case 2:                         
                                     if(ident.charCodeAt(0) === LOWER_D && ident.charCodeAt(1) === LOWER_O) {                              
@@ -803,8 +789,8 @@
                                         expected4 = -1;
                                         left = 0;                                           
                                         outputLine += ' in ';
-                                        if(isFor[''+lookupSquare+lookupCurly+lookupParen]) {
-                                            isForIn[''+lookupSquare+lookupCurly+lookupParen] = 1;        
+                                        if(isFor[index]) {
+                                            isForIn[index] = 1;        
                                         }                                                                                               
                                     } else if(ident.charCodeAt(0) === LOWER_I && ident.charCodeAt(1) === LOWER_F) {
                                         foundKeyword = 1;
@@ -818,7 +804,7 @@
                                         outputLine += ' ';
                                         }
                                         outputLine += 'if';
-                                        isIf[''+lookupSquare+lookupCurly+lookupParen] = 1;
+                                        isIf[index] = 1;
                                     }
                                 break;
                                 case 3:                                                                                                                    
@@ -835,7 +821,7 @@
                                         expect = 0;
                                         left = 0;                                            
                                         outputLine += 'var ';
-                                        isVar[''+lookupSquare+lookupCurly+lookupParen] = 1;                           
+                                        isVar[index] = 1;                           
                                     } else if(ident.charCodeAt(0) === LOWER_N && ident.charCodeAt(1) === LOWER_E && ident.charCodeAt(2) === LOWER_W) {
                                         foundKeyword = 1;
                                         state = 84;
@@ -864,7 +850,7 @@
                                         expect = 0;
                                         left = 0;                                        
                                         outputLine += 'for ';
-                                        isFor[''+lookupSquare+lookupCurly+lookupParen] = 1;
+                                        isFor[index] = 1;
                                     } else if(ident.charCodeAt(0) === LOWER_T && ident.charCodeAt(1) === LOWER_R && ident.charCodeAt(2) === LOWER_Y) {
                                         foundKeyword = 1;
                                         state = 127;
@@ -879,7 +865,7 @@
                                 break;
                                 case 4:                                                     
                                     if(ident.charCodeAt(0) === LOWER_E && ident.charCodeAt(1) === LOWER_L && ident.charCodeAt(2) === LOWER_S && ident.charCodeAt(3) === LOWER_E) {
-                                        if(!isIf[''+lookupSquare+lookupCurly+lookupParen]) {
+                                        if(!isIf[index]) {
                                             error("Syntax error unexpected else");
                                         }                                                                                                                                                       
                                         foundKeyword = 1;
@@ -918,7 +904,7 @@
                                         expected4 = -1;
                                         left = 0;                                                                    
                                         outputLine += 'case ';
-                                        isCase[''+lookupSquare+lookupCurly+lookupParen] = 1;
+                                        isCase[index] = 1;
                                         caseCount++;                           
                                     } else if(ident.charCodeAt(0) === LOWER_N && ident.charCodeAt(1) === LOWER_U && ident.charCodeAt(2) === LOWER_L && ident.charCodeAt(3) === LOWER_L) {
                                         foundKeyword = 1;
@@ -1268,22 +1254,23 @@
                         }
 					}
 					function semicolon() {
-					    var parentState = parentStates[''+lookupSquare+lookupCurly+lookupParen],
-					        parenIndex = lookupParen-1;                                    
-                        if(isFor[''+lookupSquare+lookupCurly+parenIndex] && !isForIn[''+lookupSquare+lookupCurly+parenIndex]) {
+					    var index = +(''+lookupSquare+lookupCurly+lookupParen),
+					        parentState = parentStates[index],
+					        index2 = +(''+lookupSquare+lookupCurly+(lookupParen-1));                                    
+                        if(isFor[index2] && !isForIn[index2]) {
                             state = 45;
                             outputLine += ';';
-                            if(isFor[''+lookupSquare+lookupCurly+parenIndex] > 2) {
+                            if(isFor[index2] > 2) {
                                 error("Syntax error unexpected for semi ;");
                             }
-                            isFor[''+lookupSquare+lookupCurly+parenIndex]++;
-                            isVar[''+lookupSquare+lookupCurly+lookupParen] = 0;                                                                                     
+                            isFor[index2]++;
+                            isVar[index] = 0;                                                                                     
                         } else {                                
                             state = 35;
                             if(lastState !== 35) {
                                 outputLine += ';';  
                             }
-                            isVar[''+lookupSquare+lookupCurly+lookupParen] = 0;                 
+                            isVar[index] = 0;                 
                         }                       
                         pos++;
                         left = 0;  
@@ -1524,6 +1511,7 @@
                         }
 					}
 					function arrayOrAccessorOpen() {
+					    var index = +(''+lookupSquare+lookupCurly+lookupParen);
 					    if(!left) {
                             state = 1;                
                         } else {
@@ -1533,15 +1521,17 @@
                         if(state === 3) {
                             outputLine += 'M.P(';
                         }                           
-                        parentStates[''+lookupSquare+lookupCurly+lookupParen] = state;                      
+                        parentStates[index] = state;                      
                         left = 0;                           
                         pos++;
                         lookupSquare++;
-                        parentStates[''+lookupSquare+lookupCurly+lookupParen] = state;
+                        index = +(''+lookupSquare+lookupCurly+lookupParen);
+                        parentStates[index] = state;
 					}
 					function arrayOrAccessorClose() {
-					    lookupSquare--;            
-                        parentState = parentStates[''+lookupSquare+lookupCurly+lookupParen];                                    
+					    lookupSquare--;
+					    var index = +(''+lookupSquare+lookupCurly+lookupParen)           
+                        parentState = parentStates[index];                                    
                         if(parentState === 1) {
                             state = 2;
                             left = 1;
@@ -1555,9 +1545,10 @@
                         outputLine += ']';
                         left = 1;                           
                         pos++;
-                        parentStates[''+lookupSquare+lookupCurly+lookupParen] = ''; 
+                        delete parentStates[index]; 
 					}
 					function parenOpen() {
+					    var index = +(''+lookupSquare+lookupCurly+lookupParen);
 					    if(lastState === 50) {
                                 state = 51;
                                 expect = 0;
@@ -1642,14 +1633,16 @@
                             }                                               
                             outputLine += '(';                          
                             pos++;
-                            parentStates[''+lookupSquare+lookupCurly+lookupParen] = state;
+                            parentStates[index] = state;
                             left = 0;
                             lookupParen++;
 					}
 					function parenClose() {
-					    isVar[''+lookupSquare+lookupCurly+lookupParen] = 0;                
-                        lookupParen--;                      
-                        parentState = parentStates[''+lookupSquare+lookupCurly+lookupParen];                                                                                                                                                                                                                    
+					    var index = +(''+lookupSquare+lookupCurly+lookupParen);
+					    delete isVar[index];                
+                        lookupParen--; 
+                        index = +(''+lookupSquare+lookupCurly+lookupParen);                     
+                        parentState = parentStates[index];                                                                                                                                                                                                                    
                         if(rules[57][lastState]) {
                             state = 57;
                             expect = 0;
@@ -1671,8 +1664,8 @@
                             expected3 = -1;
                             expected4 = -1;
                             left = 0;
-                            isFor[''+lookupSquare+lookupCurly+lookupParen] = 0;     
-                            isForIn[''+lookupSquare+lookupCurly+lookupParen] = 0;       
+                            isFor[index] = 0;     
+                            isForIn[index] = 0;       
                         } else if(parentState === 119) {
                             state = 120;
                             expected = -1;
@@ -1727,9 +1720,10 @@
                         }                                           
                         outputLine += ')';
                         pos++;
-                        parentStates[''+lookupSquare+lookupCurly+lookupParen] = ''; 
+                        delete parentStates[index]; 
 					}
 					function curlyOpen() {
+					    var index = +(''+lookupSquare+(lookupCurly+1)+lookupParen);
 					    if(lastState === 57) {
                                 state = 61;
                                 expected = -1;
@@ -1809,7 +1803,7 @@
                                 expected3 = 101;
                                 expected4 = 97;
                                 expect = 0;
-                                parentStates[''+lookupSquare+(lookupCurly+1)+lookupParen] = state;
+                                parentStates[index] = state;
                                 outputLine += 'M.O(';
                             } else if(rules[9][lastState]) {
                                 state = 9;
@@ -1827,7 +1821,7 @@
                                     expected3 = 101;
                                     expected4 = 97;
                                     expect = 0;
-                                    parentStates[''+lookupSquare+(lookupCurly+1)+lookupParen] = state;
+                                    parentStates[index] = state;
                                     outputLine += 'M.O(';   
                                   } else {                                                                                                                             
                                     state = 9;
@@ -1845,14 +1839,17 @@
                                 outputLine += 'var $arguments$=M.A(arguments);';
                             }                           
                             pos++;
-                            parentStates[''+lookupSquare+lookupCurly+lookupParen] = state;
+                            index = +(''+lookupSquare+lookupCurly+lookupParen);
+                            parentStates[index] = state;
                             left = 0;
                             lookupCurly++;
 					}
 					function curlyClose() {
-					    isVar[''+lookupSquare+lookupCurly+lookupParen] = 0;
-                        lookupCurly--;                                                                                                                          
-                        parentState = parentStates[''+lookupSquare+lookupCurly+lookupParen];                                                                                                                                                                    
+					    var index = +(''+lookupSquare+lookupCurly+lookupParen);
+					    delete isVar[index];
+                        lookupCurly--;
+                        index = +(''+lookupSquare+lookupCurly+lookupParen);
+                        parentState = parentStates[index];                                                                                                                                                                    
                         outputLine += '}';                                                                                                          
                         if(parentState === 61) {
                             state = 62;                              
@@ -1871,7 +1868,8 @@
                             expected3 = -1;
                             expected4 = -1;
                             left = 1;
-                            isObjectLiteral[''+lookupSquare+(lookupCurly+1)+lookupParen] = 0;
+                            index = +(''+lookupSquare+(lookupCurly+1)+lookupParen);
+                            isObjectLiteral[index] = 0;
                             outputLine += ')';
                         } else if(parentState === 43) {
                             state = 44;
@@ -1952,24 +1950,27 @@
                             left = 0;
                         } else {                                                                                        
                             error('Unexpected }. Cannot follow '+lastState+'.Output:'+output);
-                        }                           
-                        parentStates[''+lookupSquare+lookupCurly+lookupParen] = '';                                     
+                        }
+                        index = +(''+lookupSquare+lookupCurly+lookupParen);                           
+                        delete parentStates[index];                                     
                         pos++;  
 					}
 					function ternaryOpen() {
+					    var index = +(''+lookupSquare+lookupCurly+lookupParen);
 					    state = 125;
                         outputLine += '?';                          
                         left = 0;
                         pos++;
-                        if(isTernary[''+lookupSquare+lookupCurly+lookupParen]) {
-                          isTernary[''+lookupSquare+lookupCurly+lookupParen]++;
+                        if(isTernary[index]) {
+                          isTernary[index]++;
                         } else {
-                          isTernary[''+lookupSquare+lookupCurly+lookupParen] = 1;
+                          isTernary[index] = 1;
                         }
                         ternaryCount++; 
 					}
 					function comma() {
-					    parentState = parentStates[''+lookupSquare+lookupCurly+lookupParen];                                                                                                                                                                                                                                                                                                                                                                                               
+					    var index = +(''+lookupSquare+lookupCurly+lookupParen);
+					    parentState = parentStates[index];                                                                                                                                                                                                                                                                                                                                                                                               
                         if(lastState === 48) {
                             state = 49;
                             expect = 0;
@@ -1992,21 +1993,21 @@
                             expected2 = -1;
                             expected3 = -1;
                             expected4 = -1;
-                        } else if(isObjectLiteral[''+lookupSquare+lookupCurly+lookupParen]) {
+                        } else if(isObjectLiteral[index]) {
                             state = 100;
                             expect = 0;
                             expected = 98;
                             expected2 = -1;
                             expected3 = -1;
                             expected4 = -1;
-                        } else if(isVar[''+lookupSquare+lookupCurly+lookupParen]) {
+                        } else if(isVar[index]) {
                             state = 138;
                             expected = 67;
                             expected2 = -1;
                             expected3 = -1;
                             expected4 = -1;
                             expect = 0; 
-                        } else if(isTernary[''+lookupSquare+lookupCurly+lookupParen]) {
+                        } else if(isTernary[index]) {
                             error("Syntax error expected :");               
                         } else {
                             state = 28;
@@ -2035,10 +2036,11 @@
                         left = 0;
 					}
 					function colon() {
-					    parentState = parentStates[''+lookupSquare+lookupCurly+lookupParen];                               
-                        if(isTernary[''+lookupSquare+lookupCurly+lookupParen]) {
+					    var index = +(''+lookupSquare+lookupCurly+lookupParen);
+					    parentState = parentStates[index];                               
+                        if(isTernary[index]) {
                             state = 126;
-                            isTernary[''+lookupSquare+lookupCurly+lookupParen]--;
+                            isTernary[index]--;
                             ternaryCount--;
                         } else if(rules[99][lastState]) {
                             state = 99;
@@ -2046,8 +2048,8 @@
                             expected2 = -1;
                             expected3 = -1;
                             expected4 = -1;                                                                                              
-                            isObjectLiteral[''+lookupSquare+lookupCurly+lookupParen] = 1;               
-                        } else if(isCase[''+lookupSquare+lookupCurly+lookupParen] || lastState === 16) {
+                            isObjectLiteral[index] = 1;               
+                        } else if(isCase[index] || lastState === 16) {
                             state = 123;
                             if(lastState === 15) {
                                 error("Syntax error");
@@ -2057,7 +2059,7 @@
                             expected3 = -1;
                             expected4 = -1;
                             if(lastState !== 16) {
-                                isCase[''+lookupSquare+lookupCurly+lookupParen] = 0;
+                                isCase[index] = 0;
                                 caseCount--;    
                             }                       
                         } else if(!parentState) {
@@ -2481,7 +2483,10 @@
                             parseTreeOutput = parseTreeOutput + '<'+rulesLookup[state]+'>' + outputLine + '</'+rulesLookup[state]+'>';
                         }
                         lastState = state;                                                                              
-                        newLineFlag = 0;																													
+                        newLineFlag = 0;
+                        if(lookupSquare === 1 && lookupCurly === 1 && lookupParen === 1) {
+                            parentStates = {};
+                        }																													
 					}	
 					if(((expected>=0 && expected !== state) || (expected2>=0 && expected2 !== state) || (expected3>=0 && expected3 !== state) || (expected4>=0 && expected4 !== state))) {						
 						msg = "Expected " + expected;
@@ -2502,13 +2507,13 @@
 						error("Syntax error");	
 					}
 					
-					if(lookupSquare) {
+					if(lookupSquare > 1) {
 						error("Syntax error unmatched [");
-					} else if(lookupCurly) {
+					} else if(lookupCurly > 1) {
 						error("Syntax error unmatched {");
-					} else if(lookupParen) {
+					} else if(lookupParen > 1) {
 						error("Syntax error unmatched (");
-					} else if(caseCount) {
+					} else if(caseCount > 1) {
 						error("Syntax error unmatched case");
 					}
 					if(completeFlag) {
