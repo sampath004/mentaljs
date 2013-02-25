@@ -827,7 +827,7 @@
                                 asi(true);
                             }
                             continue;                          					    
-						} else if((chr >= LOWER_A && chr <= LOWER_Z) || (chr >= UPPER_A && chr <= UPPER_Z) || (chr === UNDERSCORE || chr === DOLLAR || chr === BACKSLASH) || (chr > 0x80)) {                      
+						} else if((chr >= LOWER_A && chr <= LOWER_Z) || (chr >= UPPER_A && chr <= UPPER_Z) || (chr === UNDERSCORE || chr === DOLLAR || chr === BACKSLASH) || chr > 0x80) {                      
                             states = {u:0,currentIdentifier:'',currentUnicode:'',unicodeEscape:0,identifierStart:1};                                                                                                                           
                             if(chr === BACKSLASH) {                                             
                                 states.identifierStart = 0;                     
@@ -843,7 +843,7 @@
                                             } else if(states.u >= UPPER_A && states.u <= UPPER_Z) {                                                                                                           
                                             } else if(states.u === UNDERSCORE || states.u === DOLLAR){                              
                                             } else if(states.u > 0x80){
-                                                if(!validVar(states.u)) {
+                                                if(!isValidVariable(states.u)) {
                                                   error('illegal unicode escape');
                                                 } 
                                             } else {
@@ -855,7 +855,7 @@
                                             } else if(states.u >= DIGIT_0 && states.u <= DIGIT_9) {                                               
                                             } else if(states.u === UNDERSCORE || states.u === DOLLAR){                              
                                             } else if(states.u > 0x80){
-                                                if(!validVarPart(states.u)) {
+                                                if(!isValidVariablePart(states.u)) {
                                                   error('illegal unicode escape');
                                                 } 
                                             } else {
@@ -888,7 +888,7 @@
                                 } else if(chr === BACKSLASH && !states.unicodeEscape) {
                                     states.unicodeEscape = 1;
                                 } else if(chr > 0x80) {
-                                    if(!validVarPart(chr)) {                                       
+                                    if(!isValidVariablePart(chr)) {                                       
                                        break;
                                     }                                    
                                 } else {                                                                      
