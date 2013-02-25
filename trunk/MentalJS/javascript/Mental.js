@@ -1,199 +1,200 @@
-!function(){  
-		var rules = {		
-			ArrayComma:createRule('NewExpressions,Expression,Postfix'),
-			ArrayOpen:createRule('Statements,Operators,NewExpressions,Prefix'),		
-			ArrayClose:createRule('ArrayComma,ArrayOpen,Expression,Postfix'),		
-			AccessorOpen: createRule('Expression'),		
-			AccessorClose: createRule('Expression,Postfix'),
-			Addition:createRule('Expression'),
-			AdditionAssignment:createRule('Expression'),		
-			AssignmentDivide:createRule('Expression'),
-			AndAssignment:createRule('Expression'),
-			BlockStatementCurlyOpen:createRule('Statements,SwitchColon'),
-			BlockStatementCurlyClose:createRule('Statements,Expression,BlockStatementCurlyOpen,Postfix,Break,Continue'),										
-			BitwiseNot:createRule('Prefix,Statements,NewExpressions,Operators'),
-			BitwiseOr:createRule('Expression,Postfix'),
-			BitwiseAnd:createRule('Expression,Postfix'),		
-			Break:createRule('Statements'),
-			Case: createRule('SwitchStatementCurlyOpen,EndStatement,SwitchColon'),		
-			Default:createRule('SwitchStatementCurlyOpen,EndStatement,SwitchColon'),			
-			Delete:createRule('Statements,NewExpressions,Operators'),
-			Do:createRule('Statements,SwitchColon'),	
-			DoStatementCurlyOpen:createRule('Do'),
-			DoStatementCurlyClose:createRule('Statements,Expression,DoStatementCurlyOpen,Postfix,Break,Continue'),
-			DivideOperator:createRule('Expression'),
-			CatchStatement:createRule('TryStatementCurlyClose'),
-			CatchStatementParenOpen:createRule('CatchStatement'),
-			CatchStatementParenClose:createRule('CatchStatementIdentifier'),
-			CatchStatementIdentifier:createRule('CatchStatementParenOpen'),
-			CatchStatementCurlyOpen:createRule('CatchStatementParenClose'),
-			CatchStatementCurlyClose:createRule('Statements,Expression,CatchStatementCurlyOpen,Postfix,Break,Continue'),	
-			Comma:createRule('Expression,Postfix'),
-			Continue:createRule('Statements'),										
-			EqualAssignment:createRule('Expression'),
-			Equal:createRule('Expression,Postfix'),					
-			Else:createRule('IfStatementCurlyClose,Statements'),
-			ElseCurlyOpen:createRule('Else'),
-			ElseCurlyClose:createRule('Statements,Expression,ElseCurlyOpen,Postfix,Break,Continue'),
-			EndStatement:createRule('Statements,Expression,Postfix,Continue,Break,Return,SwitchColon,ForStatementParenClose,IfStatementParenClose,WithStatementParenClose,WhileStatementParenClose'),		
-			False:createRule('Statements,Operators,Prefix,NewExpressions'),
-			FinallyStatement:createRule('CatchStatementCurlyClose,TryStatementCurlyClose'),
-			FinallyStatementCurlyOpen:createRule('FinallyStatement'),
-			FinallyStatementCurlyClose:createRule('Statements,Expression,FinallyStatementCurlyOpen,Postfix,Break,Continue'),
-			ForStatement:createRule('Statements,SwitchColon'),
-			ForStatementParenOpen:createRule('ForStatement'),
-			ForStatementParenClose:createRule('ForSemi,Expression,Postfix,Break,Continue'),
-			ForStatementCurlyOpen:createRule('ForStatementParenClose'),
-			ForStatementCurlyClose:createRule('Statements,Expression,ForStatementCurlyOpen,Postfix,Break,Continue'),
-			ForSemi:createRule('ForSemi,Expression,Postfix,ForStatementParenOpen'),
-			FunctionCallOpen:createRule('Identifier,FunctionExpressionCurlyClose,ParenExpressionClose,AccessorClose,FunctionCallClose,This'),
-			FunctionCallClose:createRule('Expression,FunctionCallOpen,Postfix'),
-			FunctionArgumentIdentifier: createRule('FunctionParenOpen,FunctionArgumentComma'),
-			FunctionArgumentComma: createRule('FunctionArgumentIdentifier'),
-			FunctionIdentifier: createRule('FunctionStatement'),					
-			FunctionParenOpen: createRule('FunctionIdentifier'),
-			FunctionExpression: createRule('Operators,Prefix,NewExpressions'),
-			FunctionExpressionIdentifier:createRule('FunctionExpression'),
-			FunctionExpressionParenOpen:createRule('FunctionExpression,FunctionExpressionIdentifier'),
-			FunctionExpressionArgumentIdentifier:createRule('FunctionExpressionParenOpen,FunctionExpressionArgumentComma'),		
-			FunctionExpressionArgumentComma:createRule('FunctionExpressionArgumentIdentifier'),
-			FunctionParenClose: createRule('FunctionParenOpen,FunctionArgumentIdentifier'),
-			FunctionExpressionParenClose: createRule('FunctionExpressionArgumentIdentifier,FunctionExpressionParenOpen'),
-			FunctionExpressionCurlyOpen:createRule('FunctionExpressionParenClose'),
-			FunctionStatement:createRule('Statements,SwitchColon'),
-			FunctionStatementCurlyOpen: createRule('FunctionParenClose'),										
-			FunctionStatementCurlyClose:createRule('Statements,Expression,FunctionStatementCurlyOpen,Postfix,Break,Continue'),
-			FunctionExpressionCurlyClose:createRule('Statements,Expression,FunctionExpressionCurlyOpen,Postfix,Break,Continue'),
-			GreaterThan:createRule('Expression,Postfix'),
-			GreaterThanEqual:createRule('Expression,Postfix'),
-			IdentifierDot:createRule('Expression'),
-			Identifier: createRule('Statements,Operators,Prefix,NewExpressions,IdentifierDot'),
-			IfStatement:createRule('Statements,SwitchColon'),
-			IfStatementParenOpen:createRule('IfStatement'),
-			IfStatementParenClose:createRule('Expression,Postfix'),
-			IfStatementCurlyOpen:createRule('IfStatementParenClose'),
-			IfStatementCurlyClose:createRule('Statements,Expression,IfStatementCurlyOpen,Postfix,Break,Continue'),
-			In:createRule('Expression'),
-			'Infinity':createRule('Statements,Operators,Prefix,NewExpressions'),
-			InstanceOf:createRule('Expression'),
-			LabelColon:createRule('Expression'),
-			LessThan:createRule('Expression,Postfix'),
-			LessThanEqual:createRule('Expression,Postfix'),
-			LeftShift:createRule('Expression,Postfix'),
-			LeftShiftAssignment:createRule('Expression'),
-			LogicalOr:createRule('Expression,Postfix'),
-			LogicalAnd:createRule('Expression,Postfix'),
-			'NaN':createRule('Statements,Operators,Prefix,NewExpressions'),
-			New: createRule('Statements,Operators,Prefix,NewExpressions'),		
-			Number: createRule('Statements,Operators,NewExpressions,Prefix'),
-			Null: createRule('Statements,Operators,NewExpressions,Prefix'),
-			NotEqual:createRule('Expression,Postfix'),					
-			Not:createRule('Prefix,Statements,NewExpressions,Operators'),
-			Nothing:{},
-			Minus:createRule('Expression,Postfix'),
-			MinusAssignment:createRule('Expression'),
-			Modulus:createRule('Expression,Postfix'),
-			ModulusAssignment:createRule('Expression'),																		
-			Multiply:createRule('Expression,Postfix'),
-			MultiplyAssignment:createRule('Expression'),
-			ObjectLiteralCurlyOpen:createRule('NewExpressions,Operators,Prefix'),
-			ObjectLiteralCurlyClose: createRule('Statements,Expression,ObjectLiteralCurlyOpen,Postfix'),
-			ObjectLiteralIdentifier: createRule('ObjectLiteralCurlyOpen,ObjectLiteralComma'),
-			ObjectLiteralColon: createRule('ObjectLiteralIdentifier,ObjectLiteralIdentifierNumber,ObjectLiteralIdentifierString'),
-			ObjectLiteralComma: createRule('Expression,Postfix'),
-			ObjectLiteralIdentifierNumber:createRule('ObjectLiteralCurlyOpen,ObjectLiteralComma'),
-			ObjectLiteralIdentifierString:createRule('ObjectLiteralCurlyOpen,ObjectLiteralComma'),
-			OrAssignment:createRule('Expression'),
-			ParenExpressionOpen:createRule('Statements,NewExpressions,Operators,Prefix'),
-			ParenExpressionComma:createRule('Expression'),
-			ParenExpressionClose:createRule('Expression,Postfix'),
-			PostfixIncrement:createRule('Expression'),
-			PostfixDeincrement:createRule('Expression'),
-			PrefixDeincrement:createRule('Statements,NewExpressions,Operators,Prefix'),
-			PrefixIncrement:createRule('Statements,NewExpressions,Operators,Prefix'),
-			Return:createRule('Statements,SwitchColon'),
-			RegExp:createRule('Statements,Operators,NewExpressions,Prefix'),
-			RightShift:createRule('Expression,Postfix'),
-			RightShiftAssignment:createRule('Expression'),
-			String:createRule('Statements,Operators,NewExpressions,Prefix'),											
-			StrictEqual:createRule('Expression,Postfix'),
-			StrictNotEqual:createRule('Expression,Postfix'),
-			SwitchStatement:createRule('Statements,SwitchColon'),
-			SwitchStatementParenOpen:createRule('SwitchStatement'),
-			SwitchStatementParenClose:createRule('Expression'),
-			SwitchStatementCurlyOpen:createRule('SwitchStatementParenClose'),
-			SwitchStatementCurlyClose:createRule('SwitchStatementCurlyOpen,Expression,Statements,Postfix,Break,Continue'),
-			SwitchColon:createRule('Expression,Default'),					
-			This:createRule('Statements,Operators,NewExpressions,Prefix'),
-			TernaryQuestionMark:createRule('Expression,Postfix'),
-			TernaryColon:createRule('Expression,Postfix'),
-			TryStatement:createRule('Statements,SwitchColon'),
-			TryStatementCurlyOpen:createRule('TryStatement'),
-			TryStatementCurlyClose:createRule('TryStatementCurlyOpen,Expression,Statements,Postfix,Break,Continue'),
-			True:createRule('Statements,Operators,Prefix,NewExpressions'),
-			Throw:createRule('Statements,NewExpressions'),
-			TypeOf:createRule('Statements,NewExpressions,Operators'),
-			UnaryPlus:createRule('Prefix,Statements,NewExpressions,Operators'),
-			UnaryMinus:createRule('Prefix,Statements,NewExpressions,Operators'),
-			Undefined:createRule('Statements,Operators,Prefix,NewExpressions'),
-			Var:createRule('Statements,NewExpressions'),
-			VarIdentifier:createRule('Var,VarComma'),
-			VarComma:createRule('Expression,Postfix'),
-			Void:createRule('Statements,NewExpressions,Operators'),
-			WithStatement:createRule('Statements,SwitchColon'),
-			WithStatementParenOpen:createRule('WithStatement'),
-			WithStatementParenClose:createRule('Expression,Postfix'),
-			WithStatementCurlyOpen:createRule('WithStatementParenClose'),
-			WithStatementCurlyClose:createRule('WithStatementCurlyOpen,Expression,Statements,Postfix,Break,Continue'),
-			WhileStatement:createRule('Statements,DoStatementCurlyClose,SwitchColon'),
-			WhileStatementParenOpen:createRule('WhileStatement'),
-			WhileStatementParenClose:createRule('Expression,Postfix'),
-			WhileStatementCurlyOpen:createRule('WhileStatementParenClose'),
-			WhileStatementCurlyClose:createRule('WhileStatementCurlyOpen,Expression,Statements,Postfix,Break,Continue'),
-			Xor:createRule('Expression,Postfix'),
-			XorAssignment:createRule('Expression'),		
-			ZeroRightShift:createRule('Expression,Postfix'),
-			ZeroRightShiftAssignment:createRule('Expression')										
-	};		
+!function(){
+    var rulesLookup = 'ArrayComma,ArrayOpen,ArrayClose,AccessorOpen,AccessorClose,Addition,AdditionAssignment,AssignmentDivide,AndAssignment,BlockStatementCurlyOpen,BlockStatementCurlyClose,BitwiseNot,BitwiseOr,BitwiseAnd,Break,Case,Default,Delete,Do,DoStatementCurlyOpen,DoStatementCurlyClose,DivideOperator,CatchStatement,CatchStatementParenOpen,CatchStatementParenClose,CatchStatementIdentifier,CatchStatementCurlyOpen,CatchStatementCurlyClose,Comma,Continue,EqualAssignment,Equal,Else,ElseCurlyOpen,ElseCurlyClose,EndStatement,False,FinallyStatement,FinallyStatementCurlyOpen,FinallyStatementCurlyClose,ForStatement,ForStatementParenOpen,ForStatementParenClose,ForStatementCurlyOpen,ForStatementCurlyClose,ForSemi,FunctionCallOpen,FunctionCallClose,FunctionArgumentIdentifier,FunctionArgumentComma,FunctionIdentifier,FunctionParenOpen,FunctionExpression,FunctionExpressionIdentifier,FunctionExpressionParenOpen,FunctionExpressionArgumentIdentifier,FunctionExpressionArgumentComma,FunctionParenClose,FunctionExpressionParenClose,FunctionExpressionCurlyOpen,FunctionStatement,FunctionStatementCurlyOpen,FunctionStatementCurlyClose,FunctionExpressionCurlyClose,GreaterThan,GreaterThanEqual,IdentifierDot,Identifier,IfStatement,IfStatementParenOpen,IfStatementParenClose,IfStatementCurlyOpen,IfStatementCurlyClose,In,Infinity,InstanceOf,LabelColon,LessThan,LessThanEqual,LeftShift,LeftShiftAssignment,LogicalOr,LogicalAnd,NaN,New,Number,Null,NotEqual,Not,Nothing,Minus,MinusAssignment,Modulus,ModulusAssignment,Multiply,MultiplyAssignment,ObjectLiteralCurlyOpen,ObjectLiteralCurlyClose,ObjectLiteralIdentifier,ObjectLiteralColon,ObjectLiteralComma,ObjectLiteralIdentifierNumber,ObjectLiteralIdentifierString,OrAssignment,ParenExpressionOpen,ParenExpressionComma,ParenExpressionClose,PostfixIncrement,PostfixDeincrement,PrefixDeincrement,PrefixIncrement,Return,RegExp,RightShift,RightShiftAssignment,String,StrictEqual,StrictNotEqual,SwitchStatement,SwitchStatementParenOpen,SwitchStatementParenClose,SwitchStatementCurlyOpen,SwitchStatementCurlyClose,SwitchColon,This,TernaryQuestionMark,TernaryColon,TryStatement,TryStatementCurlyOpen,TryStatementCurlyClose,True,Throw,TypeOf,UnaryPlus,UnaryMinus,Undefined,Var,VarIdentifier,VarComma,Void,WithStatement,WithStatementParenOpen,WithStatementParenClose,WithStatementCurlyOpen,WithStatementCurlyClose,WhileStatement,WhileStatementParenOpen,WhileStatementParenClose,WhileStatementCurlyOpen,WhileStatementCurlyClose,Xor,XorAssignment,ZeroRightShift,ZeroRightShiftAssignment'.split(','),  		
+		rules = [		
+			createRule('NewExpressions,Expression,Postfix'),
+			createRule('Statements,Operators,NewExpressions,Prefix'),		
+			createRule('0,1,Expression,Postfix'),		
+			createRule('Expression'),		
+			createRule('Expression,Postfix'),
+			createRule('Expression'),
+			createRule('Expression'),		
+			createRule('Expression'),
+			createRule('Expression'),
+			createRule('Statements,123'),
+			createRule('Statements,Expression,9,Postfix,14,29'),										
+			createRule('Prefix,Statements,NewExpressions,Operators'),
+			createRule('Expression,Postfix'),
+			createRule('Expression,Postfix'),		
+			createRule('Statements'),
+			createRule('121,35,123'),		
+			createRule('121,35,123'),			
+			createRule('Statements,NewExpressions,Operators'),
+			createRule('Statements,123'),	
+			createRule('18'),
+			createRule('Statements,Expression,19,Postfix,14,29'),
+			createRule('Expression'),
+			createRule('129'),
+			createRule('22'),
+			createRule('25'),
+			createRule('23'),
+			createRule('24'),
+			createRule('Statements,Expression,26,Postfix,14,29'),	
+			createRule('Expression,Postfix'),
+			createRule('Statements'),										
+			createRule('Expression'),
+			createRule('Expression,Postfix'),					
+			createRule('72,Statements'),
+			createRule('32'),
+			createRule('Statements,Expression,33,Postfix,14,29'),
+			createRule('Statements,Expression,Postfix,29,14,111,123,42,70,142,147'),		
+			createRule('Statements,Operators,Prefix,NewExpressions'),
+			createRule('27,129'),
+			createRule('37'),
+			createRule('Statements,Expression,38,Postfix,14,29'),
+			createRule('Statements,123'),
+			createRule('40'),
+			createRule('45,Expression,Postfix,14,29'),
+			createRule('42'),
+			createRule('Statements,Expression,43,Postfix,14,29'),
+			createRule('45,Expression,Postfix,41'),
+			createRule('67,63,106,4,47,124'),
+			createRule('Expression,46,Postfix'),
+			createRule('51,49'),
+			createRule('48'),
+			createRule('60'),					
+			createRule('50'),
+			createRule('Operators,Prefix,NewExpressions'),
+			createRule('52'),
+			createRule('52,53'),
+			createRule('54,56'),		
+			createRule('55'),
+			createRule('51,48'),
+			createRule('55,54'),
+			createRule('58'),
+			createRule('Statements,123'),
+			createRule('57'),										
+			createRule('Statements,Expression,61,Postfix,14,29'),
+			createRule('Statements,Expression,59,Postfix,14,29'),
+			createRule('Expression,Postfix'),
+			createRule('Expression,Postfix'),
+			createRule('Expression'),
+			createRule('Statements,Operators,Prefix,NewExpressions,66'),
+			createRule('Statements,123'),
+			createRule('68'),
+			createRule('Expression,Postfix'),
+			createRule('70'),
+			createRule('Statements,Expression,71,Postfix,14,29'),
+			createRule('Expression'),
+			createRule('Statements,Operators,Prefix,NewExpressions'),
+			createRule('Expression'),
+			createRule('Expression'),
+			createRule('Expression,Postfix'),
+			createRule('Expression,Postfix'),
+			createRule('Expression,Postfix'),
+			createRule('Expression'),
+			createRule('Expression,Postfix'),
+			createRule('Expression,Postfix'),
+			createRule('Statements,Operators,Prefix,NewExpressions'),
+			createRule('Statements,Operators,Prefix,NewExpressions'),		
+			createRule('Statements,Operators,NewExpressions,Prefix'),
+			createRule('Statements,Operators,NewExpressions,Prefix'),
+			createRule('Expression,Postfix'),					
+			createRule('Prefix,Statements,NewExpressions,Operators'),
+			{},
+			createRule('Expression,Postfix'),
+			createRule('Expression'),
+			createRule('Expression,Postfix'),
+			createRule('Expression'),																		
+			createRule('Expression,Postfix'),
+			createRule('Expression'),
+			createRule('NewExpressions,Operators,Prefix'),
+			createRule('Statements,Expression,96,Postfix'),
+			createRule('96,100'),
+			createRule('98,101,102'),
+			createRule('Expression,Postfix'),
+			createRule('96,100'),
+			createRule('96,100'),
+			createRule('Expression'),
+			createRule('Statements,NewExpressions,Operators,Prefix'),
+			createRule('Expression'),
+			createRule('Expression,Postfix'),
+			createRule('Expression'),
+			createRule('Expression'),
+			createRule('Statements,NewExpressions,Operators,Prefix'),
+			createRule('Statements,NewExpressions,Operators,Prefix'),
+			createRule('Statements,123'),
+			createRule('Statements,Operators,NewExpressions,Prefix'),
+			createRule('Expression,Postfix'),
+			createRule('Expression'),
+			createRule('Statements,Operators,NewExpressions,Prefix'),											
+			createRule('Expression,Postfix'),
+			createRule('Expression,Postfix'),
+			createRule('Statements,123'),
+			createRule('118'),
+			createRule('Expression'),
+			createRule('120'),
+			createRule('121,Expression,Statements,Postfix,14,29'),
+			createRule('Expression,16'),					
+			createRule('Statements,Operators,NewExpressions,Prefix'),
+			createRule('Expression,Postfix'),
+			createRule('Expression,Postfix'),
+			createRule('Statements,123'),
+			createRule('127'),
+			createRule('128,Expression,Statements,Postfix,14,29'),
+			createRule('Statements,Operators,Prefix,NewExpressions'),
+			createRule('Statements,NewExpressions'),
+			createRule('Statements,NewExpressions,Operators'),
+			createRule('Prefix,Statements,NewExpressions,Operators'),
+			createRule('Prefix,Statements,NewExpressions,Operators'),
+			createRule('Statements,Operators,Prefix,NewExpressions'),
+			createRule('Statements,NewExpressions'),
+			createRule('136,138'),
+			createRule('Expression,Postfix'),
+			createRule('Statements,NewExpressions,Operators'),
+			createRule('Statements,123'),
+			createRule('140'),
+			createRule('Expression,Postfix'),
+			createRule('142'),
+			createRule('143,Expression,Statements,Postfix,14,29'),
+			createRule('Statements,20,123'),
+			createRule('145'),
+			createRule('Expression,Postfix'),
+			createRule('147'),
+			createRule('148,Expression,Statements,Postfix,14,29'),
+			createRule('Expression,Postfix'),
+			createRule('Expression'),		
+			createRule('Expression,Postfix'),
+			createRule('Expression')										
+	];				
 	
 	function createRule(rules) {
 		rules = rules.split(',');
 		var expression = {
-			ArrayClose:true,AccessorClose:true,False:true,FunctionCallClose:true,FunctionExpressionCurlyClose:true,Identifier:true,'Infinity':true,
-			'NaN':true,Number:true,Null:true,ObjectLiteralCurlyClose:true,ParenExpressionClose:true,RegExp:true,String:true,This:true,True:true,Undefined:true,
-			VarIdentifier:true
+			2:true,4:true,36:true,47:true,63:true,67:true,74:true,
+			83:true,85:true,86:true,97:true,106:true,112:true,115:true,124:true,130:true,135:true,
+			137:true
 		},
 		prefix = {
-			Not:true,BitwiseNot:true,UnaryMinus:true,UnaryPlus:true,PrefixDeincrement:true,PrefixIncrement:true
+			88:true,11:true,134:true,133:true,109:true,110:true
 		},
 		postfix = {
-			PostfixIncrement:true,PostfixDeincrement:true
+			107:true,108:true
 		},
 		operators = {
-			In:true,InstanceOf:true,
-			Addition:true,DivideOperator:true,Equal:true,NotEqual:true,StrictEqual:true,StrictNotEqual:true,
-			LogicalOr:true,BitwiseOr:true,Xor:true,Modulus:true,LogicalAnd:true,BitwiseAnd:true,ZeroRightShift:true,
-			RightShift:true,GreaterThan:true,GreaterThanEqual:true,LeftShift:true,LessThan:true,LessThanEqual:true,
-			Multiply:true,Minus:true,EqualAssignment:true,AdditionAssignment:true,OrAssignment:true,XorAssignment:true,ModulusAssignment:true,AndAssignment:true,
-			ZeroRightShiftAssignment:true,RightShiftAssignment:true,LeftShiftAssignment:true,MultiplyAssignment:true,MinusAssignment:true,
-			AssignmentDivide:true
+			73:true,75:true,
+			5:true,21:true,31:true,87:true,116:true,117:true,
+			81:true,12:true,150:true,92:true,82:true,13:true,152:true,
+			113:true,64:true,65:true,79:true,77:true,78:true,
+			94:true,90:true,30:true,6:true,103:true,151:true,93:true,8:true,
+			153:true,114:true,80:true,95:true,91:true,
+			7:true
 		},			
 		statements = {
-			Nothing:true,EndStatement:true,BlockStatementCurlyClose:true,DoStatementCurlyClose:true,CatchStatementCurlyClose:true,
-			ElseCurlyClose:true,FinallyStatementCurlyClose:true,FunctionStatementCurlyClose:true,IfStatementCurlyClose:true,
-			SwitchStatementCurlyClose:true,TryStatementCurlyClose:true,WithStatementCurlyClose:true,WhileStatementCurlyClose:true,
-			BlockStatementCurlyOpen:true,DoStatementCurlyOpen:true,CatchStatementCurlyOpen:true,
-			ElseCurlyOpen:true,FinallyStatementCurlyOpen:true,FunctionStatementCurlyOpen:true,IfStatementCurlyOpen:true,
-			SwitchStatementCurlyOpen:true,TryStatementCurlyOpen:true,WithStatementCurlyOpen:true,WhileStatementCurlyOpen:true,
-			FunctionExpressionCurlyOpen:true,ForStatementCurlyOpen:true,ForStatementCurlyClose:true,
-			IfStatementParenClose:true,SwitchStatementParenClose:true,WithStatementParenClose:true,
-			WhileStatementParenClose:true,ForStatementParenClose:true,LabelColon:true,Return:true,Else:true,SwitchColon:true,Do:true
+			89:true,35:true,10:true,20:true,27:true,
+			34:true,39:true,62:true,72:true,
+			122:true,129:true,144:true,149:true,
+			9:true,19:true,26:true,
+			33:true,38:true,61:true,71:true,
+			121:true,128:true,143:true,148:true,
+			59:true,43:true,44:true,
+			70:true,120:true,142:true,
+			147:true,42:true,76:true,111:true,32:true,123:true,18:true
 		},
 		newExpressions = {
-			Comma:true, ArrayComma:true,VarComma:true,ForStatementParenOpen:true,IfStatementParenOpen:true,SwitchStatementParenOpen:true,
-			WithStatementParenOpen:true,WhileStatementParenOpen:true,FunctionCallOpen:true,ParenExpressionOpen:true,
-			ArrayOpen:true,AccessorOpen:true,Case:true,Return:true,New:true,TypeOf:true,Delete:true,Void:true,ObjectLiteralColon:true,
-			TernaryQuestionMark:true,TernaryColon:true,ForSemi:true,Continue:true,Break:true,Throw:true
+			28:true, 0:true,138:true,41:true,69:true,119:true,
+			141:true,146:true,46:true,104:true,
+			1:true,3:true,15:true,111:true,84:true,132:true,17:true,139:true,99:true,
+			125:true,126:true,45:true,29:true,14:true,131:true
 		},	 
 		obj = Object.create(null), i, k;		
 		for(i=0;i<rules.length;i+=1) {
@@ -478,7 +479,7 @@
                         objWhitelist(Number,'toExponential,toFixed,toPrecision');                    
                         constWhitelist(Number, 'MAX_VALUE,MIN_VALUE,NaN,NEGATIVE_INFINITY,POSITIVE_INFINITY');                                                          
                         Number.$constructor$ = $Function$;
-                        Number.prototype.$constructor$ = Number;
+                        Number.prototype.$constructor$ = 85;
                         $Number$ = Number;                                                         
                         objWhitelist(Date,'getDate,getDay,getFullYear,getHours,getMilliseconds,getMinutes,getMonth,getSeconds,getTime,getTimezoneOffset,getUTCDate,getUTCDay,getUTCFullYear,getUTCHours,getUTCMilliseconds,getUTCMinutes,getUTCMonth,getUTCSeconds,getYear,setDate,setFullYear,setHours,setMilliseconds,setMinutes,setMonth,setSeconds,setTime,setUTCDate,setUTCFullYear,setUTCHours,setUTCMilliseconds,setUTCMinutes,setUTCMonth,setUTCSeconds,setYear,toDateString,toGMTString,toLocaleDateString,toLocaleString,toLocaleTimeString,toTimeString,toUTCString');                    
                         Date.prototype.$constructor$ = Date;
@@ -582,7 +583,7 @@
                                '$clearTimeout$': {configurable: true, writable: false, value: CLEAR_TIMEOUT},
                                '$Math$': {configurable: true, writable: false, value: Math},
                                '$Date$': {configurable: true, writable: false, value: Date},
-                               '$Number$': {configurable: true, writable: false, value: Number},
+                               '$Number$': {configurable: true, writable: false, value: 85},
                                '$RegExp$': {configurable: true, writable: false, value: RegExp},
                                '$Array$': {configurable: true, writable: false, value: Array},
                                '$String$': {configurable: true, writable: false, value: String},
@@ -698,13 +699,13 @@
                 
             	function sandbox(code) {	
             		this.code = code; 													
-					var scoping = '$', pos = 0, chr, parentState, parentStates = {}, states, msg, state = 'Nothing', left = 0, output = '', outputLine = '', 					
+					var scoping = '$', pos = 0, chr, parentState, parentStates = {}, states, msg, state = 89, left = 0, output = '', outputLine = '', 					
 					next, next2, next3, cached = -1,
 					unicodeChr1, unicodeChr2, unicodeChr3, unicodeChr4,								
 					len = code.length, parseTree = that.parseTree,
 					lookupSquare = 0, lookupCurly = 0, lookupParen = 0, ternaryCount = 0, isTernary = {}, caseCount = 0, isCase = {}, isVar = {},
 					isFor = {}, isForIn = {},  isIf = {}, isObjectLiteral = {},																
-					expected = 0, expect = 0, expected2 = 0, expected3 = 0, expected4 = 0, lastState = 'Nothing', newLineFlag = 0,
+					expected = -1, expect = 0, expected2 = -1, expected3 = -1, expected4 = -1, lastState = 89, newLineFlag = 0,
 					SQUARE_OPEN = 91, SQUARE_CLOSE = 93, PAREN_OPEN = 40, PAREN_CLOSE = 41,
 					CURLY_OPEN = 123, CURLY_CLOSE = 125,
 					LOWER_A = 97, LOWER_B = 98, LOWER_C = 99, LOWER_D = 100, LOWER_E = 101,
@@ -749,7 +750,7 @@
                     };
                     function asi(useOutput) {
                         if(isFor[''+lookupSquare+lookupCurly+(lookupParen-1)] && !isForIn[''+lookupSquare+lookupCurly+(lookupParen-1)]) {
-                            lastState = 'ForSemi';
+                            lastState = 45;
                             if(useOutput) { 
                                 output = output + ';';
                             } else {
@@ -766,7 +767,7 @@
                             } else {
                                outputLine = ';' + outputLine;
                             }
-                            lastState = 'EndStatement';
+                            lastState = 35;
                             left = 0;
                             isVar[''+lookupSquare+lookupCurly+lookupParen] = 0;                               
                           }
@@ -784,21 +785,21 @@
                                 case 2:                         
                                     if(states.currentIdentifier.charCodeAt(0) === LOWER_D && states.currentIdentifier.charCodeAt(1) === LOWER_O) {                              
                                         foundKeyword = 1;
-                                        state = 'Do';
-                                        expected = 'DoStatementCurlyOpen';
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 18;
+                                        expected = 19;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         expect = 0;
                                         left = 0;                                           
                                         outputLine = outputLine + 'do ';                                                                                        
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_I && states.currentIdentifier.charCodeAt(1) === LOWER_N) {
                                         foundKeyword = 1;
-                                        state = 'In';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 73;
+                                        expected = -1;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         left = 0;                                           
                                         outputLine = outputLine + ' in ';
                                         if(isFor[''+lookupSquare+lookupCurly+lookupParen]) {
@@ -806,13 +807,13 @@
                                         }                                                                                               
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_I && states.currentIdentifier.charCodeAt(1) === LOWER_F) {
                                         foundKeyword = 1;
-                                        state = 'IfStatement';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 68;
+                                        expected = -1;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         left = 0;                                        
-                                        if(lastState === 'Else') {
+                                        if(lastState === 32) {
                                         outputLine = outputLine + ' ';
                                         }
                                         outputLine = outputLine + 'if';
@@ -821,55 +822,55 @@
                                 break;
                                 case 3:                                                                                                                    
                                     if(states.currentIdentifier.charCodeAt(0) === LOWER_V && states.currentIdentifier.charCodeAt(1) === LOWER_A && states.currentIdentifier.charCodeAt(2) === LOWER_R) {
-                                        if(!rules['Var'][lastState]) {                                                                                                                       
+                                        if(!rules[136][lastState]) {                                                                                                                       
                                             asi();                                             
                                         }
                                         foundKeyword = 1;
-                                        state = 'Var';
-                                        expected = 'Identifier';
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 136;
+                                        expected = 67;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         expect = 0;
                                         left = 0;                                            
                                         outputLine = outputLine + 'var ';
                                         isVar[''+lookupSquare+lookupCurly+lookupParen] = 1;                           
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_N && states.currentIdentifier.charCodeAt(1) === LOWER_E && states.currentIdentifier.charCodeAt(2) === LOWER_W) {
                                         foundKeyword = 1;
-                                        state = 'New';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 84;
+                                        expected = -1;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         left = 0;                                           
                                         outputLine = outputLine + 'new ';                            
                                     } else if(states.currentIdentifier.charCodeAt(0) === UPPER_N && states.currentIdentifier.charCodeAt(1) === LOWER_A && states.currentIdentifier.charCodeAt(2) === UPPER_N) {
                                         foundKeyword = 1;
-                                        state = 'NaN';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 83;
+                                        expected = -1;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         left = 1;                                           
                                         outputLine = outputLine + 'NaN';
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_F && states.currentIdentifier.charCodeAt(1) === LOWER_O && states.currentIdentifier.charCodeAt(2) === LOWER_R) {                                        
                                         foundKeyword = 1;
-                                        state = 'ForStatement';
-                                        expected = 'ForStatementParenOpen';
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 40;
+                                        expected = 41;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         expect = 0;
                                         left = 0;                                        
                                         outputLine = outputLine + 'for ';
                                         isFor[''+lookupSquare+lookupCurly+lookupParen] = 1;
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_T && states.currentIdentifier.charCodeAt(1) === LOWER_R && states.currentIdentifier.charCodeAt(2) === LOWER_Y) {
                                         foundKeyword = 1;
-                                        state = 'TryStatement';
-                                        expected = 'TryStatementCurlyOpen';
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 127;
+                                        expected = 128;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         expect = 0;
                                         left = 0;                                        
                                         outputLine = outputLine + 'try';
@@ -881,68 +882,68 @@
                                             error("Syntax error unexpected else");
                                         }                                                                                                                                                       
                                         foundKeyword = 1;
-                                        state = 'Else';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 32;
+                                        expected = -1;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         left = 0;                                           
                                         outputLine = outputLine + 'else ';                           
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_T && states.currentIdentifier.charCodeAt(1) === LOWER_H && states.currentIdentifier.charCodeAt(2) === LOWER_I && states.currentIdentifier.charCodeAt(3) === LOWER_S) {
                                         foundKeyword = 1;
-                                        state = 'This';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 124;
+                                        expected = -1;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         expect = 0;
                                         left = 1;                                           
                                         outputLine = outputLine + 'this';                           
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_V && states.currentIdentifier.charCodeAt(1) === LOWER_O && states.currentIdentifier.charCodeAt(2) === LOWER_I && states.currentIdentifier.charCodeAt(3) === LOWER_D) {
                                         foundKeyword = 1;
-                                        state = 'Void';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 139;
+                                        expected = -1;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         left = 0;                                           
                                         outputLine = outputLine + 'void ';                                                      
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_C && states.currentIdentifier.charCodeAt(1) === LOWER_A && states.currentIdentifier.charCodeAt(2) === LOWER_S && states.currentIdentifier.charCodeAt(3) === LOWER_E) {
                                         foundKeyword = 1;
-                                        state = 'Case';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 15;
+                                        expected = -1;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         left = 0;                                                                    
                                         outputLine = outputLine + 'case ';
                                         isCase[''+lookupSquare+lookupCurly+lookupParen] = 1;
                                         caseCount++;                           
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_N && states.currentIdentifier.charCodeAt(1) === LOWER_U && states.currentIdentifier.charCodeAt(2) === LOWER_L && states.currentIdentifier.charCodeAt(3) === LOWER_L) {
                                         foundKeyword = 1;
-                                        state = 'Null';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 86;
+                                        expected = -1;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         left = 1;                                           
                                         outputLine = outputLine + 'null';                           
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_T && states.currentIdentifier.charCodeAt(1) === LOWER_R && states.currentIdentifier.charCodeAt(2) === LOWER_U && states.currentIdentifier.charCodeAt(3) === LOWER_E) {
                                         foundKeyword = 1;
-                                        state = 'True';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 130;
+                                        expected = -1;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         left = 1;                                           
                                         outputLine = outputLine + 'true';
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_W && states.currentIdentifier.charCodeAt(1) === LOWER_I && states.currentIdentifier.charCodeAt(2) === LOWER_T && states.currentIdentifier.charCodeAt(3) === LOWER_H) {
                                         foundKeyword = 1;
-                                        state = 'WithStatement';
-                                        expected = 'WithStatementParenOpen';
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 140;
+                                        expected = 141;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         expect = 0;
                                         left = 0;                                        
                                         outputLine = outputLine + 'with';
@@ -951,48 +952,48 @@
                                 case 5:                                                     
                                     if(states.currentIdentifier.charCodeAt(0) === LOWER_T && states.currentIdentifier.charCodeAt(1) === LOWER_H && states.currentIdentifier.charCodeAt(2) === LOWER_R && states.currentIdentifier.charCodeAt(3) === LOWER_O && states.currentIdentifier.charCodeAt(4) === LOWER_W) {
                                         foundKeyword = 1;
-                                        state = 'Throw';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 131;
+                                        expected = -1;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         left = 0;                                           
                                         outputLine = outputLine + 'throw ';                          
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_B && states.currentIdentifier.charCodeAt(1) === LOWER_R && states.currentIdentifier.charCodeAt(2) === LOWER_E && states.currentIdentifier.charCodeAt(3) === LOWER_A && states.currentIdentifier.charCodeAt(4) === LOWER_K) {
                                         foundKeyword = 1;
-                                        state = 'Break';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 14;
+                                        expected = -1;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         left = 0;                                           
                                         outputLine = outputLine + 'break ';                         
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_F && states.currentIdentifier.charCodeAt(1) === LOWER_A && states.currentIdentifier.charCodeAt(2) === LOWER_L && states.currentIdentifier.charCodeAt(3) === LOWER_S && states.currentIdentifier.charCodeAt(4) === LOWER_E) {
                                         foundKeyword = 1;
-                                        state = 'False';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 36;
+                                        expected = -1;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         left = 1;                                           
                                         outputLine = outputLine + 'false';
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_C && states.currentIdentifier.charCodeAt(1) === LOWER_A && states.currentIdentifier.charCodeAt(2) === LOWER_T && states.currentIdentifier.charCodeAt(3) === LOWER_C && states.currentIdentifier.charCodeAt(4) === LOWER_H) {
                                         foundKeyword = 1;
-                                        state = 'CatchStatement';
-                                        expected = 'CatchStatementParenOpen';
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 22;
+                                        expected = 23;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         expect = 0;
                                         left = 0;                                        
                                         outputLine = outputLine + 'catch';
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_W && states.currentIdentifier.charCodeAt(1) === LOWER_H && states.currentIdentifier.charCodeAt(2) === LOWER_I && states.currentIdentifier.charCodeAt(3) === LOWER_L && states.currentIdentifier.charCodeAt(4) === LOWER_E) {
                                         foundKeyword = 1;
-                                        state = 'WhileStatement';
-                                        expected = 'WhileStatementParenOpen';
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 145;
+                                        expected = 146;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         expect = 0;
                                         left = 0;                                        
                                         outputLine = outputLine + 'while';
@@ -1001,38 +1002,38 @@
                                 case 6:                                                     
                                     if(states.currentIdentifier.charCodeAt(0) === LOWER_D && states.currentIdentifier.charCodeAt(1) === LOWER_E && states.currentIdentifier.charCodeAt(2) === LOWER_L && states.currentIdentifier.charCodeAt(3) === LOWER_E && states.currentIdentifier.charCodeAt(4) === LOWER_T && states.currentIdentifier.charCodeAt(5) === LOWER_E) {
                                         foundKeyword = 1;
-                                        state = 'Delete';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 17;
+                                        expected = -1;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         left = 0;                                           
                                         outputLine = outputLine + 'delete ';                         
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_R && states.currentIdentifier.charCodeAt(1) === LOWER_E && states.currentIdentifier.charCodeAt(2) === LOWER_T && states.currentIdentifier.charCodeAt(3) === LOWER_U && states.currentIdentifier.charCodeAt(4) === LOWER_R && states.currentIdentifier.charCodeAt(5) === LOWER_N) {
                                         foundKeyword = 1;
-                                        state = 'Return';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 111;
+                                        expected = -1;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         left = 0;                                           
                                         outputLine = outputLine + 'return ';                         
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_T && states.currentIdentifier.charCodeAt(1) === LOWER_Y && states.currentIdentifier.charCodeAt(2) === LOWER_P && states.currentIdentifier.charCodeAt(3) === LOWER_E && states.currentIdentifier.charCodeAt(4) === LOWER_O && states.currentIdentifier.charCodeAt(5) === LOWER_F) {                               
                                         foundKeyword = 1;
-                                        state = 'TypeOf';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 132;
+                                        expected = -1;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         left = 0;                                           
                                         outputLine = outputLine + 'typeof ';
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_S && states.currentIdentifier.charCodeAt(1) === LOWER_W && states.currentIdentifier.charCodeAt(2) === LOWER_I && states.currentIdentifier.charCodeAt(3) === LOWER_T && states.currentIdentifier.charCodeAt(4) === LOWER_C && states.currentIdentifier.charCodeAt(5) === LOWER_H) {                               
                                         foundKeyword = 1;
-                                        state = 'SwitchStatement';
-                                        expected = 'SwitchStatementParenOpen';
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 118;
+                                        expected = 119;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         expect = 0;
                                         left = 0;                                        
                                         outputLine = outputLine + 'switch';
@@ -1041,21 +1042,21 @@
                                 case 7:                         
                                     if(states.currentIdentifier.charCodeAt(0) === LOWER_D && states.currentIdentifier.charCodeAt(1) === LOWER_E && states.currentIdentifier.charCodeAt(2) === LOWER_F && states.currentIdentifier.charCodeAt(3) === LOWER_A && states.currentIdentifier.charCodeAt(4) === LOWER_U && states.currentIdentifier.charCodeAt(5) === LOWER_L && states.currentIdentifier.charCodeAt(6) === LOWER_T) {
                                         foundKeyword = 1;
-                                        state = 'Default';
-                                        expected = 'SwitchColon';
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 16;
+                                        expected = 123;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         expect = 0;
                                         left = 0;                                           
                                         outputLine = outputLine + 'default';
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_F && states.currentIdentifier.charCodeAt(1) === LOWER_I && states.currentIdentifier.charCodeAt(2) === LOWER_N && states.currentIdentifier.charCodeAt(3) === LOWER_A && states.currentIdentifier.charCodeAt(4) === LOWER_L && states.currentIdentifier.charCodeAt(5) === LOWER_L && states.currentIdentifier.charCodeAt(6) === LOWER_Y) {
                                         foundKeyword = 1;
-                                        state = 'FinallyStatement';
-                                        expected = 'FinallyStatementCurlyOpen';
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 37;
+                                        expected = 38;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         expect = 0;
                                         left = 0;                                        
                                         outputLine = outputLine + 'finally';
@@ -1064,28 +1065,28 @@
                                 case 8:                                                     
                                     if(states.currentIdentifier.charCodeAt(0) === LOWER_F && states.currentIdentifier.charCodeAt(1) === LOWER_U && states.currentIdentifier.charCodeAt(2) === LOWER_N && states.currentIdentifier.charCodeAt(3) === LOWER_C && states.currentIdentifier.charCodeAt(4) === LOWER_T && states.currentIdentifier.charCodeAt(5) === LOWER_I && states.currentIdentifier.charCodeAt(6) === LOWER_O && states.currentIdentifier.charCodeAt(7) === LOWER_N) {
                                         foundKeyword = 1;                                        
-                                        if(rules.FunctionExpression[lastState]) {
-                                            state = 'FunctionExpression';
-                                            expected = 'FunctionExpressionIdentifier';
-                                            expected2 = 'FunctionExpressionParenOpen';
-                                            expected3 = 0;
-                                            expected4 = 0;
+                                        if(rules[52][lastState]) {
+                                            state = 52;
+                                            expected = 53;
+                                            expected2 = 54;
+                                            expected3 = -1;
+                                            expected4 = -1;
                                             expect = 0;                                                             
-                                        } else if(rules.FunctionStatement[lastState]) {
-                                            state = 'FunctionStatement';
-                                            expected = 'FunctionIdentifier';
-                                            expected2 = 0;
-                                            expected3 = 0;
-                                            expected4 = 0;
+                                        } else if(rules[60][lastState]) {
+                                            state = 60;
+                                            expected = 50;
+                                            expected2 = -1;
+                                            expected3 = -1;
+                                            expected4 = -1;
                                             expect = 0;
                                         } else {                                    
-                                            if(!rules['Identifier'][lastState] && newLineFlag) {                                                                                    
+                                            if(!rules[67][lastState] && newLineFlag) {                                                                                    
                                                 asi();
-                                                state = 'FunctionStatement';
-                                                expected = 'FunctionIdentifier';
-                                                expected2 = 0;
-                                                expected3 = 0;
-                                                expected4 = 0;
+                                                state = 60;
+                                                expected = 50;
+                                                expected2 = -1;
+                                                expected3 = -1;
+                                                expected4 = -1;
                                                 expect = 0;
                                             } else {
                                                 error('Unexpected function. Cannot follow '+lastState+'.Output:'+output);
@@ -1095,20 +1096,20 @@
                                         outputLine = outputLine + 'function';                                                                   
                                     } else if(states.currentIdentifier.charCodeAt(0) === UPPER_I && states.currentIdentifier.charCodeAt(1) === LOWER_N && states.currentIdentifier.charCodeAt(2) === LOWER_F && states.currentIdentifier.charCodeAt(3) === LOWER_I && states.currentIdentifier.charCodeAt(4) === LOWER_N && states.currentIdentifier.charCodeAt(5) === LOWER_I && states.currentIdentifier.charCodeAt(6) === LOWER_T && states.currentIdentifier.charCodeAt(7) === LOWER_Y) {
                                         foundKeyword = 1;
-                                        state = 'Infinity';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 74;
+                                        expected = -1;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         left = 1;                                           
                                         outputLine = outputLine + 'Infinity';                          
                                     } else if(states.currentIdentifier.charCodeAt(0) === LOWER_C && states.currentIdentifier.charCodeAt(1) === LOWER_O && states.currentIdentifier.charCodeAt(2) === LOWER_N && states.currentIdentifier.charCodeAt(3) === LOWER_T && states.currentIdentifier.charCodeAt(4) === LOWER_I && states.currentIdentifier.charCodeAt(5) === LOWER_N && states.currentIdentifier.charCodeAt(6) === LOWER_U && states.currentIdentifier.charCodeAt(7) === LOWER_E) {
                                         foundKeyword = 1;
-                                        state = 'Continue';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 29;
+                                        expected = -1;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         left = 0;                                           
                                         outputLine = outputLine + 'continue ';
                                     }
@@ -1116,67 +1117,17 @@
                                 case 10:
                                     if(states.currentIdentifier.charCodeAt(0) === LOWER_I && states.currentIdentifier.charCodeAt(1) === LOWER_N && states.currentIdentifier.charCodeAt(2) === LOWER_S && states.currentIdentifier.charCodeAt(3) === LOWER_T && states.currentIdentifier.charCodeAt(4) === LOWER_A && states.currentIdentifier.charCodeAt(5) === LOWER_N && states.currentIdentifier.charCodeAt(6) === LOWER_C && states.currentIdentifier.charCodeAt(7) === LOWER_E && states.currentIdentifier.charCodeAt(8) === LOWER_O && states.currentIdentifier.charCodeAt(9) === LOWER_F) {
                                         foundKeyword = 1;
-                                        state = 'InstanceOf';
-                                        expected = 0;
-                                        expected2 = 0;
-                                        expected3 = 0;
-                                        expected4 = 0;
+                                        state = 75;
+                                        expected = -1;
+                                        expected2 = -1;
+                                        expected3 = -1;
+                                        expected4 = -1;
                                         left = 1;                                        
                                         outputLine = outputLine + ' instanceof ';
                                     }
                                 break;                     
                             }  
-				        }
-				        function checkRules() {
-				            expected = expected2 = expected3 = expected4 = expect = 0;
-				            if(!foundKeyword) {                                                                                                                                                                                                                                                                                                                             
-                                if(rules.FunctionIdentifier[lastState]) {
-                                    state = 'FunctionIdentifier';
-                                    expected = 'FunctionParenOpen';                                    
-                                    outputLine = outputLine + ' ';
-                                } else if(rules.CatchStatementIdentifier[lastState]) {
-                                    state = 'CatchStatementIdentifier';
-                                    expected = 'CatchStatementParenClose';                                    
-                                } else if(rules.ObjectLiteralIdentifier[lastState]) {
-                                    state = 'ObjectLiteralIdentifier';
-                                    expected = 'ObjectLiteralColon';                                                                     
-                                } else if(rules.FunctionExpressionIdentifier[lastState]) {
-                                    state = 'FunctionExpressionIdentifier';
-                                    expected = 'FunctionExpressionParenOpen';                                    
-                                    outputLine = outputLine + ' ';
-                                } else if(rules.FunctionArgumentIdentifier[lastState]) {
-                                    state = 'FunctionArgumentIdentifier';
-                                    expected = 'FunctionParenClose';
-                                    expected2 = 'FunctionArgumentComma';                                                 
-                                } else if(rules.FunctionExpressionArgumentIdentifier[lastState]) {
-                                    state = 'FunctionExpressionArgumentIdentifier';
-                                    expected = 'FunctionExpressionParenClose';
-                                    expected2 = 'FunctionExpressionArgumentComma';                                    
-                                } else if(rules.VarIdentifier[lastState]) {                                 
-                                    state = 'VarIdentifier';                                    
-                                    left = 1;                                                                                                                 
-                                } else if(rules.Identifier[lastState]) {
-                                    state = 'Identifier';                                    
-                                    left = 1;                               
-                                } else {
-                                    if(!rules['Identifier'][lastState] && newLineFlag) {                                                                                    
-                                        asi();                                              
-                                    }
-                                    state = 'Identifier';                                    
-                                    left = 1;
-                                }                                                                                   
-                                outputLine = outputLine + scoping + states.currentIdentifier + scoping;                                                                                  
-                            }
-                            
-                            if(!rules[state][lastState] && newLineFlag) {                                                                                                                    
-                                if(left) {
-                                    asi();
-                                    left = 1;    
-                                } else {
-                                    asi();
-                                }                                                                          
-                            } 
-				        }
+				        }				        
 				        function unicode() {
 				            pos++;
 				            states.unicodeEscape = 1;
@@ -1258,7 +1209,54 @@
                             states.identifierLen = states.currentIdentifier.length;
                             foundKeyword = 0;                                                                                                                                                        
                             keyword();                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-                            checkRules();
+                            if(!foundKeyword) {
+                                expected = expected2 = expected3 = expected4 = -1, expect = 0;                                                                                                                                                                                                                                                                                                                             
+                                if(rules[50][lastState]) {
+                                    state = 50;
+                                    expected = 51;                                    
+                                    outputLine = outputLine + ' ';
+                                } else if(rules[25][lastState]) {
+                                    state = 25;
+                                    expected = 24;                                    
+                                } else if(rules[98][lastState]) {
+                                    state = 98;
+                                    expected = 99;                                                                     
+                                } else if(rules[53][lastState]) {
+                                    state = 53;
+                                    expected = 54;                                    
+                                    outputLine = outputLine + ' ';
+                                } else if(rules[48][lastState]) {
+                                    state = 48;
+                                    expected = 57;
+                                    expected2 = 49;                                                 
+                                } else if(rules[55][lastState]) {
+                                    state = 55;
+                                    expected = 58;
+                                    expected2 = 56;                                    
+                                } else if(rules[137][lastState]) {                                 
+                                    state = 137;                                    
+                                    left = 1;                                                                                                                 
+                                } else if(rules[67][lastState]) {
+                                    state = 67;                                    
+                                    left = 1;                               
+                                } else {
+                                    if(!rules[67][lastState] && newLineFlag) {                                                                                    
+                                        asi();                                              
+                                    }
+                                    state = 67;                                    
+                                    left = 1;
+                                }                                                                                   
+                                outputLine = outputLine + scoping + states.currentIdentifier + scoping;                                                                                  
+                            }
+                            
+                            if(!rules[state][lastState] && newLineFlag) {                                                                                                                    
+                                if(left) {
+                                    asi();
+                                    left = 1;    
+                                } else {
+                                    asi();
+                                }                                                                          
+                            } 
 				    }
 				    function number() {
 				        while(pos < len) {
@@ -1342,14 +1340,14 @@
 					function newLine() {
 					    newLineFlag = 1;
                         pos++;                            
-                        if(lastState === 'Break' || lastState === 'Continue' || lastState === 'Return') {
+                        if(lastState === 14 || lastState === 29 || lastState === 111) {
                             asi(true);
                         }
 					}
 					function semicolon() {
 					    parentState = parentStates[''+lookupSquare+lookupCurly+lookupParen];                                    
                         if(isFor[''+lookupSquare+lookupCurly+(lookupParen-1)] && !isForIn[''+lookupSquare+lookupCurly+(lookupParen-1)]) {
-                            state = 'ForSemi';
+                            state = 45;
                             outputLine = outputLine + ';';
                             if(isFor[''+lookupSquare+lookupCurly+(lookupParen-1)] > 2) {
                                 error("Syntax error unexpected for semi ;");
@@ -1357,8 +1355,8 @@
                             isFor[''+lookupSquare+lookupCurly+(lookupParen-1)]++;
                             isVar[''+lookupSquare+lookupCurly+lookupParen] = 0;                                                                                     
                         } else {                                
-                            state = 'EndStatement';
-                            if(lastState !== 'EndStatement') {
+                            state = 35;
+                            if(lastState !== 35) {
                                 outputLine = outputLine + ';';  
                             }
                             isVar[''+lookupSquare+lookupCurly+lookupParen] = 0;                 
@@ -1369,23 +1367,23 @@
 					function plus() {
 					    next = code.charCodeAt(pos+1);
                         if(next === PLUS && left) {
-                            state = 'PostfixIncrement';
+                            state = 107;
                             outputLine = outputLine + '++';
                             pos+=2;
                         } else if(next === PLUS && !left) {
-                            state = 'PrefixIncrement';
+                            state = 110;
                             outputLine = outputLine + '++';
                             pos+=2;                     
                         } else if(next === EQUAL) {
-                            state = 'AdditionAssignment';
+                            state = 6;
                             outputLine = outputLine + '+=';
                             pos+=2;
                         } else if(next !== EQUAL && next !== PLUS && left) {
-                            state = 'Addition';
+                            state = 5;
                             outputLine = outputLine + ' + ';
                             pos++;
                         } else if(next !== EQUAL && next !== PLUS && !left) {
-                            state = 'UnaryPlus';
+                            state = 133;
                             outputLine = outputLine + '+';
                             pos++;                                                                  
                         } else {
@@ -1393,21 +1391,11 @@
                         }
                         left = 0;
 					}
-					function singleComment() {
-					    states = {complete:0};                        
+					function singleComment() {					    
                         pos+=2;                 
-                        for(;;) {                                   
-                            chr = code.charCodeAt(pos);
-                            if(chr===10||chr===13||chr===8232||chr==8233) {
-                                states.complete = 1;
-                            }
-                            if(pos + 1 > len) {
-                                break;
-                            }                               
-                            pos++;
-                            if(states.complete) {
-                                break;
-                            }
+                        while(pos < len) {                                   
+                            chr = code.charCodeAt(pos++);
+                            if(chr===10||chr===13||chr===8232||chr==8233)break;                                                                                                                   
                         }
 					}
 					function multiComment() {
@@ -1420,7 +1408,7 @@
 					}
 					function regex() {
 					    states = {escaping: 0, complete: 0, open: 0, square: 0, flags: {}};       
-                        state = 'RegExp';
+                        state = 112;
                         left = 1;               
                         states.open = 1;                                                               
                         outputLine = outputLine + '/';                              
@@ -1480,21 +1468,21 @@
                         }   
 					}
 					function numberOrHex() {
-					    if(rules.ObjectLiteralIdentifierNumber[lastState]) {
-                            state = 'ObjectLiteralIdentifierNumber';
-                            expected = 'ObjectLiteralColon';
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+					    if(rules[101][lastState]) {
+                            state = 101;
+                            expected = 99;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             expect = 0;                         
-                        } else if(rules.Number[lastState]) {
+                        } else if(rules[85][lastState]) {
                             left = 1;
-                            state = 'Number';
+                            state = 85;
                         } else {
-                            if(!rules['Number'][lastState] && newLineFlag) {                                                                                    
+                            if(!rules[85][lastState] && newLineFlag) {                                                                                    
                                 asi();
                                 left = 1;                                    
-                                state = 'Number';                                
+                                state = 85;                                
                             }
                         }
                         states = {dot: 0, e:0, e2:0, complete:0,output:'', zeroFirst: 0, dotFirst: 0};
@@ -1520,23 +1508,23 @@
 					function divide() {
 					    left = 0;
                         if(next === EQUAL) {
-                            state = 'AssignmentDivide';
+                            state = 7;
                             pos+=2;                                    
                             outputLine = outputLine + '/='; 
                         } else {
-                            state = 'DivideOperator';
+                            state = 21;
                             pos++;                                    
                             outputLine = outputLine + ' / ';    
                         }
 					}
 					function arrayOrAccessorOpen() {
 					    if(!left) {
-                            state = 'ArrayOpen';                
+                            state = 1;                
                         } else {
-                            state = 'AccessorOpen';                                                                                                 
+                            state = 3;                                                                                                 
                         }           
                         outputLine = outputLine + '[';
-                        if(state === 'AccessorOpen') {
+                        if(state === 3) {
                             outputLine = outputLine + 'M.P(';
                         }                           
                         parentStates[''+lookupSquare+lookupCurly+lookupParen] = state;                      
@@ -1548,11 +1536,11 @@
 					function arrayOrAccessorClose() {
 					    lookupSquare--;            
                         parentState = parentStates[''+lookupSquare+lookupCurly+lookupParen];                                    
-                        if(parentState === 'ArrayOpen') {
-                            state = 'ArrayClose';
+                        if(parentState === 1) {
+                            state = 2;
                             left = 1;
-                        } else if(parentState === 'AccessorOpen') {
-                            state = 'AccessorClose';
+                        } else if(parentState === 3) {
+                            state = 4;
                             left = 1;
                             outputLine = outputLine + ')';
                         } else {                
@@ -1564,84 +1552,84 @@
                         parentStates[''+lookupSquare+lookupCurly+lookupParen] = ''; 
 					}
 					function parenOpen() {
-					    if(lastState === 'FunctionIdentifier') {
-                                state = 'FunctionParenOpen';
+					    if(lastState === 50) {
+                                state = 51;
                                 expect = 0;
-                                expected = 'FunctionArgumentIdentifier';
-                                expected2 = 'FunctionParenClose';
-                                expected3 = 0;
-                                expected4 = 0;
-                            } else if(lastState === 'ForStatement') {
-                                state = 'ForStatementParenOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;
-                            } else if(rules.FunctionCallOpen[lastState]) {
-                                state = 'FunctionCallOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;
-                            } else if(lastState === 'IfStatement') {
-                                state = 'IfStatementParenOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;  
-                            } else if(lastState === 'CatchStatement') {
-                                state = 'CatchStatementParenOpen';
-                                expected = 'CatchStatementIdentifier';
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;  
+                                expected = 48;
+                                expected2 = 57;
+                                expected3 = -1;
+                                expected4 = -1;
+                            } else if(lastState === 40) {
+                                state = 41;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;
+                            } else if(rules[46][lastState]) {
+                                state = 46;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;
+                            } else if(lastState === 68) {
+                                state = 69;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;  
+                            } else if(lastState === 22) {
+                                state = 23;
+                                expected = 25;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;  
                                 expect = 0;         
-                            } else if(lastState === 'WhileStatement') {
-                                state = 'WhileStatementParenOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;
-                            } else if(lastState === 'SwitchStatement') {
-                                state = 'SwitchStatementParenOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;
-                            } else if(lastState === 'WithStatement') {
-                                state = 'WithStatementParenOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;
-                            } else if(lastState === 'FunctionExpressionIdentifier') {
-                                state = 'FunctionExpressionParenOpen';
+                            } else if(lastState === 145) {
+                                state = 146;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;
+                            } else if(lastState === 118) {
+                                state = 119;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;
+                            } else if(lastState === 140) {
+                                state = 141;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;
+                            } else if(lastState === 53) {
+                                state = 54;
                                 expect = 0;
-                                expected = 'FunctionExpressionArgumentIdentifier';
-                                expected2 = 'FunctionExpressionParenClose';
-                                expected3 = 0;
-                                expected4 = 0;
-                            } else if(lastState === 'FunctionExpression') {
-                                state = 'FunctionExpressionParenOpen';
+                                expected = 55;
+                                expected2 = 58;
+                                expected3 = -1;
+                                expected4 = -1;
+                            } else if(lastState === 52) {
+                                state = 54;
                                 expect = 0;
-                                expected = 'FunctionExpressionArgumentIdentifier';
-                                expected2 = 'FunctionExpressionParenClose';
-                                expected3 = 0;
-                                expected4 = 0;                          
-                            } else if(rules.ParenExpressionOpen[lastState]) {                           
-                                state = 'ParenExpressionOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;
+                                expected = 55;
+                                expected2 = 58;
+                                expected3 = -1;
+                                expected4 = -1;                          
+                            } else if(rules[104][lastState]) {                           
+                                state = 104;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;
                             } else {                                
-                                if(!rules['Identifier'][lastState] && newLineFlag) {                                                                                    
+                                if(!rules[67][lastState] && newLineFlag) {                                                                                    
                                    asi();
-                                   state = 'ParenExpressionOpen';
-                                   expected = 0;
-                                   expected2 = 0;
-                                   expected3 = 0;
-                                   expected4 = 0;
+                                   state = 104;
+                                   expected = -1;
+                                   expected2 = -1;
+                                   expected3 = -1;
+                                   expected4 = -1;
                                 } else {
                                    error('Unexpected (. Cannot follow '+lastState+'.Output:'+output);
                                 }                                                           
@@ -1656,77 +1644,77 @@
 					    isVar[''+lookupSquare+lookupCurly+lookupParen] = 0;                
                         lookupParen--;                      
                         parentState = parentStates[''+lookupSquare+lookupCurly+lookupParen];                                                                                                                                                                                                                    
-                        if(rules.FunctionParenClose[lastState]) {
-                            state = 'FunctionParenClose';
+                        if(rules[57][lastState]) {
+                            state = 57;
                             expect = 0;
-                            expected = "FunctionStatementCurlyOpen";
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
-                        } else if(parentState === 'FunctionCallOpen') {
-                            state = 'FunctionCallClose';
-                            expected = 0;
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                            expected = 61;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
+                        } else if(parentState === 46) {
+                            state = 47;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             left = 1;
-                        } else if(parentState === 'ForStatementParenOpen') {
-                            state = 'ForStatementParenClose';
-                            expected = 0;
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                        } else if(parentState === 41) {
+                            state = 42;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             left = 0;
                             isFor[''+lookupSquare+lookupCurly+lookupParen] = 0;     
                             isForIn[''+lookupSquare+lookupCurly+lookupParen] = 0;       
-                        } else if(parentState === 'SwitchStatementParenOpen') {
-                            state = 'SwitchStatementParenClose';
-                            expected = 0;
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                        } else if(parentState === 119) {
+                            state = 120;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             left = 0;
-                        } else if(parentState === 'CatchStatementParenOpen') {
-                            state = 'CatchStatementParenClose';
-                            expected = 0;
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                        } else if(parentState === 23) {
+                            state = 24;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             left = 0;
-                        } else if(parentState === 'WhileStatementParenOpen') {
-                            state = 'WhileStatementParenClose';
-                            expected = "";
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                        } else if(parentState === 146) {
+                            state = 147;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             left = 0;
-                        } else if(parentState === 'WithStatementParenOpen') {
-                            state = 'WithStatementParenClose';
-                            expected = "";
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                        } else if(parentState === 141) {
+                            state = 142;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             left = 0;
-                        } else if(parentState === 'IfStatementParenOpen') {
-                            state = 'IfStatementParenClose';
-                            expected = "";
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                        } else if(parentState === 69) {
+                            state = 70;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             left = 0;
-                        } else if(rules.FunctionExpressionParenClose[lastState]) {
-                            state = 'FunctionExpressionParenClose';
+                        } else if(rules[58][lastState]) {
+                            state = 58;
                             expect = 0;
-                            expected = "FunctionExpressionCurlyOpen";
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
-                        } else if(parentState === 'ParenExpressionOpen') {
-                            state = 'ParenExpressionClose';
-                            expected = 0;
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                            expected = 59;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
+                        } else if(parentState === 104) {
+                            state = 106;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             left = 1;
                         } else {                                                                                                                    
                             error('Unexpected ). Cannot follow '+lastState+'.Output:'+output);                          
@@ -1736,118 +1724,118 @@
                         parentStates[''+lookupSquare+lookupCurly+lookupParen] = ''; 
 					}
 					function curlyOpen() {
-					    if(lastState === 'FunctionParenClose') {
-                                state = 'FunctionStatementCurlyOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;
-                            } else if(lastState === 'Do') {
-                                state = 'DoStatementCurlyOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;
-                            } else if(lastState === 'Else') {
-                                state = 'ElseCurlyOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;
-                            } else if(lastState === 'WhileStatementParenClose') {
-                                state = 'WhileStatementCurlyOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;  
-                            } else if(lastState === 'CatchStatementParenClose') {
-                                state = 'CatchStatementCurlyOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;
-                            } else if(lastState === 'ForStatementParenClose') {
-                                state = 'ForStatementCurlyOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;
-                            } else if(lastState === 'WithStatementParenClose') {
-                                state = 'WithStatementCurlyOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;              
-                            } else if(lastState === 'TryStatement') {
-                                state = 'TryStatementCurlyOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;
-                            } else if(lastState === 'SwitchStatementParenClose') {
-                                state = 'SwitchStatementCurlyOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;
-                            } else if(lastState === 'IfStatementParenClose') {
-                                state = 'IfStatementCurlyOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;
-                            } else if(lastState === 'FinallyStatement') {
-                                state = 'FinallyStatementCurlyOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;
-                            } else if(lastState === 'FunctionExpressionParenClose') {
-                                state = 'FunctionExpressionCurlyOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;
-                            } else if(rules.ObjectLiteralCurlyOpen[lastState]) {                
-                                state = 'ObjectLiteralCurlyOpen';
-                                expected = 'ObjectLiteralIdentifier';
-                                expected2 = 'ObjectLiteralIdentifierString';
-                                expected3 = 'ObjectLiteralIdentifierNumber';
-                                expected4 = 'ObjectLiteralCurlyClose';
+					    if(lastState === 57) {
+                                state = 61;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;
+                            } else if(lastState === 18) {
+                                state = 19;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;
+                            } else if(lastState === 32) {
+                                state = 33;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;
+                            } else if(lastState === 147) {
+                                state = 148;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;  
+                            } else if(lastState === 24) {
+                                state = 26;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;
+                            } else if(lastState === 42) {
+                                state = 43;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;
+                            } else if(lastState === 142) {
+                                state = 143;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;              
+                            } else if(lastState === 127) {
+                                state = 128;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;
+                            } else if(lastState === 120) {
+                                state = 121;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;
+                            } else if(lastState === 70) {
+                                state = 71;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;
+                            } else if(lastState === 37) {
+                                state = 38;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;
+                            } else if(lastState === 58) {
+                                state = 59;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;
+                            } else if(rules[96][lastState]) {                
+                                state = 96;
+                                expected = 98;
+                                expected2 = 102;
+                                expected3 = 101;
+                                expected4 = 97;
                                 expect = 0;
                                 parentStates[''+lookupSquare+(lookupCurly+1)+lookupParen] = state;
                                 outputLine = outputLine + 'M.O(';
-                            } else if(rules.BlockStatementCurlyOpen[lastState]) {
-                                state = 'BlockStatementCurlyOpen';
-                                expected = 0;
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;
+                            } else if(rules[9][lastState]) {
+                                state = 9;
+                                expected = -1;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;
                             } else {                                                                                                                            
-                                if(!rules['Identifier'][lastState] && newLineFlag) {                                    
+                                if(!rules[67][lastState] && newLineFlag) {                                    
                                   asi();
-                                  if(lastState === 'ForSemi') {                                    
-                                    state = 'ObjectLiteralCurlyOpen';
-                                    expected = 'ObjectLiteralIdentifier';
-                                    expected2 = 'ObjectLiteralIdentifierString';
-                                    expected3 = 'ObjectLiteralIdentifierNumber';
-                                    expected4 = 'ObjectLiteralCurlyClose';
+                                  if(lastState === 45) {                                    
+                                    state = 96;
+                                    expected = 98;
+                                    expected2 = 102;
+                                    expected3 = 101;
+                                    expected4 = 97;
                                     expect = 0;
                                     parentStates[''+lookupSquare+(lookupCurly+1)+lookupParen] = state;
                                     outputLine = outputLine + 'M.O(';   
                                   } else {                                                                                                                             
-                                    state = 'BlockStatementCurlyOpen';
-                                    expected = 0;
-                                    expected2 = 0;
-                                    expected3 = 0;
-                                    expected4 = 0;
+                                    state = 9;
+                                    expected = -1;
+                                    expected2 = -1;
+                                    expected3 = -1;
+                                    expected4 = -1;
                                   }                                                                                 
                                 } else {                                                
                                     error('Unexpected {. Cannot follow '+lastState+'.Output:'+output);
                                 }
                             }                                       
                             outputLine = outputLine + '{';
-                            if(state === 'FunctionStatementCurlyOpen' || state === 'FunctionExpressionCurlyOpen') {
+                            if(state === 61 || state === 59) {
                                 outputLine = outputLine + 'var $arguments$=M.A(arguments);';
                             }                           
                             pos++;
@@ -1860,101 +1848,101 @@
                         lookupCurly--;                                                                                                                          
                         parentState = parentStates[''+lookupSquare+lookupCurly+lookupParen];                                                                                                                                                                    
                         outputLine = outputLine + '}';                                                                                                          
-                        if(parentState === 'FunctionStatementCurlyOpen') {
-                            state = 'FunctionStatementCurlyClose';                              
+                        if(parentState === 61) {
+                            state = 62;                              
                             left = 0;
-                        } else if(parentState === 'ElseCurlyOpen') {
-                            state = 'ElseCurlyClose';
-                            expected = 0;
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                        } else if(parentState === 33) {
+                            state = 34;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             left = 0;
-                        } else if(parentState === 'ObjectLiteralCurlyOpen') {
-                            state = 'ObjectLiteralCurlyClose';
-                            expected = 0;
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                        } else if(parentState === 96) {
+                            state = 97;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             left = 1;
                             isObjectLiteral[''+lookupSquare+(lookupCurly+1)+lookupParen] = 0;
                             outputLine = outputLine + ')';
-                        } else if(parentState === 'ForStatementCurlyOpen') {
-                            state = 'ForStatementCurlyClose';
-                            expected = 0;
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                        } else if(parentState === 43) {
+                            state = 44;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             left = 0;                               
-                        } else if(parentState === 'WhileStatementCurlyOpen') {
-                            state = 'WhileStatementCurlyClose';
-                            expected = 0;
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                        } else if(parentState === 148) {
+                            state = 149;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             left = 0;                               
-                        } else if(parentState === 'CatchStatementCurlyOpen') {
-                            state = 'CatchStatementCurlyClose';
-                            expected = 0;
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                        } else if(parentState === 26) {
+                            state = 27;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             left = 0;
-                        } else if(parentState === 'FinallyStatementCurlyOpen') {
-                            state = 'FinallyStatementCurlyClose';
-                            expected = 0;
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                        } else if(parentState === 38) {
+                            state = 39;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             left = 0;                                               
-                        } else if(parentState === 'WithStatementCurlyOpen') {
-                            state = 'WithStatementCurlyClose';
-                            expected = 0;
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                        } else if(parentState === 143) {
+                            state = 144;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             left = 0;                               
-                        } else if(parentState === 'TryStatementCurlyOpen') {
-                            state = 'TryStatementCurlyClose';               
-                            expected = 'CatchStatement';
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                        } else if(parentState === 128) {
+                            state = 129;               
+                            expected = 22;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             expect = 0;
-                        } else if(parentState === 'DoStatementCurlyOpen') {
-                            state = 'DoStatementCurlyClose';                
-                            expected = 'WhileStatement';
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                        } else if(parentState === 19) {
+                            state = 20;                
+                            expected = 145;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             expect = 0;
-                        } else if(parentState === 'SwitchStatementCurlyOpen') {
-                            state = 'SwitchStatementCurlyClose';
-                            expected = 0;
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                        } else if(parentState === 121) {
+                            state = 122;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             left = 0;                                                       
-                        } else if(parentState === 'DoStatement') {
-                            state = 'DoStatementCurlyOpen';
-                            expected = 0;
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                        } else if(parentState === 18) {
+                            state = 19;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             left = 0;
                             expect = 0;
-                        } else if(parentState === 'IfStatementCurlyOpen') {
-                            state = 'IfStatementCurlyClose';
-                            expected = 0;
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                        } else if(parentState === 71) {
+                            state = 72;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             left = 0;
-                        } else if(parentState === 'FunctionExpressionCurlyOpen') {
-                            state = 'FunctionExpressionCurlyClose';
+                        } else if(parentState === 59) {
+                            state = 63;
                             left = 1;
-                        } else if(parentState === 'BlockStatementCurlyOpen') {
-                            state = 'BlockStatementCurlyClose';                             
+                        } else if(parentState === 9) {
+                            state = 10;                             
                             left = 0;
                         } else {                                                                                        
                             error('Unexpected }. Cannot follow '+lastState+'.Output:'+output);
@@ -1963,7 +1951,7 @@
                         pos++;  
 					}
 					function ternaryOpen() {
-					    state = 'TernaryQuestionMark';
+					    state = 125;
                         outputLine = outputLine + '?';                          
                         left = 0;
                         pos++;
@@ -1976,50 +1964,50 @@
 					}
 					function comma() {
 					    parentState = parentStates[''+lookupSquare+lookupCurly+lookupParen];                                                                                                                                                                                                                                                                                                                                                                                               
-                        if(lastState === 'FunctionArgumentIdentifier') {
-                            state = 'FunctionArgumentComma';
+                        if(lastState === 48) {
+                            state = 49;
                             expect = 0;
-                            expected = 'FunctionArgumentIdentifier';
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
-                        } else if(parentState === 'ArrayOpen' || lastState === 'ArrayOpen') {
-                            state = 'ArrayComma';                                                           
-                        } else if(lastState === 'FunctionExpressionArgumentIdentifier') {
-                            state = 'FunctionExpressionArgumentComma';
+                            expected = 48;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
+                        } else if(parentState === 1 || lastState === 1) {
+                            state = 0;                                                           
+                        } else if(lastState === 55) {
+                            state = 56;
                             expect = 0;
-                            expected = 'FunctionExpressionArgumentIdentifier';
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;      
-                        } else if(parentState === 'ParenExpressionOpen') {
-                            state = 'ParenExpressionComma';
-                            expected = 0;
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                            expected = 55;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;      
+                        } else if(parentState === 104) {
+                            state = 105;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                         } else if(isObjectLiteral[''+lookupSquare+lookupCurly+lookupParen]) {
-                            state = 'ObjectLiteralComma';
+                            state = 100;
                             expect = 0;
-                            expected = 'ObjectLiteralIdentifier';
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                            expected = 98;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                         } else if(isVar[''+lookupSquare+lookupCurly+lookupParen]) {
-                            state = 'VarComma';
-                            expected = 'Identifier';
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                            state = 138;
+                            expected = 67;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                             expect = 0; 
                         } else if(isTernary[''+lookupSquare+lookupCurly+lookupParen]) {
                             error("Syntax error expected :");               
                         } else {
-                            state = 'Comma';
-                            expected = 0;
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
+                            state = 28;
+                            expected = -1;
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
                         }
                         outputLine = outputLine + ',';
                         pos++;
@@ -2027,14 +2015,14 @@
 					}
 					function period() {
 					    if(left) {                         
-                            state = 'IdentifierDot';                                
+                            state = 66;                                
                         } else {
                             error('Unexpected . Cannot follow '+lastState+'.Output:'+output);
                         }
-                        expected = 'Identifier';
-                        expected2 = 0;
-                        expected3 = 0;
-                        expected4 = 0;
+                        expected = 67;
+                        expected2 = -1;
+                        expected3 = -1;
+                        expected4 = -1;
                         expect = 0;
                         outputLine = outputLine + '.';
                         pos++;
@@ -2043,31 +2031,31 @@
 					function colon() {
 					    parentState = parentStates[''+lookupSquare+lookupCurly+lookupParen];                               
                         if(isTernary[''+lookupSquare+lookupCurly+lookupParen]) {
-                            state = 'TernaryColon';
+                            state = 126;
                             isTernary[''+lookupSquare+lookupCurly+lookupParen]--;
                             ternaryCount--;
-                        } else if(rules.ObjectLiteralColon[lastState]) {
-                            state = 'ObjectLiteralColon';
-                            expected = 0;                               
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;                                                                                              
+                        } else if(rules[99][lastState]) {
+                            state = 99;
+                            expected = -1;                               
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;                                                                                              
                             isObjectLiteral[''+lookupSquare+lookupCurly+lookupParen] = 1;               
-                        } else if(isCase[''+lookupSquare+lookupCurly+lookupParen] || lastState === 'Default') {
-                            state = 'SwitchColon';
-                            if(lastState === 'Case') {
+                        } else if(isCase[''+lookupSquare+lookupCurly+lookupParen] || lastState === 16) {
+                            state = 123;
+                            if(lastState === 15) {
                                 error("Syntax error");
                             }
-                            expected = 0;                               
-                            expected2 = 0;
-                            expected3 = 0;
-                            expected4 = 0;
-                            if(lastState !== 'Default') {
+                            expected = -1;                               
+                            expected2 = -1;
+                            expected3 = -1;
+                            expected4 = -1;
+                            if(lastState !== 16) {
                                 isCase[''+lookupSquare+lookupCurly+lookupParen] = 0;
                                 caseCount--;    
                             }                       
                         } else if(!parentState) {
-                            state = 'LabelColon';
+                            state = 76;
                         } else {
                             error('Unexpected : Cannot follow '+lastState+'.Output:'+output);
                         }
@@ -2076,23 +2064,23 @@
                         left = 0;
 					}
 					function string() {
-					    if(lastState === 'ObjectLiteralCurlyOpen' || lastState === 'ObjectLiteralComma') {
-                                state = 'ObjectLiteralIdentifierString';
+					    if(lastState === 96 || lastState === 100) {
+                                state = 102;
                                 left = 0;
-                                expected = 'ObjectLiteralColon';
-                                expected2 = 0;
-                                expected3 = 0;
-                                expected4 = 0;
+                                expected = 99;
+                                expected2 = -1;
+                                expected3 = -1;
+                                expected4 = -1;
                                 expect = 0; 
                             } else {
-                                state = 'String';
+                                state = 115;
                                 left = 1;
                             }                           
                             states = {escaping: 0, complete: 0};
                             states[chr] = 1;                        
                             outputLine = outputLine + code.charAt(pos);
                             pos++;
-                            if(state === 'ObjectLiteralIdentifierString') {
+                            if(state === 102) {
                                 outputLine = outputLine + scoping;  
                             }
                             while(pos < len) {                               
@@ -2118,7 +2106,7 @@
                                     outputLine = outputLine + '\\';
                                     states.escaping = 0;
                                 }                                                            
-                                if(states.complete && state === 'ObjectLiteralIdentifierString') {
+                                if(states.complete && state === 102) {
                                     outputLine = outputLine + scoping;  
                                 }                                                                       
                                 outputLine = outputLine + code.charAt(pos);
@@ -2135,15 +2123,15 @@
 					    next = code.charCodeAt(pos+1);
                         next2 = code.charCodeAt(pos+2);                     
                         if(next !== EQUAL && !left) {
-                            state = 'Not';
+                            state = 88;
                             outputLine = outputLine + ' ! ';
                             pos++;
                         } else if(next === EQUAL && next2 !== EQUAL) {
-                            state = 'NotEqual';
+                            state = 87;
                             outputLine = outputLine + '!=';
                             pos+=2;
                         } else if(next === EQUAL && next2 === EQUAL) {
-                            state = 'StrictNotEqual';
+                            state = 117;
                             outputLine = outputLine + '!==';
                             pos+=3;                         
                         } else {
@@ -2153,7 +2141,7 @@
 					}
 					function tilde() {
 					    if(!left) {
-                            state = 'BitwiseNot';
+                            state = 11;
                             outputLine = outputLine + '~';
                             pos++;                                              
                         } else {
@@ -2164,15 +2152,15 @@
 					function pipe() {
 					    next = code.charCodeAt(pos+1);
                         if(next === PIPE) {
-                            state = 'LogicalOr';
+                            state = 81;
                             outputLine = outputLine + '||';
                             pos+=2;
                         } else if(next === EQUAL) {
-                            state = 'OrAssignment';
+                            state = 103;
                             outputLine = outputLine + '|=';
                             pos+=2;
                         } else if(next !== PIPE && next !== EQUAL) {
-                            state = 'BitwiseOr';
+                            state = 12;
                             outputLine = outputLine + ' | ';
                             pos++;                      
                         } else {
@@ -2183,11 +2171,11 @@
 					function caret() {
 					    next = code.charCodeAt(pos+1); 
                         if(next === EQUAL) {
-                            state = 'XorAssignment';
+                            state = 151;
                             outputLine = outputLine + '^=';
                             pos+=2;
                         } else if(next !== EQUAL) {
-                            state = 'Xor';
+                            state = 150;
                             outputLine = outputLine + ' ^ ';
                             pos++;                      
                         } else {
@@ -2198,11 +2186,11 @@
 					function percent() {
 					    next = code.charCodeAt(pos+1);
                         if(next === EQUAL) {
-                            state = 'ModulusAssignment';
+                            state = 93;
                             outputLine = outputLine + '%=';
                             pos+=2;
                         } else if(next !== EQUAL) {
-                            state = 'Modulus';
+                            state = 92;
                             outputLine = outputLine + ' % ';
                             pos++;                      
                         } else {
@@ -2213,15 +2201,15 @@
 					function ampersand() {
 					    next = code.charCodeAt(pos+1);
                         if(next === AMPERSAND) {
-                            state = 'LogicalAnd';
+                            state = 82;
                             outputLine = outputLine + '&&';
                             pos+=2;
                         } else if(next === EQUAL) {
-                            state = 'AndAssignment';
+                            state = 8;
                             outputLine = outputLine + '&=';
                             pos+=2;
                         } else if(next !== AMPERSAND && next !== EQUAL) {
-                            state = 'BitwiseAnd';
+                            state = 13;
                             outputLine = outputLine + ' & ';
                             pos++;                      
                         } else {
@@ -2233,15 +2221,15 @@
 					    next = code.charCodeAt(pos+1);
                         next2 = code.charCodeAt(pos+2);                     
                         if(next !== EQUAL) {
-                            state = 'EqualAssignment';
+                            state = 30;
                             outputLine = outputLine + ' = ';
                             pos++;
                         } else if(next === EQUAL && next2 !== EQUAL) {
-                            state = 'Equal';
+                            state = 31;
                             outputLine = outputLine + '==';
                             pos+=2;
                         } else if(next === EQUAL && next2 === EQUAL) {
-                            state = 'StrictEqual';
+                            state = 116;
                             outputLine = outputLine + '===';
                             pos+=3;
                         } else {
@@ -2254,27 +2242,27 @@
                         next2 = code.charCodeAt(pos+2);
                         next3 = code.charCodeAt(pos+3);
                         if(next === GREATER_THAN && next2 === GREATER_THAN && next3 === EQUAL) {
-                            state = 'ZeroRightShiftAssignment';
+                            state = 153;
                             outputLine = outputLine + '>>>=';
                             pos+=4;                                             
                         } else if(next === GREATER_THAN && next2 === GREATER_THAN) {
-                            state = 'ZeroRightShift';
+                            state = 152;
                             outputLine = outputLine + '>>>';
                             pos+=3; 
                         } else if(next === GREATER_THAN && next2 === EQUAL) {
-                            state = 'RightShiftAssignment';
+                            state = 114;
                             outputLine = outputLine + '>>=';
                             pos+=3;                                             
                         } else if(next === GREATER_THAN) {
-                            state = 'RightShift';
+                            state = 113;
                             outputLine = outputLine + '>>';
                             pos+=2;
                         } else if(next !== EQUAL) {
-                            state = 'GreaterThan';
+                            state = 64;
                             outputLine = outputLine + ' > ';
                             pos++;
                         } else if(next === EQUAL) {
-                            state = 'GreaterThanEqual';
+                            state = 65;
                             outputLine = outputLine + '>=';
                             pos+=2;                     
                         } else {
@@ -2286,19 +2274,19 @@
 					    next = code.charCodeAt(pos+1);
                         next2 = code.charCodeAt(pos+2); 
                         if(next === LESS_THAN && next2 === EQUAL) {
-                            state = 'LeftShiftAssignment';
+                            state = 80;
                             outputLine = outputLine + '<<=';
                             pos+=3;
                         }else if(next === LESS_THAN) {
-                            state = 'LeftShift';
+                            state = 79;
                             outputLine = outputLine + '<<';
                             pos+=2;
                         } else if(next !== EQUAL) {
-                            state = 'LessThan';
+                            state = 77;
                             outputLine = outputLine + ' < ';
                             pos++;
                         } else if(next === EQUAL) {
-                            state = 'LessThanEqual';
+                            state = 78;
                             outputLine = outputLine + '<=';
                             pos+=2;                     
                         } else {
@@ -2309,11 +2297,11 @@
 					function asterix() {
 					    next = code.charCodeAt(pos+1);                                         
                         if(next !== EQUAL) {
-                            state = 'Multiply';
+                            state = 94;
                             outputLine = outputLine + ' * ';
                             pos++;
                         } else if(next === EQUAL) {
-                            state = 'MultiplyAssignment';
+                            state = 95;
                             outputLine = outputLine + '*=';
                             pos+=2;                     
                         } else {
@@ -2324,23 +2312,23 @@
 					function minus() {
 					    next = code.charCodeAt(pos+1);
                         if(next === MINUS && left) {
-                            state = 'PostfixDeincrement';
+                            state = 108;
                             outputLine = outputLine + '--';
                             pos+=2;
                         } else if(next === MINUS && !left) {
-                            state = 'PrefixDeincrement';
+                            state = 109;
                             outputLine = outputLine + '--';
                             pos+=2;                     
                         } else if(next === EQUAL) {
-                            state = 'MinusAssignment';
+                            state = 91;
                             outputLine = outputLine + '-=';
                             pos+=2;
                         } else if(next !== EQUAL && next !== MINUS && left) {
-                            state = 'Minus';
+                            state = 90;
                             outputLine = outputLine + ' - ';
                             pos++;
                         } else if(next !== EQUAL && next !== MINUS && !left) {
-                            state = 'UnaryMinus';
+                            state = 134;
                             outputLine = outputLine + '-';
                             pos++;                                                                  
                         } else {                    
@@ -2354,8 +2342,8 @@
 									
 					while(pos < len) {					    
 						outputLine = '';                                               
-                        state = 'Nothing';
-                        if(expected||expected2||expected3||expected4)expect = 1;															
+                        state = 89;
+                        if(expected>-1||expected2>-1||expected3>-1||expected4>-1)expect = 1;															
 						chr = code.charCodeAt(pos);									              																				
 					    if(chr===10||chr===13) {                                                   
                             newLine();
@@ -2373,7 +2361,7 @@
 							numberOrHex();                                              							        
 				        } else if(chr === FORWARD_SLASH) {
 				            next = code.charCodeAt(pos+1);				            
-                            if(!left && next !== ASTERIX && next !== FORWARD_SLASH && lastState !== 'VarIdentifier') {                                                                                                                               
+                            if(!left && next !== ASTERIX && next !== FORWARD_SLASH && lastState !== 137) {                                                                                                                               
                                 regex();
                             } else if(next === FORWARD_SLASH) {
                                 singleComment();
@@ -2381,7 +2369,7 @@
                             } else if(next === ASTERIX) {                                 
                                 multiComment();                                                                                   
                                 continue;  
-                            } else if((lastState === 'VarIdentifier' || left) && next !== FORWARD_SLASH) {
+                            } else if((lastState === 137 || left) && next !== FORWARD_SLASH) {
                                 divide();
                             } else {
                                 error('Unexpected /. Cannot follow '+lastState+'.Output:'+output);
@@ -2451,7 +2439,7 @@
                                 identifier();
                             } 
                         }																				
-						if(state === 'Nothing') {                          
+						if(state === 89) {                          
                             error("No state defined for char:" +String.fromCharCode(chr) + ', left: '+left+', last state: '+lastState+',output:'+output);
                         }
                         
@@ -2467,15 +2455,15 @@
                          
                         if(!rules[state][lastState]) {                                                                                          
                             error("Unexpected " + state + '. Cannot follow '+lastState+'.Output:'+output);
-                        } else if(((expected && expected !== state) || (expected2 && expected2 !== state) || (expected3 && expected3 !== state) || (expected4 && expected4 !== state)) && expect === 1) {
+                        } else if(((expected>=0 && expected !== state) || (expected2>=0 && expected2 !== state) || (expected3>=0 && expected3 !== state) || (expected4>=0 && expected4 !== state)) && expect === 1) {
                             msg = "Expected " + expected;
-                            if(expected2) {
+                            if(expected2>=0) {
                                 msg = msg + ' or ' + expected2;
                             }
-                            if(expected3) {
+                            if(expected3>=0) {
                                 msg = msg + ' or ' + expected3;
                             }
-                            if(expected4) {
+                            if(expected4>=0) {
                                 msg = msg + ' or ' + expected4;
                             }
                             msg = msg + '. But got '+state + ' with last state:'+lastState+', output:'+output;
@@ -2483,27 +2471,27 @@
                         }
                         
                         if(parseTreeFlag){                          
-                            parseTreeOutput = parseTreeOutput + '<'+state+'>' + outputLine + '</'+state+'>';
+                            parseTreeOutput = parseTreeOutput + '<'+rulesLookup[state]+'>' + outputLine + '</'+rulesLookup[state]+'>';
                         }
                         lastState = state;                                                                              
                         newLineFlag = 0;																													
 					}	
-					if(((expected && expected !== state) || (expected2 && expected2 !== state) || (expected3 && expected3 !== state) || (expected4 && expected4 !== state))) {
+					if(((expected>=0 && expected !== state) || (expected2>=0 && expected2 !== state) || (expected3>=0 && expected3 !== state) || (expected4>=0 && expected4 !== state))) {						
 						msg = "Expected " + expected;
-						if(expected2) {
+						if(expected2>=0) {
 							msg = msg + ' or ' + expected2;
 						}
-						if(expected3) {
+						if(expected3>=0) {
 							msg = msg + ' or ' + expected3;
 						}
-						if(expected4) {
+						if(expected4>=0) {
 							msg = msg + ' or ' + expected4;
 						}
 						msg = msg + '. But got '+state + ' with last state:'+lastState + ', output:'+output;
 						error(msg);
 					}
 									
-					if(lastState === 'IfStatementParenClose') {
+					if(lastState === 70) {
 						error("Syntax error");	
 					}
 					
