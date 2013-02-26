@@ -1,5 +1,5 @@
 MentalJS = function() {
-        var rulesLookup = 'ArrayComma,ArrayOpen,ArrayClose,AccessorOpen,AccessorClose,Addition,AdditionAssignment,AssignmentDivide,AndAssignment,BlockStatementCurlyOpen,BlockStatementCurlyClose,BitwiseNot,BitwiseOr,BitwiseAnd,Break,Case,Default,Delete,Do,DoStatementCurlyOpen,DoStatementCurlyClose,DivideOperator,CatchStatement,CatchStatementParenOpen,CatchStatementParenClose,CatchStatementIdentifier,CatchStatementCurlyOpen,CatchStatementCurlyClose,Comma,Continue,EqualAssignment,Equal,Else,ElseCurlyOpen,ElseCurlyClose,EndStatement,False,FinallyStatement,FinallyStatementCurlyOpen,FinallyStatementCurlyClose,ForStatement,ForStatementParenOpen,ForStatementParenClose,ForStatementCurlyOpen,ForStatementCurlyClose,ForSemi,FunctionCallOpen,FunctionCallClose,FunctionArgumentIdentifier,FunctionArgumentComma,FunctionIdentifier,FunctionParenOpen,FunctionExpression,FunctionExpressionIdentifier,FunctionExpressionParenOpen,FunctionExpressionArgumentIdentifier,FunctionExpressionArgumentComma,FunctionParenClose,FunctionExpressionParenClose,FunctionExpressionCurlyOpen,FunctionStatement,FunctionStatementCurlyOpen,FunctionStatementCurlyClose,FunctionExpressionCurlyClose,GreaterThan,GreaterThanEqual,IdentifierDot,Identifier,IfStatement,IfStatementParenOpen,IfStatementParenClose,IfStatementCurlyOpen,IfStatementCurlyClose,In,Infinity,InstanceOf,LabelColon,LessThan,LessThanEqual,LeftShift,LeftShiftAssignment,LogicalOr,LogicalAnd,NaN,New,Number,Null,NotEqual,Not,Nothing,Minus,MinusAssignment,Modulus,ModulusAssignment,Multiply,MultiplyAssignment,ObjectLiteralCurlyOpen,ObjectLiteralCurlyClose,ObjectLiteralIdentifier,ObjectLiteralColon,ObjectLiteralComma,ObjectLiteralIdentifierNumber,ObjectLiteralIdentifierString,OrAssignment,ParenExpressionOpen,ParenExpressionComma,ParenExpressionClose,PostfixIncrement,PostfixDeincrement,PrefixDeincrement,PrefixIncrement,Return,RegExp,RightShift,RightShiftAssignment,String,StrictEqual,StrictNotEqual,SwitchStatement,SwitchStatementParenOpen,SwitchStatementParenClose,SwitchStatementCurlyOpen,SwitchStatementCurlyClose,SwitchColon,This,TernaryQuestionMark,TernaryColon,TryStatement,TryStatementCurlyOpen,TryStatementCurlyClose,True,Throw,TypeOf,UnaryPlus,UnaryMinus,Undefined,Var,VarIdentifier,VarComma,Void,WithStatement,WithStatementParenOpen,WithStatementParenClose,WithStatementCurlyOpen,WithStatementCurlyClose,WhileStatement,WhileStatementParenOpen,WhileStatementParenClose,WhileStatementCurlyOpen,WhileStatementCurlyClose,Xor,XorAssignment,ZeroRightShift,ZeroRightShiftAssignment'.split(','),         
+        var rulesLookup =  {0:'ArrayComma',1:'ArrayOpen',2:'ArrayClose',3:'AccessorOpen',4:'AccessorClose',5:'Addition',6:'AdditionAssignment',7:'AssignmentDivide',8:'AndAssignment',9:'BlockStatementCurlyOpen',10:'BlockStatementCurlyClose',11:'BitwiseNot',12:'BitwiseOr',13:'BitwiseAnd',14:'Break',15:'Case',16:'Default',17:'Delete',18:'Do',19:'DoStatementCurlyOpen',20:'DoStatementCurlyClose',21:'DivideOperator',22:'CatchStatement',23:'CatchStatementParenOpen',24:'CatchStatementParenClose',25:'CatchStatementIdentifier',26:'CatchStatementCurlyOpen',27:'CatchStatementCurlyClose',28:'Comma',29:'Continue',30:'EqualAssignment',31:'Equal',32:'Else',33:'ElseCurlyOpen',34:'ElseCurlyClose',35:'EndStatement',36:'False',37:'FinallyStatement',38:'FinallyStatementCurlyOpen',39:'FinallyStatementCurlyClose',40:'ForStatement',41:'ForStatementParenOpen',42:'ForStatementParenClose',43:'ForStatementCurlyOpen',44:'ForStatementCurlyClose',45:'ForSemi',46:'FunctionCallOpen',47:'FunctionCallClose',48:'FunctionArgumentIdentifier',49:'FunctionArgumentComma',50:'FunctionIdentifier',51:'FunctionParenOpen',52:'FunctionExpression',53:'FunctionExpressionIdentifier',54:'FunctionExpressionParenOpen',55:'FunctionExpressionArgumentIdentifier',56:'FunctionExpressionArgumentComma',57:'FunctionParenClose',58:'FunctionExpressionParenClose',59:'FunctionExpressionCurlyOpen',60:'FunctionStatement',61:'FunctionStatementCurlyOpen',62:'FunctionStatementCurlyClose',63:'FunctionExpressionCurlyClose',64:'GreaterThan',65:'GreaterThanEqual',66:'IdentifierDot',67:'Identifier',68:'IfStatement',69:'IfStatementParenOpen',70:'IfStatementParenClose',71:'IfStatementCurlyOpen',72:'IfStatementCurlyClose',73:'In',74:'Infinity',75:'InstanceOf',76:'LabelColon',77:'LessThan',78:'LessThanEqual',79:'LeftShift',80:'LeftShiftAssignment',81:'LogicalOr',82:'LogicalAnd',83:'NaN',84:'New',85:'Number',86:'Null',87:'NotEqual',88:'Not',89:'Nothing',90:'Minus',91:'MinusAssignment',92:'Modulus',93:'ModulusAssignment',94:'Multiply',95:'MultiplyAssignment',96:'ObjectLiteralCurlyOpen',97:'ObjectLiteralCurlyClose',98:'ObjectLiteralIdentifier',99:'ObjectLiteralColon',100:'ObjectLiteralComma',101:'ObjectLiteralIdentifierNumber',102:'ObjectLiteralIdentifierString',103:'OrAssignment',104:'ParenExpressionOpen',105:'ParenExpressionComma',106:'ParenExpressionClose',107:'PostfixIncrement',108:'PostfixDeincrement',109:'PrefixDeincrement',110:'PrefixIncrement',111:'Return',112:'RegExp',113:'RightShift',114:'RightShiftAssignment',115:'String',116:'StrictEqual',117:'StrictNotEqual',118:'SwitchStatement',119:'SwitchStatementParenOpen',120:'SwitchStatementParenClose',121:'SwitchStatementCurlyOpen',122:'SwitchStatementCurlyClose',123:'SwitchColon',124:'This',125:'TernaryQuestionMark',126:'TernaryColon',127:'TryStatement',128:'TryStatementCurlyOpen',129:'TryStatementCurlyClose',130:'True',131:'Throw',132:'TypeOf',133:'UnaryPlus',134:'UnaryMinus',135:'Undefined',136:'Var',137:'VarIdentifier',138:'VarComma',139:'Void',140:'WithStatement',141:'WithStatementParenOpen',142:'WithStatementParenClose',143:'WithStatementCurlyOpen',144:'WithStatementCurlyClose',145:'WhileStatement',146:'WhileStatementParenOpen',147:'WhileStatementParenClose',148:'WhileStatementCurlyOpen',149:'WhileStatementCurlyClose',150:'Xor',151:'XorAssignment',152:'ZeroRightShift',153:'ZeroRightShiftAssignment'},        
         rules = [       
             createRule('NewExpressions,Expression,Postfix'),
             createRule('Statements,Operators,NewExpressions,Prefix'),       
@@ -675,14 +675,14 @@ MentalJS = function() {
                     return result;
             };
             
-        	function sandbox(code) {	
+        	function sandbox(code) {        			
         		this.code = code; 													
 				var scoping = '$', pos = 0, chr, parentState, parentStates = {}, msg, state = 89, left = 0, output = '', outputLine = '', 					
 				next, next2, next3, cached = -1,  												
 				len = code.length, parseTree = that.parseTree,
 				lookupSquare = 1, lookupCurly = 1, lookupParen = 1, ternaryCount = 0, isTernary = {}, caseCount = 0, isCase = {}, isVar = {},
 				isFor = {}, isForIn = {},  isIf = {}, isObjectLiteral = {},																
-				expected = -1, expect = 0, expected2 = -1, expected3 = -1, expected4 = -1, lastState = 89, newLineFlag = 0,
+				lastState = 89, newLineFlag = 0,
 				SQUARE_OPEN = 91, SQUARE_CLOSE = 93, PAREN_OPEN = 40, PAREN_CLOSE = 41,
 				CURLY_OPEN = 123, CURLY_CLOSE = 125,
 				LOWER_A = 97, LOWER_B = 98, LOWER_C = 99, LOWER_D = 100, LOWER_E = 101,
@@ -757,21 +757,12 @@ MentalJS = function() {
                             case 2:                         
                                 if(ident === 'do') {                              
                                     foundKeyword = 1;
-                                    state = 18;
-                                    expected = 19;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
-                                    expect = 0;
+                                    state = 18;                                    
                                     left = 0;                                           
                                     outputLine += 'do ';                                                                                        
                                 } else if(ident === 'in') {
                                     foundKeyword = 1;
                                     state = 73;
-                                    expected = -1;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
                                     left = 0;                                           
                                     outputLine += ' in ';
                                     if(isFor[index]) {
@@ -780,10 +771,6 @@ MentalJS = function() {
                                 } else if(ident === 'if') {
                                     foundKeyword = 1;
                                     state = 68;
-                                    expected = -1;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
                                     left = 0;                                        
                                     if(lastState === 32) {
                                     outputLine += ' ';
@@ -798,52 +785,29 @@ MentalJS = function() {
                                         asi();                                             
                                     }
                                     foundKeyword = 1;
-                                    state = 136;
-                                    expected = 67;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
-                                    expect = 0;
+                                    state = 136;                                    
                                     left = 0;                                            
                                     outputLine += 'var ';
                                     isVar[index] = 1;                           
                                 } else if(ident === 'new') {
                                     foundKeyword = 1;
                                     state = 84;
-                                    expected = -1;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
                                     left = 0;                                           
                                     outputLine += 'new ';                            
                                 } else if(ident === 'NaN') {
                                     foundKeyword = 1;
                                     state = 83;
-                                    expected = -1;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
                                     left = 1;                                           
                                     outputLine += 'NaN';
                                 } else if(ident === 'for') {                                        
                                     foundKeyword = 1;
-                                    state = 40;
-                                    expected = 41;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
-                                    expect = 0;
+                                    state = 40;                                    
                                     left = 0;                                        
                                     outputLine += 'for ';
                                     isFor[index] = 1;
                                 } else if(ident === 'try') {
                                     foundKeyword = 1;
-                                    state = 127;
-                                    expected = 128;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
-                                    expect = 0;
+                                    state = 127;                                    
                                     left = 0;                                        
                                     outputLine += 'try';
                                 } 
@@ -855,38 +819,22 @@ MentalJS = function() {
                                     }                                                                                                                                                       
                                     foundKeyword = 1;
                                     state = 32;
-                                    expected = -1;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
                                     left = 0;                                           
                                     outputLine += 'else ';                           
                                 } else if(ident === 'this') {
                                     foundKeyword = 1;
-                                    state = 124;
-                                    expected = -1;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
+                                    state = 124;                                    
                                     expect = 0;
                                     left = 1;                                           
                                     outputLine += 'this';                           
                                 } else if(ident === 'void') {
                                     foundKeyword = 1;
                                     state = 139;
-                                    expected = -1;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
                                     left = 0;                                           
                                     outputLine += 'void ';                                                      
                                 } else if(ident === 'case') {
                                     foundKeyword = 1;
                                     state = 15;
-                                    expected = -1;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
                                     left = 0;                                                                    
                                     outputLine += 'case ';
                                     isCase[index] = 1;
@@ -894,29 +842,16 @@ MentalJS = function() {
                                 } else if(ident === 'null') {
                                     foundKeyword = 1;
                                     state = 86;
-                                    expected = -1;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
                                     left = 1;                                           
                                     outputLine += 'null';                           
                                 } else if(ident === 'true') {
                                     foundKeyword = 1;
                                     state = 130;
-                                    expected = -1;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
                                     left = 1;                                           
                                     outputLine += 'true';
                                 } else if(ident === 'with') {
                                     foundKeyword = 1;
-                                    state = 140;
-                                    expected = 141;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
-                                    expect = 0;
+                                    state = 140;                                    
                                     left = 0;                                        
                                     outputLine += 'with';
                                 }
@@ -925,48 +860,26 @@ MentalJS = function() {
                                 if(ident === 'throw') {
                                     foundKeyword = 1;
                                     state = 131;
-                                    expected = -1;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
                                     left = 0;                                           
                                     outputLine += 'throw ';                          
                                 } else if(ident === 'break') {
                                     foundKeyword = 1;
                                     state = 14;
-                                    expected = -1;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
                                     left = 0;                                           
                                     outputLine += 'break ';                         
                                 } else if(ident === 'false') {
                                     foundKeyword = 1;
                                     state = 36;
-                                    expected = -1;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
                                     left = 1;                                           
                                     outputLine += 'false';
                                 } else if(ident === 'catch') {
                                     foundKeyword = 1;
-                                    state = 22;
-                                    expected = 23;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
-                                    expect = 0;
+                                    state = 22;                                    
                                     left = 0;                                        
                                     outputLine += 'catch';
                                 } else if(ident === 'while') {
                                     foundKeyword = 1;
-                                    state = 145;
-                                    expected = 146;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
-                                    expect = 0;
+                                    state = 145;                                    
                                     left = 0;                                        
                                     outputLine += 'while';
                                 }
@@ -975,38 +888,21 @@ MentalJS = function() {
                                 if(ident === 'delete') {
                                     foundKeyword = 1;
                                     state = 17;
-                                    expected = -1;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
                                     left = 0;                                           
                                     outputLine += 'delete ';                         
                                 } else if(ident === 'return') {
                                     foundKeyword = 1;
                                     state = 111;
-                                    expected = -1;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
                                     left = 0;                                           
                                     outputLine += 'return ';                         
                                 } else if(ident === 'typeof') {                               
                                     foundKeyword = 1;
                                     state = 132;
-                                    expected = -1;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
                                     left = 0;                                           
                                     outputLine += 'typeof ';
                                 } else if(ident === 'switch') {                               
                                     foundKeyword = 1;
-                                    state = 118;
-                                    expected = 119;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
-                                    expect = 0;
+                                    state = 118;                                    
                                     left = 0;                                        
                                     outputLine += 'switch';
                                 }
@@ -1014,22 +910,12 @@ MentalJS = function() {
                             case 7:                         
                                 if(ident === 'default') {
                                     foundKeyword = 1;
-                                    state = 16;
-                                    expected = 123;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
-                                    expect = 0;
+                                    state = 16;                                    
                                     left = 0;                                           
                                     outputLine += 'default';
                                 } else if(ident === 'finally') {
                                     foundKeyword = 1;
-                                    state = 37;
-                                    expected = 38;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
-                                    expect = 0;
+                                    state = 37;                                    
                                     left = 0;                                        
                                     outputLine += 'finally';
                                 }
@@ -1038,28 +924,13 @@ MentalJS = function() {
                                 if(ident === 'function') {
                                     foundKeyword = 1;                                        
                                     if(rules[52][lastState]) {
-                                        state = 52;
-                                        expected = 53;
-                                        expected2 = 54;
-                                        expected3 = -1;
-                                        expected4 = -1;
-                                        expect = 0;                                                             
+                                        state = 52;                                                                                                    
                                     } else if(rules[60][lastState]) {
-                                        state = 60;
-                                        expected = 50;
-                                        expected2 = -1;
-                                        expected3 = -1;
-                                        expected4 = -1;
-                                        expect = 0;
+                                        state = 60;                                        
                                     } else {                                    
                                         if(!rules[67][lastState] && newLineFlag) {                                                                                    
                                             asi();
-                                            state = 60;
-                                            expected = 50;
-                                            expected2 = -1;
-                                            expected3 = -1;
-                                            expected4 = -1;
-                                            expect = 0;
+                                            state = 60;                                            
                                         } else {
                                             error('Unexpected function. Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                                         }                                              
@@ -1069,19 +940,11 @@ MentalJS = function() {
                                 } else if(ident === 'Infinity') {
                                     foundKeyword = 1;
                                     state = 74;
-                                    expected = -1;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
                                     left = 1;                                           
                                     outputLine += 'Infinity';                          
                                 } else if(ident === 'continue') {
                                     foundKeyword = 1;
                                     state = 29;
-                                    expected = -1;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
                                     left = 0;                                           
                                     outputLine += 'continue ';
                                 }
@@ -1090,10 +953,6 @@ MentalJS = function() {
                                 if(ident === 'instanceof') {
                                     foundKeyword = 1;
                                     state = 75;
-                                    expected = -1;
-                                    expected2 = -1;
-                                    expected3 = -1;
-                                    expected4 = -1;
                                     left = 1;                                        
                                     outputLine += ' instanceof ';
                                 }
@@ -1182,30 +1041,21 @@ MentalJS = function() {
                         if(identifierLen > 1 && identifierLen < 11) {
                             keyword();
                         }                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
-                        if(!foundKeyword) {
-                            expected = expected2 = expected3 = expected4 = -1, expect = 0;                                                                                                                                                                                                                                                                                                                             
+                        if(!foundKeyword) {                                                                                                                                                                                                                                                                                                                                                        
                             if(rules[50][lastState]) {
-                                state = 50;
-                                expected = 51;                                    
+                                state = 50;                                                                    
                                 outputLine += ' ';
                             } else if(rules[25][lastState]) {
-                                state = 25;
-                                expected = 24;                                    
+                                state = 25;                                                                    
                             } else if(rules[98][lastState]) {
-                                state = 98;
-                                expected = 99;                                                                     
+                                state = 98;                                                                                                     
                             } else if(rules[53][lastState]) {
-                                state = 53;
-                                expected = 54;                                    
+                                state = 53;                                                                    
                                 outputLine += ' ';
                             } else if(rules[48][lastState]) {
-                                state = 48;
-                                expected = 57;
-                                expected2 = 49;                                                 
+                                state = 48;                                                                                 
                             } else if(rules[55][lastState]) {
-                                state = 55;
-                                expected = 58;
-                                expected2 = 56;                                    
+                                state = 55;                                                                    
                             } else if(rules[137][lastState]) {                                 
                                 state = 137;                                    
                                 left = 1;                                                                                                                 
@@ -1454,12 +1304,7 @@ MentalJS = function() {
                 }
 				    var states = {dot: 0, e:0, e2:0, complete:0,output:'', zeroFirst: 0, dotFirst: 0};				    
 				    if(rules[101][lastState]) {
-                        state = 101;
-                        expected = 99;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
-                        expect = 0;                         
+                        state = 101;                                                 
                     } else if(rules[85][lastState]) {
                         left = 1;
                         state = 85;
@@ -1544,92 +1389,40 @@ MentalJS = function() {
 				function parenOpen() {
 				    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
 				    if(lastState === 50) {
-                            state = 51;
-                            expect = 0;
-                            expected = 48;
-                            expected2 = 57;
-                            expected3 = -1;
-                            expected4 = -1;
-                        } else if(lastState === 40) {
-                            state = 41;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;
-                        } else if(rules[46][lastState]) {
-                            state = 46;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;
-                        } else if(lastState === 68) {
-                            state = 69;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;  
-                        } else if(lastState === 22) {
-                            state = 23;
-                            expected = 25;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;  
-                            expect = 0;         
-                        } else if(lastState === 145) {
-                            state = 146;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;
-                        } else if(lastState === 118) {
-                            state = 119;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;
-                        } else if(lastState === 140) {
-                            state = 141;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;
-                        } else if(lastState === 53) {
-                            state = 54;
-                            expect = 0;
-                            expected = 55;
-                            expected2 = 58;
-                            expected3 = -1;
-                            expected4 = -1;
-                        } else if(lastState === 52) {
-                            state = 54;
-                            expect = 0;
-                            expected = 55;
-                            expected2 = 58;
-                            expected3 = -1;
-                            expected4 = -1;                          
-                        } else if(rules[104][lastState]) {                           
-                            state = 104;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;
-                        } else {                                
-                            if(!rules[67][lastState] && newLineFlag) {                                                                                    
-                               asi();
-                               state = 104;
-                               expected = -1;
-                               expected2 = -1;
-                               expected3 = -1;
-                               expected4 = -1;
-                            } else {
-                               error('Unexpected (. Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
-                            }                                                           
-                        }                                               
-                        outputLine += '(';                          
-                        pos++;
-                        parentStates[index] = state;
-                        left = 0;
-                        lookupParen++;
+                        state = 51;                                                        
+                    } else if(lastState === 40) {
+                        state = 41;                            
+                    } else if(rules[46][lastState]) {
+                        state = 46;                            
+                    } else if(lastState === 68) {
+                        state = 69;                              
+                    } else if(lastState === 22) {
+                        state = 23;                                 
+                    } else if(lastState === 145) {
+                        state = 146;                            
+                    } else if(lastState === 118) {
+                        state = 119;                            
+                    } else if(lastState === 140) {
+                        state = 141;                           
+                    } else if(lastState === 53) {
+                        state = 54;                                                    
+                    } else if(lastState === 52) {
+                        state = 54;                                                                              
+                    } else if(rules[104][lastState]) {                           
+                        state = 104;                            
+                    } else {                                
+                        if(!rules[67][lastState] && newLineFlag) {                                                                                    
+                           asi();
+                           state = 104;                               
+                        } else {
+                           error('Unexpected (. Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
+                        }                                                           
+                    }                                               
+                    outputLine += '(';                          
+                    pos++;
+                    parentStates[index] = state;
+                    left = 0;
+                    lookupParen++;
 				}
 				function parenClose() {
 				    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
@@ -1638,76 +1431,34 @@ MentalJS = function() {
                     index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);                     
                     parentState = parentStates[index];                                                                                                                                                                                                                    
                     if(rules[57][lastState]) {
-                        state = 57;
-                        expect = 0;
-                        expected = 61;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 57;                                                
                     } else if(parentState === 46) {
-                        state = 47;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 47;                        
                         left = 1;
                     } else if(parentState === 41) {
-                        state = 42;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 42;                        
                         left = 0;
                         isFor[index] = 0;     
                         isForIn[index] = 0;       
                     } else if(parentState === 119) {
-                        state = 120;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 120;                        
                         left = 0;
                     } else if(parentState === 23) {
-                        state = 24;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 24;                        
                         left = 0;
                     } else if(parentState === 146) {
-                        state = 147;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 147;                        
                         left = 0;
                     } else if(parentState === 141) {
-                        state = 142;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 142;                        
                         left = 0;
                     } else if(parentState === 69) {
-                        state = 70;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 70;                        
                         left = 0;
                     } else if(rules[58][lastState]) {
-                        state = 58;
-                        expect = 0;
-                        expected = 59;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 58;                                                
                     } else if(parentState === 104) {
-                        state = 106;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 106;                        
                         left = 1;
                     } else {                                                                                                                    
                         error('Unexpected ). Cannot follow '+rulesLookup[lastState]+'.Output:'+output);                          
@@ -1719,124 +1470,58 @@ MentalJS = function() {
 				function curlyOpen() {
 				    var index = parseFloat(''+lookupSquare+(lookupCurly+1)+lookupParen);
 				    if(lastState === 57) {
-                            state = 61;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;
-                        } else if(lastState === 18) {
-                            state = 19;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;
-                        } else if(lastState === 32) {
-                            state = 33;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;
-                        } else if(lastState === 147) {
-                            state = 148;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;  
-                        } else if(lastState === 24) {
-                            state = 26;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;
-                        } else if(lastState === 42) {
-                            state = 43;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;
-                        } else if(lastState === 142) {
-                            state = 143;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;              
-                        } else if(lastState === 127) {
-                            state = 128;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;
-                        } else if(lastState === 120) {
-                            state = 121;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;
-                        } else if(lastState === 70) {
-                            state = 71;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;
-                        } else if(lastState === 37) {
-                            state = 38;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;
-                        } else if(lastState === 58) {
-                            state = 59;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;
-                        } else if(rules[96][lastState]) {                
-                            state = 96;
-                            expected = 98;
-                            expected2 = 102;
-                            expected3 = 101;
-                            expected4 = 97;
-                            expect = 0;
-                            parentStates[index] = state;
-                            outputLine += 'M.O(';
-                        } else if(rules[9][lastState]) {
-                            state = 9;
-                            expected = -1;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;
-                        } else {                                                                                                                            
-                            if(!rules[67][lastState] && newLineFlag) {                                    
-                              asi();
-                              if(lastState === 45) {                                    
-                                state = 96;
-                                expected = 98;
-                                expected2 = 102;
-                                expected3 = 101;
-                                expected4 = 97;
-                                expect = 0;
-                                parentStates[index] = state;
-                                outputLine += 'M.O(';   
-                              } else {                                                                                                                             
-                                state = 9;
-                                expected = -1;
-                                expected2 = -1;
-                                expected3 = -1;
-                                expected4 = -1;
-                              }                                                                                 
-                            } else {                                                
-                                error('Unexpected {. Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
-                            }
-                        }                                       
-                        outputLine += '{';
-                        if(state === 61 || state === 59) {
-                            outputLine += 'var $arguments$=M.A(arguments);';
-                        }                           
-                        pos++;
-                        index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
+                       state = 61;                            
+                    } else if(lastState === 18) {
+                        state = 19;                        
+                    } else if(lastState === 32) {
+                        state = 33;                        
+                    } else if(lastState === 147) {
+                        state = 148;                          
+                    } else if(lastState === 24) {
+                        state = 26;                        
+                    } else if(lastState === 42) {
+                        state = 43;                        
+                    } else if(lastState === 142) {
+                        state = 143;                                      
+                    } else if(lastState === 127) {
+                        state = 128;                        
+                    } else if(lastState === 120) {
+                        state = 121;                        
+                    } else if(lastState === 70) {
+                        state = 71;                        
+                    } else if(lastState === 37) {
+                        state = 38;                        
+                    } else if(lastState === 58) {
+                        state = 59;                        
+                    } else if(rules[96][lastState]) {                
+                        state = 96;                        
                         parentStates[index] = state;
-                        left = 0;
-                        lookupCurly++;
+                        outputLine += 'M.O(';
+                    } else if(rules[9][lastState]) {
+                        state = 9;                        
+                    } else {                                                                                                                            
+                        if(!rules[67][lastState] && newLineFlag) {                                    
+                          asi();
+                          if(lastState === 45) {                                    
+                            state = 96;                            
+                            parentStates[index] = state;
+                            outputLine += 'M.O(';   
+                          } else {                                                                                                                             
+                            state = 9;                            
+                          }                                                                                 
+                        } else {                                                
+                            error('Unexpected {. Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
+                        }
+                    }                                       
+                    outputLine += '{';
+                    if(state === 61 || state === 59) {
+                        outputLine += 'var $arguments$=M.A(arguments);';
+                    }                           
+                    pos++;
+                    index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
+                    parentStates[index] = state;
+                    left = 0;
+                    lookupCurly++;
 				}
 				function curlyClose() {
 				    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
@@ -1849,92 +1534,42 @@ MentalJS = function() {
                         state = 62;                              
                         left = 0;
                     } else if(parentState === 33) {
-                        state = 34;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 34;                        
                         left = 0;
                     } else if(parentState === 96) {
-                        state = 97;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 97;                        
                         left = 1;
                         index = parseFloat(''+lookupSquare+(lookupCurly+1)+lookupParen);
                         isObjectLiteral[index] = 0;
                         outputLine += ')';
                     } else if(parentState === 43) {
-                        state = 44;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 44;                        
                         left = 0;                               
                     } else if(parentState === 148) {
-                        state = 149;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 149;                        
                         left = 0;                               
                     } else if(parentState === 26) {
-                        state = 27;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 27;                        
                         left = 0;
                     } else if(parentState === 38) {
-                        state = 39;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 39;                        
                         left = 0;                                               
                     } else if(parentState === 143) {
-                        state = 144;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 144;                        
                         left = 0;                               
                     } else if(parentState === 128) {
-                        state = 129;               
-                        expected = 22;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
-                        expect = 0;
+                        state = 129;                                       
                     } else if(parentState === 19) {
-                        state = 20;                
-                        expected = 145;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
-                        expect = 0;
+                        state = 20;                                        
                     } else if(parentState === 121) {
-                        state = 122;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 122;                        
                         left = 0;                                                       
                     } else if(parentState === 18) {
-                        state = 19;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 19;                      
                         left = 0;
                         expect = 0;
                     } else if(parentState === 71) {
-                        state = 72;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 72;                        
                         left = 0;
                     } else if(parentState === 59) {
                         state = 63;
@@ -1966,49 +1601,21 @@ MentalJS = function() {
 				    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
 				    parentState = parentStates[index];                                                                                                                                                                                                                                                                                                                                                                                               
                     if(lastState === 48) {
-                        state = 49;
-                        expect = 0;
-                        expected = 48;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 49;                                                
                     } else if(parentState === 1 || lastState === 1) {
                         state = 0;                                                           
                     } else if(lastState === 55) {
-                        state = 56;
-                        expect = 0;
-                        expected = 55;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;      
+                        state = 56;                                                      
                     } else if(parentState === 104) {
-                        state = 105;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 105;                        
                     } else if(isObjectLiteral[index]) {
-                        state = 100;
-                        expect = 0;
-                        expected = 98;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 100;                                               
                     } else if(isVar[index]) {
-                        state = 138;
-                        expected = 67;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
-                        expect = 0; 
+                        state = 138;                         
                     } else if(isTernary[index]) {
                         error("Syntax error expected :");               
                     } else {
-                        state = 28;
-                        expected = -1;
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        state = 28;                        
                     }
                     outputLine += ',';
                     pos++;
@@ -2019,12 +1626,7 @@ MentalJS = function() {
                         state = 66;                                
                     } else {
                         error('Unexpected . Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
-                    }
-                    expected = 67;
-                    expected2 = -1;
-                    expected3 = -1;
-                    expected4 = -1;
-                    expect = 0;
+                    }                    
                     outputLine += '.';
                     pos++;
                     left = 0;
@@ -2037,21 +1639,13 @@ MentalJS = function() {
                         isTernary[index]--;
                         ternaryCount--;
                     } else if(rules[99][lastState]) {
-                        state = 99;
-                        expected = -1;                               
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;                                                                                              
+                        state = 99;                                                                                                                      
                         isObjectLiteral[index] = 1;               
                     } else if(isCase[index] || lastState === 16) {
                         state = 123;
                         if(lastState === 15) {
                             error("Syntax error");
-                        }
-                        expected = -1;                               
-                        expected2 = -1;
-                        expected3 = -1;
-                        expected4 = -1;
+                        }                        
                         if(lastState !== 16) {
                             isCase[index] = 0;
                             caseCount--;    
@@ -2067,60 +1661,55 @@ MentalJS = function() {
 				}
 				function string() {
 				    var states;
-				    if(lastState === 96 || lastState === 100) {
-                            state = 102;
-                            left = 0;
-                            expected = 99;
-                            expected2 = -1;
-                            expected3 = -1;
-                            expected4 = -1;
-                            expect = 0; 
-                        } else {
-                            state = 115;
-                            left = 1;
-                        }                           
-                        states = {escaping: 0, complete: 0};
-                        states[chr] = 1;                        
+			    	if(lastState === 96 || lastState === 100) {
+                        state = 102;
+                        left = 0;                             
+                    } else {
+                        state = 115;
+                        left = 1;
+                    }                           
+                    states = {escaping: 0, complete: 0};
+                    states[chr] = 1;                        
+                    outputLine += code.charAt(pos);
+                    pos++;
+                    if(state === 102) {
+                        outputLine += scoping;  
+                    }
+                    while(pos < len) {                               
+                        chr = code.charCodeAt(pos);                                                                                          
+                        if(chr === SINGLE_QUOTE && !states.escaping && states[SINGLE_QUOTE]) {
+                            states.complete = 1;                 
+                        } else if(chr === DOUBLE_QUOTE && !states.escaping && states[DOUBLE_QUOTE]) {
+                            states.complete = 1;
+                        } else if(states.escaping && (chr===10||chr===13||chr===8232||chr==8233) ) {                                    
+                            pos++;
+                            states.escaping = 0;
+                            continue;                                                
+                        } else if(chr === BACKSLASH && !states.escaping) {
+                            states.escaping = 1;
+                            pos++;
+                            continue;                                
+                        } else if(chr === BACKSLASH && states.escaping) {
+                            states.escaping = 0;
+                            outputLine += '\\';                                
+                        } else if((chr===10||chr===13||chr===8232||chr==8233) && !states.escaping) {
+                            error("Unterminated string literal");
+                        } else if(states.escaping) {
+                            outputLine += '\\';
+                            states.escaping = 0;
+                        }                                                            
+                        if(states.complete && state === 102) {
+                            outputLine += scoping;  
+                        }                                                                       
                         outputLine += code.charAt(pos);
                         pos++;
-                        if(state === 102) {
-                            outputLine += scoping;  
-                        }
-                        while(pos < len) {                               
-                            chr = code.charCodeAt(pos);                                                                                          
-                            if(chr === SINGLE_QUOTE && !states.escaping && states[SINGLE_QUOTE]) {
-                                states.complete = 1;                 
-                            } else if(chr === DOUBLE_QUOTE && !states.escaping && states[DOUBLE_QUOTE]) {
-                                states.complete = 1;
-                            } else if(states.escaping && (chr===10||chr===13||chr===8232||chr==8233) ) {                                    
-                                pos++;
-                                states.escaping = 0;
-                                continue;                                                
-                            } else if(chr === BACKSLASH && !states.escaping) {
-                                states.escaping = 1;
-                                pos++;
-                                continue;                                
-                            } else if(chr === BACKSLASH && states.escaping) {
-                                states.escaping = 0;
-                                outputLine += '\\';                                
-                            } else if((chr===10||chr===13||chr===8232||chr==8233) && !states.escaping) {
-                                error("Unterminated string literal");
-                            } else if(states.escaping) {
-                                outputLine += '\\';
-                                states.escaping = 0;
-                            }                                                            
-                            if(states.complete && state === 102) {
-                                outputLine += scoping;  
-                            }                                                                       
-                            outputLine += code.charAt(pos);
-                            pos++;
-                            if(states.complete) {                                                               
-                                break;
-                            }                           
-                        }  
-                        if(!states.complete) {
-                           error("Unterminated string literal"); 
-                        }
+                        if(states.complete) {                                                               
+                            break;
+                        }                           
+                    }  
+                    if(!states.complete) {
+                       error("Unterminated string literal"); 
+                    }
 				}
 				function exclamation() {
 					cached = -1;
@@ -2377,7 +1966,7 @@ MentalJS = function() {
                     }
                     
                     if(!rules[state]) {
-                        error("State does not exist in the rules:" +state);
+                        error("State does not exist in the rules:" +rulesLookup[state]);
                     }                                                                      
                     
                     if(!rules[state][lastState] && newLineFlag) {                                                                                   
@@ -2386,20 +1975,7 @@ MentalJS = function() {
                      
                     if(!rules[state][lastState]) {                                                                                          
                         error("Unexpected " + rulesLookup[state] + '. Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
-                    } else if(((expected>=0 && expected !== state) || (expected2>=0 && expected2 !== state) || (expected3>=0 && expected3 !== state) || (expected4>=0 && expected4 !== state)) && expect === 1) {
-                        msg = "Expected " + expected;
-                        if(expected2>=0) {
-                            msg = msg + ' or ' + expected2;
-                        }
-                        if(expected3>=0) {
-                            msg = msg + ' or ' + expected3;
-                        }
-                        if(expected4>=0) {
-                            msg = msg + ' or ' + expected4;
-                        }
-                        msg = msg + '. But got '+rulesLookup[state] + ' with last state:'+rulesLookup[lastState]+', output:'+output;
-                        error(msg);
-                    }
+                    } 
                     
                     if(parseTreeFlag){                          
                         parseTreeOutput = parseTreeOutput + '<'+rulesLookup[state]+'>' + outputLine + '</'+rulesLookup[state]+'>';
@@ -2408,16 +1984,13 @@ MentalJS = function() {
                     newLineFlag = 0;
                     if(lookupSquare === 1 && lookupCurly === 1 && lookupParen === 1) {
                         parentStates = {};
-                    }
+                    }                                        
 				}																				
 				if(browserCheckSyntaxFlag) {
 				   checkSyntax(code);
 				}								
 				while(pos < len) {					    						                                               
-                    state = 89;
-                    if(expected>-1||expected2>-1||expected3>-1||expected4>-1) {
-                    	expect = 1;
-                   	}															
+                    state = 89;                    															
 					if(cached >= 0) {
 						chr = cached;
 					} else {
@@ -2521,21 +2094,7 @@ MentalJS = function() {
 					checkRules();
                     output += outputLine;
                     outputLine = '';																													
-				}	
-				if(((expected>=0 && expected !== state) || (expected2>=0 && expected2 !== state) || (expected3>=0 && expected3 !== state) || (expected4>=0 && expected4 !== state))) {						
-					msg = "Expected " + expected;
-					if(expected2>=0) {
-						msg = msg + ' or ' + expected2;
-					}
-					if(expected3>=0) {
-						msg = msg + ' or ' + expected3;
-					}
-					if(expected4>=0) {
-						msg = msg + ' or ' + expected4;
-					}
-					msg = msg + '. But got '+state + ' with last state:'+lastState + ', output:'+output;
-					error(msg);
-				}
+				}																	
 								
 				if(lastState === 70) {
 					error("Syntax error");	
@@ -2549,7 +2108,12 @@ MentalJS = function() {
 					error("Syntax error unmatched (");
 				} else if(caseCount > 1) {
 					error("Syntax error unmatched case");
+				}	
+				
+				if(!rules[35][lastState]) {
+					error('Unexpected EOF. '+rulesLookup[lastState] + ' cannot follow EOF.');
 				}
+							
 				if(completeFlag) {
                     that.complete();
                 }
