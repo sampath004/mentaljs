@@ -160,82 +160,82 @@
 	function createRule(rules) {
 		rules = rules.split(',');
 		var expression = {
-			2:true,4:true,36:true,47:true,63:true,67:true,74:true,
-			83:true,85:true,86:true,97:true,106:true,112:true,115:true,124:true,130:true,135:true,
-			137:true
-		},
-		prefix = {
-			88:true,11:true,134:true,133:true,109:true,110:true
-		},
-		postfix = {
-			107:true,108:true
-		},
-		operators = {
-			73:true,75:true,
-			5:true,21:true,31:true,87:true,116:true,117:true,
-			81:true,12:true,150:true,92:true,82:true,13:true,152:true,
-			113:true,64:true,65:true,79:true,77:true,78:true,
-			94:true,90:true,30:true,6:true,103:true,151:true,93:true,8:true,
-			153:true,114:true,80:true,95:true,91:true,
-			7:true
-		},			
-		statements = {
-			89:true,35:true,10:true,20:true,27:true,
-			34:true,39:true,62:true,72:true,
-			122:true,129:true,144:true,149:true,
-			9:true,19:true,26:true,
-			33:true,38:true,61:true,71:true,
-			121:true,128:true,143:true,148:true,
-			59:true,43:true,44:true,
-			70:true,120:true,142:true,
-			147:true,42:true,76:true,111:true,32:true,123:true,18:true
-		},
-		newExpressions = {
-			28:true, 0:true,138:true,41:true,69:true,119:true,
-			141:true,146:true,46:true,104:true,
-			1:true,3:true,15:true,111:true,84:true,132:true,17:true,139:true,99:true,
-			125:true,126:true,45:true,29:true,14:true,131:true
-		},	 
+            2:1,4:1,36:1,47:1,63:1,67:1,74:1,
+            83:1,85:1,86:1,97:1,106:1,112:1,115:1,124:1,130:1,135:1,
+            137:1
+        },
+        prefix = {
+            88:1,11:1,134:1,133:1,109:1,110:1
+        },
+        postfix = {
+            107:1,108:1
+        },
+        operators = {
+            73:1,75:1,
+            5:1,21:1,31:1,87:1,116:1,117:1,
+            81:1,12:1,150:1,92:1,82:1,13:1,152:1,
+            113:1,64:1,65:1,79:1,77:1,78:1,
+            94:1,90:1,30:1,6:1,103:1,151:1,93:1,8:1,
+            153:1,114:1,80:1,95:1,91:1,
+            7:1
+        },          
+        statements = {
+            89:1,35:1,10:1,20:1,27:1,
+            34:1,39:1,62:1,72:1,
+            122:1,129:1,144:1,149:1,
+            9:1,19:1,26:1,
+            33:1,38:1,61:1,71:1,
+            121:1,128:1,143:1,148:1,
+            59:1,43:1,44:1,
+            70:1,120:1,142:1,
+            147:1,42:1,76:1,111:1,32:1,123:1,18:1
+        },
+        newExpressions = {
+            28:1, 0:1,138:1,41:1,69:1,119:1,
+            141:1,146:1,46:1,104:1,
+            1:1,3:1,15:1,111:1,84:1,132:1,17:1,139:1,99:1,
+            125:1,126:1,45:1,29:1,14:1,131:1
+        },   
 		obj = Object.create(null), i, k;		
 		for(i=0;i<rules.length;i+=1) {
 			if(rules[i] === 'Expression') {
 				for(k in expression) {
 					if(expression.hasOwnProperty(k)) {
-						obj[k] = true;
+						obj[k] = 1;
 					}
 				}
 			} else if(rules[i] === 'Operators') {
 				for(k in operators) {
 					if(operators.hasOwnProperty(k)) {
-						obj[k] = true;
+						obj[k] = 1;
 					}
 				}			
 			} else if(rules[i] === 'Prefix') {
 				for(k in prefix) {
 					if(prefix.hasOwnProperty(k)) {
-						obj[k] = true;
+						obj[k] = 1;
 					}
 				}
 			} else if(rules[i] === 'Postfix') {
 				for(k in postfix) {
 					if(postfix.hasOwnProperty(k)) {
-						obj[k] = true;
+						obj[k] = 1;
 					}
 				}
 			} else if(rules[i] === 'Statements') {
 				for(k in statements) {
 					if(statements.hasOwnProperty(k)) {
-						obj[k] = true;
+						obj[k] = 1;
 					}
 				}
 			} else if(rules[i] === 'NewExpressions') {
 				for(k in newExpressions) {
 					if(newExpressions.hasOwnProperty(k)) {
-						obj[k] = true;
+						obj[k] = 1;
 					}
 				}
 			} else {
-				obj[rules[i]] = true;
+				obj[rules[i]] = 1;
 			}
 		}
 		return obj;		
