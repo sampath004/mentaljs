@@ -1061,7 +1061,7 @@ MentalJS = function() {
                                             expected4 = -1;
                                             expect = 0;
                                         } else {
-                                            error('Unexpected function. Cannot follow '+lastState+'.Output:'+output);
+                                            error('Unexpected function. Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                                         }                                              
                                     }                                        
                                     left = 0;                                        
@@ -1286,7 +1286,7 @@ MentalJS = function() {
                         pos++;
                         cached = next;                                                                  
                     } else {
-                        error('Unexpected + Cannot follow '+lastState+'.Output:'+output);
+                        error('Unexpected + Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                     }
                     left = 0;
 				}
@@ -1534,7 +1534,7 @@ MentalJS = function() {
                         left = 1;
                         outputLine += ')';
                     } else {                
-                        error('Unexpected ]. Cannot follow '+lastState+'.Output:'+output);
+                        error('Unexpected ]. Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                     }                                                   
                     outputLine += ']';
                     left = 1;                           
@@ -1622,7 +1622,7 @@ MentalJS = function() {
                                expected3 = -1;
                                expected4 = -1;
                             } else {
-                               error('Unexpected (. Cannot follow '+lastState+'.Output:'+output);
+                               error('Unexpected (. Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                             }                                                           
                         }                                               
                         outputLine += '(';                          
@@ -1710,7 +1710,7 @@ MentalJS = function() {
                         expected4 = -1;
                         left = 1;
                     } else {                                                                                                                    
-                        error('Unexpected ). Cannot follow '+lastState+'.Output:'+output);                          
+                        error('Unexpected ). Cannot follow '+rulesLookup[lastState]+'.Output:'+output);                          
                     }                                           
                     outputLine += ')';
                     pos++;
@@ -1825,7 +1825,7 @@ MentalJS = function() {
                                 expected4 = -1;
                               }                                                                                 
                             } else {                                                
-                                error('Unexpected {. Cannot follow '+lastState+'.Output:'+output);
+                                error('Unexpected {. Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                             }
                         }                                       
                         outputLine += '{';
@@ -1943,7 +1943,7 @@ MentalJS = function() {
                         state = 10;                             
                         left = 0;
                     } else {                                                                                        
-                        error('Unexpected }. Cannot follow '+lastState+'.Output:'+output);
+                        error('Unexpected }. Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                     }
                     index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);                           
                     parentStates[index] = null;                                     
@@ -2018,7 +2018,7 @@ MentalJS = function() {
 				    if(left) {                         
                         state = 66;                                
                     } else {
-                        error('Unexpected . Cannot follow '+lastState+'.Output:'+output);
+                        error('Unexpected . Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                     }
                     expected = 67;
                     expected2 = -1;
@@ -2059,7 +2059,7 @@ MentalJS = function() {
                     } else if(!parentState) {
                         state = 76;
                     } else {
-                        error('Unexpected : Cannot follow '+lastState+'.Output:'+output);
+                        error('Unexpected : Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                     }
                     outputLine += ':';
                     pos++;
@@ -2141,7 +2141,7 @@ MentalJS = function() {
                         outputLine += '!==';
                         pos+=3;                         
                     } else {
-                        error('Unexpected !. Cannot follow '+lastState+'.Output:'+output);
+                        error('Unexpected !. Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                     }           
                     left = 0;
 				}
@@ -2151,7 +2151,7 @@ MentalJS = function() {
                         outputLine += '~';
                         pos++;                                              
                     } else {
-                        error('Unexpected ~ Cannot follow '+lastState+'.Output:'+output);
+                        error('Unexpected ~ Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                     }
                     left = 0;
 				}
@@ -2172,7 +2172,7 @@ MentalJS = function() {
                         pos++; 
                         cached = next;                     
                     } else {
-                        error('Unexpected | Cannot follow '+lastState+'.Output:'+output);
+                        error('Unexpected | Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                     }
                     left = 0;
 				}
@@ -2189,7 +2189,7 @@ MentalJS = function() {
                         pos++;  
                         cached = next;                    
                     } else {
-                        error('Unexpected ^. Cannot follow '+lastState+'.Output:'+output);
+                        error('Unexpected ^. Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                     }
                     left = 0;
 				}
@@ -2206,7 +2206,7 @@ MentalJS = function() {
                         pos++; 
                         cached = next;                     
                     } else {
-                        error('Unexpected % Cannot follow '+lastState+'.Output:'+output);
+                        error('Unexpected % Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                     }
                     left = 0;
 				}
@@ -2227,7 +2227,7 @@ MentalJS = function() {
                         pos++;  
                         cached = next;                    
                     } else {
-                        error('Unexpected & Cannot follow '+lastState+'.Output:'+output);
+                        error('Unexpected & Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                     }
                     left = 0;
 				}
@@ -2250,7 +2250,7 @@ MentalJS = function() {
                         outputLine += '===';
                         pos+=3;                           
                     } else {
-                        error('Unexpected = Cannot follow '+lastState+'.Output:'+output);
+                        error('Unexpected = Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                     }
                     left = 0;
 				}
@@ -2289,7 +2289,7 @@ MentalJS = function() {
                         pos+=2;
                         cached = next2;                     
                     } else {
-                        error('Unexpected > Cannot follow '+lastState+'.Output:'+output);
+                        error('Unexpected > Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                     }
                     left = 0;
 				}
@@ -2317,7 +2317,7 @@ MentalJS = function() {
                         pos+=2;
                         cached = next2;                     
                     } else {
-                        error('Unexpected < Cannot follow '+lastState+'.Output:'+output);
+                        error('Unexpected < Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                     }
                     left = 0;
 				}
@@ -2334,7 +2334,7 @@ MentalJS = function() {
                         outputLine += '*=';
                         pos+=2;                     
                     } else {
-                        error('Unexpected * Cannot follow '+lastState+'.Output:'+output);
+                        error('Unexpected * Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                     }
                     left = 0;
 				}
@@ -2364,7 +2364,7 @@ MentalJS = function() {
                         pos++;      
                         cached = next;                                                            
                     } else {                    
-                        error('Unexpected - Cannot follow '+lastState+'.Output:'+output);
+                        error('Unexpected - Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                     }
                     left = 0;   
 				}
@@ -2373,7 +2373,7 @@ MentalJS = function() {
 				}
 				function checkRules() {
 				    if(state === 89) {                          
-                        error("No state defined for char:" +String.fromCharCode(chr) + ', left: '+left+', last state: '+lastState+',output:'+output);
+                        error("No state defined for char:" +String.fromCharCode(chr) + ', left: '+left+', last state: '+rulesLookup[lastState]+',output:'+output);
                     }
                     
                     if(!rules[state]) {
@@ -2385,7 +2385,7 @@ MentalJS = function() {
                     }                                                
                      
                     if(!rules[state][lastState]) {                                                                                          
-                        error("Unexpected " + state + '. Cannot follow '+lastState+'.Output:'+output);
+                        error("Unexpected " + rulesLookup[state] + '. Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                     } else if(((expected>=0 && expected !== state) || (expected2>=0 && expected2 !== state) || (expected3>=0 && expected3 !== state) || (expected4>=0 && expected4 !== state)) && expect === 1) {
                         msg = "Expected " + expected;
                         if(expected2>=0) {
@@ -2397,7 +2397,7 @@ MentalJS = function() {
                         if(expected4>=0) {
                             msg = msg + ' or ' + expected4;
                         }
-                        msg = msg + '. But got '+state + ' with last state:'+lastState+', output:'+output;
+                        msg = msg + '. But got '+rulesLookup[state] + ' with last state:'+rulesLookup[lastState]+', output:'+output;
                         error(msg);
                     }
                     
@@ -2451,7 +2451,7 @@ MentalJS = function() {
                         } else if((lastState === 137 || left) && next !== FORWARD_SLASH) {
                             divide();
                         } else {
-                            error('Unexpected /. Cannot follow '+lastState+'.Output:'+output);
+                            error('Unexpected /. Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                         }                                                                                                                                                                                  																				                                                                                   																																																																			                                                                                                                                                                                                                                                                                     						
                     } else if(chr === PLUS) {
                         plus();					
