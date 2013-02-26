@@ -756,7 +756,7 @@
 				            var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
 				            switch(identifierLen) {
                                 case 2:                         
-                                    if(ident.charCodeAt(0) === LOWER_D && ident.charCodeAt(1) === LOWER_O) {                              
+                                    if(ident === 'do') {                              
                                         foundKeyword = 1;
                                         state = 18;
                                         expected = 19;
@@ -766,7 +766,7 @@
                                         expect = 0;
                                         left = 0;                                           
                                         outputLine += 'do ';                                                                                        
-                                    } else if(ident.charCodeAt(0) === LOWER_I && ident.charCodeAt(1) === LOWER_N) {
+                                    } else if(ident === 'in') {
                                         foundKeyword = 1;
                                         state = 73;
                                         expected = -1;
@@ -778,7 +778,7 @@
                                         if(isFor[index]) {
                                             isForIn[index] = 1;        
                                         }                                                                                               
-                                    } else if(ident.charCodeAt(0) === LOWER_I && ident.charCodeAt(1) === LOWER_F) {
+                                    } else if(ident === 'if') {
                                         foundKeyword = 1;
                                         state = 68;
                                         expected = -1;
@@ -794,7 +794,7 @@
                                     }
                                 break;
                                 case 3:                                                                                                                    
-                                    if(ident.charCodeAt(0) === LOWER_V && ident.charCodeAt(1) === LOWER_A && ident.charCodeAt(2) === LOWER_R) {
+                                    if(ident === 'var') {
                                         if(!rules[136][lastState]) {                                                                                                                       
                                             asi();                                             
                                         }
@@ -808,7 +808,7 @@
                                         left = 0;                                            
                                         outputLine += 'var ';
                                         isVar[index] = 1;                           
-                                    } else if(ident.charCodeAt(0) === LOWER_N && ident.charCodeAt(1) === LOWER_E && ident.charCodeAt(2) === LOWER_W) {
+                                    } else if(ident === 'new') {
                                         foundKeyword = 1;
                                         state = 84;
                                         expected = -1;
@@ -817,7 +817,7 @@
                                         expected4 = -1;
                                         left = 0;                                           
                                         outputLine += 'new ';                            
-                                    } else if(ident.charCodeAt(0) === UPPER_N && ident.charCodeAt(1) === LOWER_A && ident.charCodeAt(2) === UPPER_N) {
+                                    } else if(ident === 'NaN') {
                                         foundKeyword = 1;
                                         state = 83;
                                         expected = -1;
@@ -826,7 +826,7 @@
                                         expected4 = -1;
                                         left = 1;                                           
                                         outputLine += 'NaN';
-                                    } else if(ident.charCodeAt(0) === LOWER_F && ident.charCodeAt(1) === LOWER_O && ident.charCodeAt(2) === LOWER_R) {                                        
+                                    } else if(ident === 'for') {                                        
                                         foundKeyword = 1;
                                         state = 40;
                                         expected = 41;
@@ -837,7 +837,7 @@
                                         left = 0;                                        
                                         outputLine += 'for ';
                                         isFor[index] = 1;
-                                    } else if(ident.charCodeAt(0) === LOWER_T && ident.charCodeAt(1) === LOWER_R && ident.charCodeAt(2) === LOWER_Y) {
+                                    } else if(ident === 'try') {
                                         foundKeyword = 1;
                                         state = 127;
                                         expected = 128;
@@ -850,7 +850,7 @@
                                     } 
                                 break;
                                 case 4:                                                     
-                                    if(ident.charCodeAt(0) === LOWER_E && ident.charCodeAt(1) === LOWER_L && ident.charCodeAt(2) === LOWER_S && ident.charCodeAt(3) === LOWER_E) {
+                                    if(ident === 'else') {
                                         if(!isIf[index]) {
                                             error("Syntax error unexpected else");
                                         }                                                                                                                                                       
@@ -862,7 +862,7 @@
                                         expected4 = -1;
                                         left = 0;                                           
                                         outputLine += 'else ';                           
-                                    } else if(ident.charCodeAt(0) === LOWER_T && ident.charCodeAt(1) === LOWER_H && ident.charCodeAt(2) === LOWER_I && ident.charCodeAt(3) === LOWER_S) {
+                                    } else if(ident === 'this') {
                                         foundKeyword = 1;
                                         state = 124;
                                         expected = -1;
@@ -872,7 +872,7 @@
                                         expect = 0;
                                         left = 1;                                           
                                         outputLine += 'this';                           
-                                    } else if(ident.charCodeAt(0) === LOWER_V && ident.charCodeAt(1) === LOWER_O && ident.charCodeAt(2) === LOWER_I && ident.charCodeAt(3) === LOWER_D) {
+                                    } else if(ident === 'void') {
                                         foundKeyword = 1;
                                         state = 139;
                                         expected = -1;
@@ -881,7 +881,7 @@
                                         expected4 = -1;
                                         left = 0;                                           
                                         outputLine += 'void ';                                                      
-                                    } else if(ident.charCodeAt(0) === LOWER_C && ident.charCodeAt(1) === LOWER_A && ident.charCodeAt(2) === LOWER_S && ident.charCodeAt(3) === LOWER_E) {
+                                    } else if(ident === 'case') {
                                         foundKeyword = 1;
                                         state = 15;
                                         expected = -1;
@@ -892,7 +892,7 @@
                                         outputLine += 'case ';
                                         isCase[index] = 1;
                                         caseCount++;                           
-                                    } else if(ident.charCodeAt(0) === LOWER_N && ident.charCodeAt(1) === LOWER_U && ident.charCodeAt(2) === LOWER_L && ident.charCodeAt(3) === LOWER_L) {
+                                    } else if(ident === 'null') {
                                         foundKeyword = 1;
                                         state = 86;
                                         expected = -1;
@@ -901,7 +901,7 @@
                                         expected4 = -1;
                                         left = 1;                                           
                                         outputLine += 'null';                           
-                                    } else if(ident.charCodeAt(0) === LOWER_T && ident.charCodeAt(1) === LOWER_R && ident.charCodeAt(2) === LOWER_U && ident.charCodeAt(3) === LOWER_E) {
+                                    } else if(ident === 'true') {
                                         foundKeyword = 1;
                                         state = 130;
                                         expected = -1;
@@ -910,7 +910,7 @@
                                         expected4 = -1;
                                         left = 1;                                           
                                         outputLine += 'true';
-                                    } else if(ident.charCodeAt(0) === LOWER_W && ident.charCodeAt(1) === LOWER_I && ident.charCodeAt(2) === LOWER_T && ident.charCodeAt(3) === LOWER_H) {
+                                    } else if(ident === 'with') {
                                         foundKeyword = 1;
                                         state = 140;
                                         expected = 141;
@@ -923,7 +923,7 @@
                                     }
                                 break;
                                 case 5:                                                     
-                                    if(ident.charCodeAt(0) === LOWER_T && ident.charCodeAt(1) === LOWER_H && ident.charCodeAt(2) === LOWER_R && ident.charCodeAt(3) === LOWER_O && ident.charCodeAt(4) === LOWER_W) {
+                                    if(ident === 'throw') {
                                         foundKeyword = 1;
                                         state = 131;
                                         expected = -1;
@@ -932,7 +932,7 @@
                                         expected4 = -1;
                                         left = 0;                                           
                                         outputLine += 'throw ';                          
-                                    } else if(ident.charCodeAt(0) === LOWER_B && ident.charCodeAt(1) === LOWER_R && ident.charCodeAt(2) === LOWER_E && ident.charCodeAt(3) === LOWER_A && ident.charCodeAt(4) === LOWER_K) {
+                                    } else if(ident === 'break') {
                                         foundKeyword = 1;
                                         state = 14;
                                         expected = -1;
@@ -941,7 +941,7 @@
                                         expected4 = -1;
                                         left = 0;                                           
                                         outputLine += 'break ';                         
-                                    } else if(ident.charCodeAt(0) === LOWER_F && ident.charCodeAt(1) === LOWER_A && ident.charCodeAt(2) === LOWER_L && ident.charCodeAt(3) === LOWER_S && ident.charCodeAt(4) === LOWER_E) {
+                                    } else if(ident === 'false') {
                                         foundKeyword = 1;
                                         state = 36;
                                         expected = -1;
@@ -950,7 +950,7 @@
                                         expected4 = -1;
                                         left = 1;                                           
                                         outputLine += 'false';
-                                    } else if(ident.charCodeAt(0) === LOWER_C && ident.charCodeAt(1) === LOWER_A && ident.charCodeAt(2) === LOWER_T && ident.charCodeAt(3) === LOWER_C && ident.charCodeAt(4) === LOWER_H) {
+                                    } else if(ident === 'catch') {
                                         foundKeyword = 1;
                                         state = 22;
                                         expected = 23;
@@ -960,7 +960,7 @@
                                         expect = 0;
                                         left = 0;                                        
                                         outputLine += 'catch';
-                                    } else if(ident.charCodeAt(0) === LOWER_W && ident.charCodeAt(1) === LOWER_H && ident.charCodeAt(2) === LOWER_I && ident.charCodeAt(3) === LOWER_L && ident.charCodeAt(4) === LOWER_E) {
+                                    } else if(ident === 'while') {
                                         foundKeyword = 1;
                                         state = 145;
                                         expected = 146;
@@ -973,7 +973,7 @@
                                     }
                                 break;
                                 case 6:                                                     
-                                    if(ident.charCodeAt(0) === LOWER_D && ident.charCodeAt(1) === LOWER_E && ident.charCodeAt(2) === LOWER_L && ident.charCodeAt(3) === LOWER_E && ident.charCodeAt(4) === LOWER_T && ident.charCodeAt(5) === LOWER_E) {
+                                    if(ident === 'delete') {
                                         foundKeyword = 1;
                                         state = 17;
                                         expected = -1;
@@ -982,7 +982,7 @@
                                         expected4 = -1;
                                         left = 0;                                           
                                         outputLine += 'delete ';                         
-                                    } else if(ident.charCodeAt(0) === LOWER_R && ident.charCodeAt(1) === LOWER_E && ident.charCodeAt(2) === LOWER_T && ident.charCodeAt(3) === LOWER_U && ident.charCodeAt(4) === LOWER_R && ident.charCodeAt(5) === LOWER_N) {
+                                    } else if(ident === 'return') {
                                         foundKeyword = 1;
                                         state = 111;
                                         expected = -1;
@@ -991,7 +991,7 @@
                                         expected4 = -1;
                                         left = 0;                                           
                                         outputLine += 'return ';                         
-                                    } else if(ident.charCodeAt(0) === LOWER_T && ident.charCodeAt(1) === LOWER_Y && ident.charCodeAt(2) === LOWER_P && ident.charCodeAt(3) === LOWER_E && ident.charCodeAt(4) === LOWER_O && ident.charCodeAt(5) === LOWER_F) {                               
+                                    } else if(ident === 'typeof') {                               
                                         foundKeyword = 1;
                                         state = 132;
                                         expected = -1;
@@ -1000,7 +1000,7 @@
                                         expected4 = -1;
                                         left = 0;                                           
                                         outputLine += 'typeof ';
-                                    } else if(ident.charCodeAt(0) === LOWER_S && ident.charCodeAt(1) === LOWER_W && ident.charCodeAt(2) === LOWER_I && ident.charCodeAt(3) === LOWER_T && ident.charCodeAt(4) === LOWER_C && ident.charCodeAt(5) === LOWER_H) {                               
+                                    } else if(ident === 'switch') {                               
                                         foundKeyword = 1;
                                         state = 118;
                                         expected = 119;
@@ -1013,7 +1013,7 @@
                                     }
                                 break;
                                 case 7:                         
-                                    if(ident.charCodeAt(0) === LOWER_D && ident.charCodeAt(1) === LOWER_E && ident.charCodeAt(2) === LOWER_F && ident.charCodeAt(3) === LOWER_A && ident.charCodeAt(4) === LOWER_U && ident.charCodeAt(5) === LOWER_L && ident.charCodeAt(6) === LOWER_T) {
+                                    if(ident === 'default') {
                                         foundKeyword = 1;
                                         state = 16;
                                         expected = 123;
@@ -1023,7 +1023,7 @@
                                         expect = 0;
                                         left = 0;                                           
                                         outputLine += 'default';
-                                    } else if(ident.charCodeAt(0) === LOWER_F && ident.charCodeAt(1) === LOWER_I && ident.charCodeAt(2) === LOWER_N && ident.charCodeAt(3) === LOWER_A && ident.charCodeAt(4) === LOWER_L && ident.charCodeAt(5) === LOWER_L && ident.charCodeAt(6) === LOWER_Y) {
+                                    } else if(ident === 'finally') {
                                         foundKeyword = 1;
                                         state = 37;
                                         expected = 38;
@@ -1036,7 +1036,7 @@
                                     }
                                 break;
                                 case 8:                                                     
-                                    if(ident.charCodeAt(0) === LOWER_F && ident.charCodeAt(1) === LOWER_U && ident.charCodeAt(2) === LOWER_N && ident.charCodeAt(3) === LOWER_C && ident.charCodeAt(4) === LOWER_T && ident.charCodeAt(5) === LOWER_I && ident.charCodeAt(6) === LOWER_O && ident.charCodeAt(7) === LOWER_N) {
+                                    if(ident === 'function') {
                                         foundKeyword = 1;                                        
                                         if(rules[52][lastState]) {
                                             state = 52;
@@ -1067,7 +1067,7 @@
                                         }                                        
                                         left = 0;                                        
                                         outputLine += 'function';                                                                   
-                                    } else if(ident.charCodeAt(0) === UPPER_I && ident.charCodeAt(1) === LOWER_N && ident.charCodeAt(2) === LOWER_F && ident.charCodeAt(3) === LOWER_I && ident.charCodeAt(4) === LOWER_N && ident.charCodeAt(5) === LOWER_I && ident.charCodeAt(6) === LOWER_T && ident.charCodeAt(7) === LOWER_Y) {
+                                    } else if(ident === 'Infinity') {
                                         foundKeyword = 1;
                                         state = 74;
                                         expected = -1;
@@ -1076,7 +1076,7 @@
                                         expected4 = -1;
                                         left = 1;                                           
                                         outputLine += 'Infinity';                          
-                                    } else if(ident.charCodeAt(0) === LOWER_C && ident.charCodeAt(1) === LOWER_O && ident.charCodeAt(2) === LOWER_N && ident.charCodeAt(3) === LOWER_T && ident.charCodeAt(4) === LOWER_I && ident.charCodeAt(5) === LOWER_N && ident.charCodeAt(6) === LOWER_U && ident.charCodeAt(7) === LOWER_E) {
+                                    } else if(ident === 'continue') {
                                         foundKeyword = 1;
                                         state = 29;
                                         expected = -1;
@@ -1088,7 +1088,7 @@
                                     }
                                 break;                                
                                 case 10:
-                                    if(ident.charCodeAt(0) === LOWER_I && ident.charCodeAt(1) === LOWER_N && ident.charCodeAt(2) === LOWER_S && ident.charCodeAt(3) === LOWER_T && ident.charCodeAt(4) === LOWER_A && ident.charCodeAt(5) === LOWER_N && ident.charCodeAt(6) === LOWER_C && ident.charCodeAt(7) === LOWER_E && ident.charCodeAt(8) === LOWER_O && ident.charCodeAt(9) === LOWER_F) {
+                                    if(ident === 'instanceof') {
                                         foundKeyword = 1;
                                         state = 75;
                                         expected = -1;
