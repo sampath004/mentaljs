@@ -444,22 +444,7 @@ MentalJS = function() {
 				len = code.length, parseTree = that.parseTree,
 				lookupSquare = 1, lookupCurly = 1, lookupParen = 1, ternaryCount = 0, isTernary = {}, caseCount = 0, isCase = {}, isVar = {},
 				isFor = {}, isForIn = {},  isIf = {}, isObjectLiteral = {},																
-				lastState = 89, newLineFlag = 0,
-				SQUARE_OPEN = 91, SQUARE_CLOSE = 93, PAREN_OPEN = 40, PAREN_CLOSE = 41,
-				CURLY_OPEN = 123, CURLY_CLOSE = 125,
-				LOWER_A = 97, LOWER_B = 98, LOWER_C = 99, LOWER_D = 100, LOWER_E = 101,
-				LOWER_F = 102, LOWER_G = 103, LOWER_H = 104, LOWER_I = 105,
-				LOWER_K = 107, LOWER_L = 108, LOWER_M = 109, LOWER_N = 110, LOWER_O = 111,
-				LOWER_P = 112, LOWER_R = 114, LOWER_S = 115, LOWER_T = 116,
-				LOWER_U = 117, LOWER_V = 118, LOWER_W = 119, LOWER_X = 120, LOWER_Y = 121,
-				LOWER_Z = 122, UPPER_A = 65, UPPER_E = 69, UPPER_F = 70, UPPER_I = 73, 
-				UPPER_N = 78, UPPER_O = 79, UPPER_X = 88, UPPER_Z = 90, DIGIT_0 = 48, DIGIT_1 = 49, DIGIT_9 = 57, 
-				DOLLAR = 36, UNDERSCORE = 95, SINGLE_QUOTE = 39, DOUBLE_QUOTE = 34,
-				FORWARD_SLASH = 47, BACKSLASH = 92, ASTERIX = 42, EQUAL = 61, CARET = 94,
-				COLON = 58, QUESTION_MARK = 63, COMMA = 44, PERIOD = 46, SEMI_COLON = 59,
-				EXCLAMATION_MARK = 33, 	TILDE = 126, PLUS = 43, MINUS = 45,
-				AMPERSAND = 38, PIPE = 124, GREATER_THAN = 62, LESS_THAN = 60,
-				PERCENT = 37,															
+				lastState = 89, newLineFlag = 0,															 																																				
 				parseTreeFlag = !!that.parseTree, completeFlag = !!that.complete,
 				convertedFlag = !!that.converted,  
 				browserCheckSyntaxFlag = !!that.options.browserCheckSyntax, foundKeyword = 0;												    
@@ -727,7 +712,7 @@ MentalJS = function() {
 			            while(pos < len) {
 			                chr = code.charCodeAt(pos); 				              				                
 			                if(unicodeEscape === 1) {
-                                if(chr !== LOWER_U) {                                        
+                                if(chr !== 0x75) {                                        
                                     error('Unexpected "'+(isNaN(chr)?'(end)':chr)+'" character. Expected unicode escape.');
                                 }
                                 unicodeEscape = 2;
@@ -737,9 +722,9 @@ MentalJS = function() {
                                 currentUnicode = currentUnicode + code.charAt(pos);
                                 u = parseInt('0x'+currentUnicode, 16);                                                                                                          
                                 if(!identifierStart) {                       
-                                    if(u >= LOWER_A && u <= LOWER_Z) {                                                    
-                                    } else if(u >= UPPER_A && u <= UPPER_Z) {                                                                                                           
-                                    } else if(u === UNDERSCORE || u === DOLLAR){                              
+                                    if(u > 0x60 && u < 0x7b) {                                                    
+                                    } else if(u > 0x40 && u < 0x5b) {                                                                                                           
+                                    } else if(u === 0x5f || u === 0x24){                              
                                     } else if(u > 0x80){
                                         if(!isValidVariable(u)) {
                                           error('illegal unicode escape');
@@ -748,10 +733,10 @@ MentalJS = function() {
                                         error('illegal unicode escape');
                                     }                           
                                 } else {
-                                    if(u >= LOWER_A && u <= LOWER_Z) {                                                    
-                                    } else if(u >= UPPER_A && u <= UPPER_Z) {                             
-                                    } else if(u >= DIGIT_0 && u <= DIGIT_9) {                                               
-                                    } else if(u === UNDERSCORE || u === DOLLAR){                              
+                                    if(u > 0x60 && u < 0x7b) {                                                    
+                                    } else if(u > 0x40 && u < 0x5b) {                             
+                                    } else if(u > 0x2f && u < 0x3a) {                                               
+                                    } else if(u === 0x5f || u === 0x24){                              
                                     } else if(u > 0x80){
                                         if(!isValidVariablePart(u)) {
                                           error('illegal unicode escape');
@@ -764,9 +749,9 @@ MentalJS = function() {
                                 currentUnicode = '';
                                 unicodeEscape = 0;
                                 identifierStart = 1;
-                            } else if(chr >= DIGIT_0 && chr <= DIGIT_9) {
-                            } else if(chr >= LOWER_A && chr <= LOWER_F) {                   
-                            } else if(chr >= UPPER_A && chr <= UPPER_F) {
+                            } else if(chr > 0x2f && chr < 0x3a) {
+                            } else if(chr > 0x60 && chr < 0x67) {                   
+                            } else if(chr > 0x40 && chr < 0x47) {
                             } else {
                                 error('Unexpected "'+(isNaN(chr)?'(end)':chr)+'" character. Expected unicode escape.');
                             }
@@ -777,16 +762,16 @@ MentalJS = function() {
                        }
 			        }
 			        				                                                                                                                                  
-                        if(chr === BACKSLASH) {                                             
+                        if(chr === 0x5c) {                                             
                             identifierStart = 0;                     
                         }                                                                                                                                                                             
                         while(pos < len) {                                
                             chr = code.charCodeAt(pos);                                                                                                               
-                            if(chr >= LOWER_A && chr <= LOWER_Z) {
-                            } else if(chr >= DIGIT_0 && chr <= DIGIT_9) {
-                            } else if(chr >= UPPER_A && chr <= UPPER_Z) {
-                            } else if(chr === UNDERSCORE || chr === DOLLAR) {                                
-                            } else if(chr === BACKSLASH) {                                    
+                            if(chr > 0x60 && chr < 0x7b) {
+                            } else if(chr > 0x2f && chr < 0x3a) {
+                            } else if(chr > 0x40 && chr < 0x5b) {
+                            } else if(chr === 0x5f || chr === 0x24) {                                
+                            } else if(chr === 0x5c) {                                    
                                 unicode();
                                 continue;                                                                        
                             } else if(chr > 0x80) {
@@ -875,24 +860,24 @@ MentalJS = function() {
 				function plus() {
 				    next = code.charCodeAt(pos+1);
 				    cached = -1;
-                    if(next === PLUS && left) {
+                    if(next === 0x2b && left) {
                         state = 107;
                         outputLine += '++';
                         pos+=2;
-                    } else if(next === PLUS && !left) {
+                    } else if(next === 0x2b && !left) {
                         state = 110;
                         outputLine += '++';
                         pos+=2;                     
-                    } else if(next === EQUAL) {
+                    } else if(next === 0x3d) {
                         state = 6;
                         outputLine += '+=';
                         pos+=2;
-                    } else if(next !== EQUAL && next !== PLUS && left) {
+                    } else if(next !== 0x3d && next !== 0x2b && left) {
                         state = 5;
                         outputLine += ' + ';
                         pos++;
                         cached = next;
-                    } else if(next !== EQUAL && next !== PLUS && !left) {
+                    } else if(next !== 0x3d && next !== 0x2b && !left) {
                         state = 133;
                         outputLine += '+';
                         pos++;
@@ -937,41 +922,41 @@ MentalJS = function() {
                        	}
                         next = code.charCodeAt(pos+1);
                         cached = -1;                            
-                        if(chr === FORWARD_SLASH && !states.escaping && !states.square) {
+                        if(chr === 0x2f && !states.escaping && !states.square) {
                             states.open = 0;
-                            if(next !== LOWER_I && next !== LOWER_M && next !== LOWER_G) {
+                            if(next !== 0x69 && next !== 0x6d && next !== 0x67) {
                                 states.complete = 1;
                             }
-                        } else if(chr === FORWARD_SLASH && !states.escaping && states.square) {
+                        } else if(chr === 0x2f && !states.escaping && states.square) {
                             outputLine += '\\';           
-                        } else if(chr === PAREN_OPEN && !states.escaping && states.square) {
+                        } else if(chr === 0x28 && !states.escaping && states.square) {
                              outputLine += '\\';
-                        } else if(chr === PAREN_CLOSE && !states.escaping && states.square) {
+                        } else if(chr === 0x29 && !states.escaping && states.square) {
                             outputLine += '\\';                                 
-                        } else if(chr === SQUARE_OPEN && !states.escaping && states.square) {                
+                        } else if(chr === 0x5b && !states.escaping && states.square) {                
                             outputLine += '\\';
-                        } else if(chr === SQUARE_OPEN && !states.escaping && !states.square) {
+                        } else if(chr === 0x5b && !states.escaping && !states.square) {
                             next2 = code.charCodeAt(pos+2); 
-                            if(next === SQUARE_CLOSE || (next === CARET && next2 === SQUARE_CLOSE)) {
+                            if(next === 0x5d || (next === 0x5e && next2 === 0x5d)) {
                                 error("Empty character class not allowed.");
                             }
                             states.square = 1;               
-                        } else if(chr === BACKSLASH && !states.escaping) {
+                        } else if(chr === 0x5c && !states.escaping) {
                             states.escaping = 1;
-                        } else if(chr === BACKSLASH && states.escaping) {
+                        } else if(chr === 0x5c && states.escaping) {
                             states.escaping = 0;
-                        } else if(chr === SQUARE_CLOSE && !states.escaping) {                
+                        } else if(chr === 0x5d && !states.escaping) {                
                             states.square = 0;               
                         } else if(chr===10||chr===13||chr===8232||chr==8233) {
                             error("Unterminated regex literal");                                
                         } else if(states.escaping) {
                             states.escaping = 0;
-                        } else if(!states.open && next !== LOWER_I && next !== LOWER_M && next !== LOWER_G) {
-                            if(!states.open && (chr === LOWER_I || chr === LOWER_M || chr === LOWER_G) && states.flags[chr]) {
+                        } else if(!states.open && next !== 0x69 && next !== 0x6d && next !== 0x67) {
+                            if(!states.open && (chr === 0x69 || chr === 0x6d || chr === 0x67) && states.flags[chr]) {
                                 error("Duplicate regex flag");
                             }               
                             states.complete = 1;
-                        } else if(!states.open && (chr === LOWER_I || chr === LOWER_M || chr === LOWER_G) && !states.flags[chr]) {
+                        } else if(!states.open && (chr === 0x69 || chr === 0x6d || chr === 0x67) && !states.flags[chr]) {
                             states.flags[chr] = 1;
                         }                                                                                                                    
                         outputLine += code.charAt(pos++);                                                         
@@ -988,7 +973,7 @@ MentalJS = function() {
 				    function number() {
                         while(pos < len) {
                             chr = code.charCodeAt(pos);
-                            if(chr >= DIGIT_1 && chr <= DIGIT_9) {
+                            if(chr >= 0x31 && chr <= 0x39) {
                                 states.zeroFirst = 0;
                                 if(states.e) {
                                     states.e = 2;
@@ -996,7 +981,7 @@ MentalJS = function() {
                                 if(states.e2) {
                                     states.e2 = 2;
                                 }                               
-                            } else if(chr === DIGIT_0) {
+                            } else if(chr === 0x30) {
                                 if(states.zeroFirst) {
                                     pos++;
                                     continue;                               
@@ -1007,13 +992,13 @@ MentalJS = function() {
                                 if(states.e2) {
                                     states.e2 = 2;
                                 }
-                            } else if(chr === LOWER_E || chr === UPPER_E) {
+                            } else if(chr === 0x65 || chr === 0x45) {
                                 if(states.e) {
                                     break;
                                 } else {
                                     states.e = 1;
                                 }
-                            } else if(chr === PLUS || chr === MINUS) {
+                            } else if(chr === 0x2b || chr === 0x2d) {
                                 if(states.e === 1 && !states.e2) {
                                     states.e = 2;
                                     states.e2 = 1;                              
@@ -1021,7 +1006,7 @@ MentalJS = function() {
                                     cached = chr;
                                     break;
                                 }
-                            } else if(chr === PERIOD) {
+                            } else if(chr === 0x2e) {
                                 if(states.dot || states.e) {
                                     break;
                                 }
@@ -1050,9 +1035,9 @@ MentalJS = function() {
                     pos++;
                     while(pos < len) {
                         chr = code.charCodeAt(pos);
-                        if(chr >= DIGIT_0 && chr <= DIGIT_9) {
-                        } else if(chr >= LOWER_A && chr <= LOWER_F) {
-                        } else if(chr >= UPPER_A && chr <= UPPER_F) {                           
+                        if(chr > 0x2f && chr < 0x3a) {
+                        } else if(chr > 0x60 && chr < 0x67) {
+                        } else if(chr > 0x40 && chr < 0x47) {                           
                         } else {
                             break;
                         }
@@ -1078,11 +1063,11 @@ MentalJS = function() {
                         }
                     }
                     
-                    if(chr === PERIOD) {
+                    if(chr === 0x2e) {
                         states.output = '.';
                         states.dot = 1;
                         states.dotFirst = 1;                        
-                    } else if(chr === DIGIT_0) {
+                    } else if(chr === 0x30) {
                         states.zeroFirst = 1;                                                                       
                     } else {
                         states.output = code.charAt(pos);                       
@@ -1091,7 +1076,7 @@ MentalJS = function() {
                         pos++;                            
                         chr = code.charCodeAt(pos);
                     }
-                    if((chr === LOWER_X || chr === UPPER_X) && pos < len) {
+                    if((chr === 0x78 || chr === 0x58) && pos < len) {
                         hex();
                     } else {
                         number();                                                                                   
@@ -1100,7 +1085,7 @@ MentalJS = function() {
 				function divide() {
 				    left = 0;
 				    cached = -1;
-                    if(next === EQUAL) {
+                    if(next === 0x3d) {
                         state = 7;
                         pos+=2;                                    
                         outputLine += '/='; 
@@ -1439,19 +1424,19 @@ MentalJS = function() {
                     }
                     while(pos < len) {                               
                         chr = code.charCodeAt(pos);                                                                                          
-                        if(chr === SINGLE_QUOTE && !states.escaping && states[SINGLE_QUOTE]) {
+                        if(chr === 0x27 && !states.escaping && states[0x27]) {
                             states.complete = 1;                 
-                        } else if(chr === DOUBLE_QUOTE && !states.escaping && states[DOUBLE_QUOTE]) {
+                        } else if(chr === 0x22 && !states.escaping && states[0x22]) {
                             states.complete = 1;
                         } else if(states.escaping && (chr===10||chr===13||chr===8232||chr==8233) ) {                                    
                             pos++;
                             states.escaping = 0;
                             continue;                                                
-                        } else if(chr === BACKSLASH && !states.escaping) {
+                        } else if(chr === 0x5c && !states.escaping) {
                             states.escaping = 1;
                             pos++;
                             continue;                                
-                        } else if(chr === BACKSLASH && states.escaping) {
+                        } else if(chr === 0x5c && states.escaping) {
                             states.escaping = 0;
                             outputLine += '\\';                                
                         } else if((chr===10||chr===13||chr===8232||chr==8233) && !states.escaping) {
@@ -1477,17 +1462,17 @@ MentalJS = function() {
 					cached = -1;
 				    next = code.charCodeAt(pos+1);
                     next2 = code.charCodeAt(pos+2);                     
-                    if(next !== EQUAL && !left) {
+                    if(next !== 0x3d && !left) {
                         state = 88;
                         outputLine += ' ! ';
                         pos++;
                         cached = next;
-                    } else if(next === EQUAL && next2 !== EQUAL) {
+                    } else if(next === 0x3d && next2 !== 0x3d) {
                         state = 87;
                         outputLine += '!=';
                         pos+=2;
                         cached = next2;
-                    } else if(next === EQUAL && next2 === EQUAL) {
+                    } else if(next === 0x3d && next2 === 0x3d) {
                         state = 117;
                         outputLine += '!==';
                         pos+=3;                         
@@ -1509,15 +1494,15 @@ MentalJS = function() {
 				function pipe() {
 				    next = code.charCodeAt(pos+1);
 				    cached = -1;
-                    if(next === PIPE) {
+                    if(next === 0x7c) {
                         state = 81;
                         outputLine += '||';
                         pos+=2;
-                    } else if(next === EQUAL) {
+                    } else if(next === 0x3d) {
                         state = 103;
                         outputLine += '|=';
                         pos+=2;
-                    } else if(next !== PIPE && next !== EQUAL) {
+                    } else if(next !== 0x7c && next !== 0x3d) {
                         state = 12;
                         outputLine += ' | ';
                         pos++; 
@@ -1530,11 +1515,11 @@ MentalJS = function() {
 				function caret() {
 				    next = code.charCodeAt(pos+1);
 				    cached = -1; 
-                    if(next === EQUAL) {
+                    if(next === 0x3d) {
                         state = 151;
                         outputLine += '^=';
                         pos+=2;
-                    } else if(next !== EQUAL) {
+                    } else if(next !== 0x3d) {
                         state = 150;
                         outputLine += ' ^ ';
                         pos++;  
@@ -1547,11 +1532,11 @@ MentalJS = function() {
 				function percent() {
 				    next = code.charCodeAt(pos+1);
 				    cached = -1;
-                    if(next === EQUAL) {
+                    if(next === 0x3d) {
                         state = 93;
                         outputLine += '%=';
                         pos+=2;
-                    } else if(next !== EQUAL) {
+                    } else if(next !== 0x3d) {
                         state = 92;
                         outputLine += ' % ';
                         pos++; 
@@ -1564,15 +1549,15 @@ MentalJS = function() {
 				function ampersand() {
 				    next = code.charCodeAt(pos+1);
 				    cached = -1;
-                    if(next === AMPERSAND) {
+                    if(next === 0x26) {
                         state = 82;
                         outputLine += '&&';
                         pos+=2;
-                    } else if(next === EQUAL) {
+                    } else if(next === 0x3d) {
                         state = 8;
                         outputLine += '&=';
                         pos+=2;
-                    } else if(next !== AMPERSAND && next !== EQUAL) {
+                    } else if(next !== 0x26 && next !== 0x3d) {
                         state = 13;
                         outputLine += ' & ';
                         pos++;  
@@ -1586,17 +1571,17 @@ MentalJS = function() {
 				    next = code.charCodeAt(pos+1);
                     next2 = code.charCodeAt(pos+2);
                     cached = -1;                     
-                    if(next !== EQUAL) {
+                    if(next !== 0x3d) {
                         state = 30;
                         outputLine += ' = ';
                         pos++;
                         cached = next;
-                    } else if(next === EQUAL && next2 !== EQUAL) {
+                    } else if(next === 0x3d && next2 !== 0x3d) {
                         state = 31;
                         outputLine += '==';
                         pos+=2;
                         cached = next2;
-                    } else if(next === EQUAL && next2 === EQUAL) {
+                    } else if(next === 0x3d && next2 === 0x3d) {
                         state = 116;
                         outputLine += '===';
                         pos+=3;                           
@@ -1610,31 +1595,31 @@ MentalJS = function() {
                     next2 = code.charCodeAt(pos+2);
                     next3 = code.charCodeAt(pos+3);
                     cached = -1;
-                    if(next === GREATER_THAN && next2 === GREATER_THAN && next3 === EQUAL) {
+                    if(next === 0x3e && next2 === 0x3e && next3 === 0x3d) {
                         state = 153;
                         outputLine += '>>>=';
                         pos+=4;                                             
-                    } else if(next === GREATER_THAN && next2 === GREATER_THAN) {
+                    } else if(next === 0x3e && next2 === 0x3e) {
                         state = 152;
                         outputLine += '>>>';
                         pos+=3;
                         cached = next3; 
-                    } else if(next === GREATER_THAN && next2 === EQUAL) {
+                    } else if(next === 0x3e && next2 === 0x3d) {
                         state = 114;
                         outputLine += '>>=';
                         pos+=3;
                         cached = next3;                                             
-                    } else if(next === GREATER_THAN) {
+                    } else if(next === 0x3e) {
                         state = 113;
                         outputLine += '>>';
                         pos+=2;
                         cached = next2;
-                    } else if(next !== EQUAL) {
+                    } else if(next !== 0x3d) {
                         state = 64;
                         outputLine += ' > ';
                         pos++;
                         cached = next;
-                    } else if(next === EQUAL) {
+                    } else if(next === 0x3d) {
                         state = 65;
                         outputLine += '>=';
                         pos+=2;
@@ -1648,21 +1633,21 @@ MentalJS = function() {
 				    next = code.charCodeAt(pos+1);
                     next2 = code.charCodeAt(pos+2);
                     cached = -1; 
-                    if(next === LESS_THAN && next2 === EQUAL) {
+                    if(next === 0x3c && next2 === 0x3d) {
                         state = 80;
                         outputLine += '<<=';
                         pos+=3;
-                    }else if(next === LESS_THAN) {
+                    }else if(next === 0x3c) {
                         state = 79;
                         outputLine += '<<';
                         pos+=2;
                         cached = next2;
-                    } else if(next !== EQUAL) {
+                    } else if(next !== 0x3d) {
                         state = 77;
                         outputLine += ' < ';
                         pos++;
                         cached = next;
-                    } else if(next === EQUAL) {
+                    } else if(next === 0x3d) {
                         state = 78;
                         outputLine += '<=';
                         pos+=2;
@@ -1675,12 +1660,12 @@ MentalJS = function() {
 				function asterix() {
 				    next = code.charCodeAt(pos+1);
 				    cached = -1;                                         
-                    if(next !== EQUAL) {
+                    if(next !== 0x3d) {
                         state = 94;
                         outputLine += ' * ';
                         pos++;
                         cached = next;
-                    } else if(next === EQUAL) {
+                    } else if(next === 0x3d) {
                         state = 95;
                         outputLine += '*=';
                         pos+=2;                     
@@ -1692,24 +1677,24 @@ MentalJS = function() {
 				function minus() {
 				    next = code.charCodeAt(pos+1);
 				    cached = -1;
-                    if(next === MINUS && left) {
+                    if(next === 0x2d && left) {
                         state = 108;
                         outputLine += '--';
                         pos+=2;
-                    } else if(next === MINUS && !left) {
+                    } else if(next === 0x2d && !left) {
                         state = 109;
                         outputLine += '--';
                         pos+=2;                     
-                    } else if(next === EQUAL) {
+                    } else if(next === 0x3d) {
                         state = 91;
                         outputLine += '-=';
                         pos+=2;
-                    } else if(next !== EQUAL && next !== MINUS && left) {
+                    } else if(next !== 0x3d && next !== 0x2d && left) {
                         state = 90;
                         outputLine += ' - ';
                         pos++;
                         cached = next;
-                    } else if(next !== EQUAL && next !== MINUS && !left) {
+                    } else if(next !== 0x3d && next !== 0x2d && !left) {
                         state = 134;
                         outputLine += '-';
                         pos++;      
@@ -1765,82 +1750,82 @@ MentalJS = function() {
 					} else if(chr===9||chr===11||chr===12||chr===32) {
 						space();
 						continue;												
-                    } else if(chr === SEMI_COLON) {             
+                    } else if(chr === 0x3b) {             
                         semicolon();                      	                                                        					    						
-					} else if(chr >= LOWER_A && chr <= LOWER_Z) {                      
+					} else if(chr > 0x60 && chr < 0x7b) {                      
                         identifier();
-                    } else if(chr === DOLLAR) {
+                    } else if(chr === 0x24) {
                         identifier();          
-					} else if((chr >= DIGIT_0 && chr <= DIGIT_9) || (!left && chr === PERIOD)) {						    						    					    																													
+					} else if((chr > 0x2f && chr < 0x3a) || (!left && chr === 0x2e)) {						    						    					    																													
 						numberOrHex();                                              							        
-			        } else if(chr === FORWARD_SLASH) {
+			        } else if(chr === 0x2f) {
 			            next = code.charCodeAt(pos+1);				            
-                        if(!left && next !== ASTERIX && next !== FORWARD_SLASH && lastState !== 137) {                                                                                                                               
+                        if(!left && next !== 0x2a && next !== 0x2f && lastState !== 137) {                                                                                                                               
                             regex();
-                        } else if(next === FORWARD_SLASH) {
+                        } else if(next === 0x2f) {
                             singleComment();
                             continue;                              
-                        } else if(next === ASTERIX) {                                 
+                        } else if(next === 0x2a) {                                 
                             multiComment();                                                                                   
                             continue;  
-                        } else if((lastState === 137 || left) && next !== FORWARD_SLASH) {
+                        } else if((lastState === 137 || left) && next !== 0x2f) {
                             divide();
                         } else {
                             error('Unexpected /. Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                         }                                                                                                                                                                                  																				                                                                                   																																																																			                                                                                                                                                                                                                                                                                     						
-                    } else if(chr === PLUS) {
+                    } else if(chr === 0x2b) {
                         plus();					
-					} else if(chr === SQUARE_OPEN) {			
+					} else if(chr === 0x5b) {			
 						arrayOrAccessorOpen();						
-					} else if(chr === SQUARE_CLOSE) {
+					} else if(chr === 0x5d) {
 						arrayOrAccessorClose();						
-					} else if(chr === PAREN_OPEN) {																																																																									
+					} else if(chr === 0x28) {																																																																									
 						parenOpen();
-					} else if(chr === PAREN_CLOSE) {
+					} else if(chr === 0x29) {
 					    parenClose();																	
-					} else if(chr === CURLY_OPEN) {																																												
+					} else if(chr === 0x7b) {																																												
 						curlyOpen();
-					} else if(chr === CURLY_CLOSE) {							
+					} else if(chr === 0x7d) {							
 						curlyClose();													
-					} else if(chr === QUESTION_MARK) {
+					} else if(chr === 0x3f) {
 						ternaryOpen();												
-					} else if(chr === COMMA) {			
+					} else if(chr === 0x2c) {			
 						comma();						
-					} else if(chr === PERIOD) {
+					} else if(chr === 0x2e) {
 						period();
-					} else if(chr === COLON) {
+					} else if(chr === 0x3a) {
 						colon();																								
-                    } else if(chr === SINGLE_QUOTE) {                                           
+                    } else if(chr === 0x27) {                                           
                         string();
-                    } else if(chr === DOUBLE_QUOTE) {
+                    } else if(chr === 0x22) {
                         string();
-					} else if(chr === EXCLAMATION_MARK) {
+					} else if(chr === 0x21) {
 					    exclamation();						    				
-					} else if(chr === TILDE) {
+					} else if(chr === 0x7e) {
 						tilde();							
-					} else if(chr === PIPE) {
+					} else if(chr === 0x7c) {
 					    pipe();
-					} else if(chr === CARET) {
+					} else if(chr === 0x5e) {
 					    caret();
-					} else if(chr === PERCENT) {
+					} else if(chr === 0x25) {
 					    percent();								
-					} else if(chr === AMPERSAND) {
+					} else if(chr === 0x26) {
 					    ampersand();	
-					} else if(chr === EQUAL) {
+					} else if(chr === 0x3d) {
 					    equal();																											
-					} else if(chr === GREATER_THAN) {
+					} else if(chr === 0x3e) {
 					    greaterThan();		
-					} else if(chr === LESS_THAN) {
+					} else if(chr === 0x3c) {
 					    lessThan();
-					} else if(chr === ASTERIX) {
+					} else if(chr === 0x2a) {
 					    asterix();																						
-					} else if(chr === MINUS) {
+					} else if(chr === 0x2d) {
 					    minus();
-					} else if(chr === UNDERSCORE) {
+					} else if(chr === 0x5f) {
                         identifier();                        
-                    } else if(chr === BACKSLASH) {
+                    } else if(chr === 0x5c) {
                         identifier();
-                    } else if(chr >= UPPER_A && chr <= UPPER_Z) {
+                    } else if(chr > 0x40 && chr < 0x5b) {
                         identifier();																																																				
 					} else if(chr > 159) {
                         if(chr === 160||chr===5760||chr===6158||chr===8192||chr===8193||chr===8194||chr===8195||chr===8196||chr===8197||chr===8198||chr===8199||chr===8200||chr===8201||chr===8202||chr===8239||chr===8287||chr===12288) {
