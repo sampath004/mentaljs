@@ -1539,7 +1539,7 @@ MentalJS = function() {
                     outputLine += ']';
                     left = 1;                           
                     pos++;
-                    delete parentStates[index]; 
+                    parentStates[index] = null; 
 				}
 				function parenOpen() {
 				    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
@@ -1633,7 +1633,7 @@ MentalJS = function() {
 				}
 				function parenClose() {
 				    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
-				    delete isVar[index];                
+				    isVar[index] = null;                
                     lookupParen--; 
                     index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);                     
                     parentState = parentStates[index];                                                                                                                                                                                                                    
@@ -1714,7 +1714,7 @@ MentalJS = function() {
                     }                                           
                     outputLine += ')';
                     pos++;
-                    delete parentStates[index]; 
+                    parentStates[index] = null; 
 				}
 				function curlyOpen() {
 				    var index = parseFloat(''+lookupSquare+(lookupCurly+1)+lookupParen);
@@ -1840,7 +1840,7 @@ MentalJS = function() {
 				}
 				function curlyClose() {
 				    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
-				    delete isVar[index];
+				    isVar[index] = null;
                     lookupCurly--;
                     index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
                     parentState = parentStates[index];                                                                                                                                                                    
@@ -1946,7 +1946,7 @@ MentalJS = function() {
                         error('Unexpected }. Cannot follow '+lastState+'.Output:'+output);
                     }
                     index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);                           
-                    delete parentStates[index];                                     
+                    parentStates[index] = null;                                     
                     pos++;  
 				}
 				function ternaryOpen() {
@@ -2367,11 +2367,52 @@ MentalJS = function() {
                         error('Unexpected - Cannot follow '+lastState+'.Output:'+output);
                     }
                     left = 0;   
+				}
+				function space() {
+				    pos++;
+				}
+				function checkRules() {
+				    if(state === 89) {                          
+                        error("No state defined for char:" +String.fromCharCode(chr) + ', left: '+left+', last state: '+lastState+',output:'+output);
+                    }
+                    
+                    if(!rules[state]) {
+                        error("State does not exist in the rules:" +state);
+                    }                                                                      
+                    
+                    if(!rules[state][lastState] && newLineFlag) {                                                                                   
+                        asi();                                              
+                    }                                                
+                     
+                    if(!rules[state][lastState]) {                                                                                          
+                        error("Unexpected " + state + '. Cannot follow '+lastState+'.Output:'+output);
+                    } else if(((expected>=0 && expected !== state) || (expected2>=0 && expected2 !== state) || (expected3>=0 && expected3 !== state) || (expected4>=0 && expected4 !== state)) && expect === 1) {
+                        msg = "Expected " + expected;
+                        if(expected2>=0) {
+                            msg = msg + ' or ' + expected2;
+                        }
+                        if(expected3>=0) {
+                            msg = msg + ' or ' + expected3;
+                        }
+                        if(expected4>=0) {
+                            msg = msg + ' or ' + expected4;
+                        }
+                        msg = msg + '. But got '+state + ' with last state:'+lastState+', output:'+output;
+                        error(msg);
+                    }
+                    
+                    if(parseTreeFlag){                          
+                        parseTreeOutput = parseTreeOutput + '<'+rulesLookup[state]+'>' + outputLine + '</'+rulesLookup[state]+'>';
+                    }
+                    lastState = state;                                                                              
+                    newLineFlag = 0;
+                    if(lookupSquare === 1 && lookupCurly === 1 && lookupParen === 1) {
+                        parentStates = {};
+                    }
 				}																				
 				if(browserCheckSyntaxFlag) {
 				   checkSyntax(code);
-				}
-								
+				}								
 				while(pos < len) {					    						                                               
                     state = 89;
                     if(expected>-1||expected2>-1||expected3>-1||expected4>-1) {
@@ -2387,7 +2428,7 @@ MentalJS = function() {
                         newLine();
                         continue;                         
 					} else if(chr===9||chr===11||chr===12||chr===32) {
-						pos++;
+						space();
 						continue;												
                     } else if(chr === SEMI_COLON) {             
                         semicolon();                      	                                                        					    						
@@ -2468,7 +2509,7 @@ MentalJS = function() {
                         identifier();																																																				
 					} else if(chr > 159) {
                         if(chr === 160||chr===5760||chr===6158||chr===8192||chr===8193||chr===8194||chr===8195||chr===8196||chr===8197||chr===8198||chr===8199||chr===8200||chr===8201||chr===8202||chr===8239||chr===8287||chr===12288) {
-                            pos++;
+                            space();
                             continue;
                         } else if(chr===8232||chr==8233) {
                             newLine();
@@ -2477,43 +2518,7 @@ MentalJS = function() {
                             identifier();
                         } 
                     }																				
-					if(state === 89) {                          
-                        error("No state defined for char:" +String.fromCharCode(chr) + ', left: '+left+', last state: '+lastState+',output:'+output);
-                    }
-                    
-                    if(!rules[state]) {
-                        error("State does not exist in the rules:" +state);
-                    }                                                                      
-                    
-                    if(!rules[state][lastState] && newLineFlag) {                                                                                   
-                        asi();                                              
-                    }                                                
-                     
-                    if(!rules[state][lastState]) {                                                                                          
-                        error("Unexpected " + state + '. Cannot follow '+lastState+'.Output:'+output);
-                    } else if(((expected>=0 && expected !== state) || (expected2>=0 && expected2 !== state) || (expected3>=0 && expected3 !== state) || (expected4>=0 && expected4 !== state)) && expect === 1) {
-                        msg = "Expected " + expected;
-                        if(expected2>=0) {
-                            msg = msg + ' or ' + expected2;
-                        }
-                        if(expected3>=0) {
-                            msg = msg + ' or ' + expected3;
-                        }
-                        if(expected4>=0) {
-                            msg = msg + ' or ' + expected4;
-                        }
-                        msg = msg + '. But got '+state + ' with last state:'+lastState+', output:'+output;
-                        error(msg);
-                    }
-                    
-                    if(parseTreeFlag){                          
-                        parseTreeOutput = parseTreeOutput + '<'+rulesLookup[state]+'>' + outputLine + '</'+rulesLookup[state]+'>';
-                    }
-                    lastState = state;                                                                              
-                    newLineFlag = 0;
-                    if(lookupSquare === 1 && lookupCurly === 1 && lookupParen === 1) {
-                        parentStates = {};
-                    }
+					checkRules();
                     output += outputLine;
                     outputLine = '';																													
 				}	
