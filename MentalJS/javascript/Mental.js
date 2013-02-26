@@ -196,7 +196,7 @@ MentalJS = function() {
             1:1,3:1,15:1,111:1,84:1,132:1,17:1,139:1,99:1,
             125:1,126:1,45:1,29:1,14:1,131:1
         },   
-        obj = Object.create(null), i, k;        
+        obj = {}, i, k;        
         for(i=0;i<rules.length;i+=1) {
             if(rules[i] === 'Expression') {
                 for(k in expression) {
@@ -457,7 +457,7 @@ MentalJS = function() {
                     objWhitelist(Number,'toExponential,toFixed,toPrecision');                    
                     constWhitelist(Number, 'MAX_VALUE,MIN_VALUE,NaN,NEGATIVE_INFINITY,POSITIVE_INFINITY');                                                          
                     Number.$constructor$ = $Function$;
-                    Number.prototype.$constructor$ = 85;
+                    Number.prototype.$constructor$ = Number;
                     $Number$ = Number;                                                         
                     objWhitelist(Date,'getDate,getDay,getFullYear,getHours,getMilliseconds,getMinutes,getMonth,getSeconds,getTime,getTimezoneOffset,getUTCDate,getUTCDay,getUTCFullYear,getUTCHours,getUTCMilliseconds,getUTCMinutes,getUTCMonth,getUTCSeconds,getYear,setDate,setFullYear,setHours,setMilliseconds,setMinutes,setMonth,setSeconds,setTime,setUTCDate,setUTCFullYear,setUTCHours,setUTCMilliseconds,setUTCMinutes,setUTCMonth,setUTCSeconds,setYear,toDateString,toGMTString,toLocaleDateString,toLocaleString,toLocaleTimeString,toTimeString,toUTCString');                    
                     Date.prototype.$constructor$ = Date;
@@ -561,7 +561,7 @@ MentalJS = function() {
                            '$clearTimeout$': {configurable: true, writable: false, value: CLEAR_TIMEOUT},
                            '$Math$': {configurable: true, writable: false, value: Math},
                            '$Date$': {configurable: true, writable: false, value: Date},
-                           '$Number$': {configurable: true, writable: false, value: 85},
+                           '$Number$': {configurable: true, writable: false, value: Number},
                            '$RegExp$': {configurable: true, writable: false, value: RegExp},
                            '$Array$': {configurable: true, writable: false, value: Array},
                            '$String$': {configurable: true, writable: false, value: String},
