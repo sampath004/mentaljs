@@ -846,7 +846,8 @@
     			function semicolon() {
     			    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen),
     			        parentState = parentStates[index],
-    			        index2 = parseFloat(''+lookupSquare+lookupCurly+(lookupParen-1));                                    
+    			        parenIndex = lookupParen-1;
+    			        index2 = parseFloat(''+lookupSquare+lookupCurly+parenIndex);                                    
                     if(isFor[index2] && !isForIn[index2]) {
                         state = 45;
                         outputLine += ';';
@@ -1223,7 +1224,8 @@
                     parentStates[index] = null; 
     			}
     			function curlyOpen() {
-    			    var index = parseFloat(''+lookupSquare+(lookupCurly+1)+lookupParen);
+    			    var curlyIndex= lookupCurly+1,
+    			        index = parseFloat(''+lookupSquare+curlyIndex+lookupParen);
     			    if(lastState === 57) {
                        state = 61;                            
                     } else if(lastState === 18) {
@@ -1279,7 +1281,7 @@
                     lookupCurly++;
     			}
     			function curlyClose() {
-    			    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
+    			    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen), curlyIndex;
     			    isVar[index] = null;
                     lookupCurly--;
                     index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
@@ -1294,7 +1296,8 @@
                     } else if(parentState === 96) {
                         state = 97;                        
                         left = 1;
-                        index = parseFloat(''+lookupSquare+(lookupCurly+1)+lookupParen);
+                        curlyIndex = lookupCurly+1;
+                        index = parseFloat(''+lookupSquare+curlyIndex+lookupParen);
                         isObjectLiteral[index] = 0;
                         outputLine += ')';
                     } else if(parentState === 43) {
