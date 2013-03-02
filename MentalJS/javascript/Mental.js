@@ -1721,7 +1721,7 @@
                         identifier();
                     } else if(chr === 0x24) {
                         nonKeyword();          
-    				} else if((chr > 0x2f && chr < 0x3a) || (!left && chr === 0x2e)) {						    						    					    																													
+    				} else if(chr > 0x2f && chr < 0x3a) {						    						    					    																													
     					numberOrHex();                                              							        
     		        } else if(chr === 0x2f) {
     		            next = code.charCodeAt(pos+1);				            
@@ -1795,7 +1795,9 @@
                             identifier();		
                         } else {
                             nonKeyword();
-                        }																																																		
+                        }		
+                    } else if(!left && chr === 0x2e) {    																																																
+    					numberOrHex();
     				} else if(chr > 159) {
                         if(chr === 160||chr===5760||chr===6158||chr===8192||chr===8193||chr===8194||chr===8195||chr===8196||chr===8197||chr===8198||chr===8199||chr===8200||chr===8201||chr===8202||chr===8239||chr===8287||chr===12288) {
                             space();
@@ -1808,8 +1810,8 @@
                         } 
                     }																				
     				checkRules();
-                    output += outputLine;
-                    outputLine = '';																													
+                    output+=outputLine;
+                    outputLine='';																													
     			}																	
     							
     			if(lastState === 70) {
