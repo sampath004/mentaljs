@@ -547,22 +547,20 @@
                 function keyword(iLen) {
                     state = -1;
                     index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
+                    left = 0;
                     switch(iLen) {
                         case 2:                         
                             if(outputLine === 'do') {                                                              
-                                state = 18;                                    
-                                left = 0;                                           
+                                state = 18;                                                                               
                                 outputLine += ' ';                                                                                        
                             } else if(outputLine === 'in') {                                
-                                state = 73;
-                                left = 0;                                           
+                                state = 73;     
                                 outputLine=' '+outputLine+' ';
                                 if(isFor[index]) {
                                     isForIn[index] = 1;        
                                 }                                                                                               
                             } else if(outputLine === 'if') {
-                                state = 68;
-                                left = 0;                                        
+                                state = 68;                                      
                                 if(lastState === 32) {
                                 outputLine=' '+outputLine;
                                 }                                
@@ -574,25 +572,21 @@
                                 if(!rules[136][lastState]) {                                                                                                                       
                                     asi();                                             
                                 }                                
-                                state = 136;                                    
-                                left = 0;                                            
+                                state = 136;                                                                              
                                 outputLine += ' ';
                                 isVar[index] = 1;                           
                             } else if(outputLine === 'new') {                                
-                                state = 84;
-                                left = 0;                                           
+                                state = 84;    
                                 outputLine += ' ';                            
                             } else if(outputLine === 'NaN') {                                
                                 state = 83;
                                 left = 1;                                                                        
                             } else if(outputLine === 'for') {                                                                        
                                 state = 40;                                    
-                                left = 0;                                        
                                 outputLine += ' ';
                                 isFor[index] = 1;
                             } else if(outputLine === 'try') {                                
-                                state = 127;                                    
-                                left = 0;                                                                        
+                                state = 127;                                                                      
                             } 
                         break;
                         case 4:                                                     
@@ -600,20 +594,16 @@
                                 if(!isIf[index]) {
                                     error("Syntax error unexpected else");
                                 }                                                                                                                                                                                       
-                                state = 32;
-                                left = 0;                                           
+                                state = 32;    
                                 outputLine += ' ';                           
                             } else if(outputLine === 'this') {                                
                                 state = 124;                                    
-                                expect = 0;
                                 left = 1;                                                                                                    
                             } else if(outputLine === 'void') {                                
-                                state = 139;
-                                left = 0;                                           
+                                state = 139;                                
                                 outputLine += ' ';                                                      
                             } else if(outputLine === 'case') {                                
-                                state = 15;
-                                left = 0;                                                                    
+                                state = 15;                             
                                 outputLine += ' ';
                                 isCase[index] = 1;
                                 caseCount++;                           
@@ -624,55 +614,44 @@
                                 state = 130;
                                 left = 1;                                                                           
                             } else if(outputLine === 'with') {                                
-                                state = 140;                                    
-                                left = 0;                                                                        
+                                state = 140;                                                                                                          
                             }
                         break;
                         case 5:                                                     
                             if(outputLine === 'throw') {                                
-                                state = 131;
-                                left = 0;                                           
+                                state = 131;    
                                 outputLine += ' ';                          
                             } else if(outputLine === 'break') {                                
-                                state = 14;
-                                left = 0;                                           
+                                state = 14;                                        
                                 outputLine += ' ';                         
                             } else if(outputLine === 'false') {                                
                                 state = 36;
                                 left = 1;                                                                           
                             } else if(outputLine === 'catch') {                                
-                                state = 22;                                    
-                                left = 0;                                                                        
+                                state = 22;                                                                                                          
                             } else if(outputLine === 'while') {                                
-                                state = 145;                                    
-                                left = 0;                                                                        
+                                state = 145;                                                                      
                             }
                         break;
                         case 6:                                                     
                             if(outputLine === 'delete') {                                
-                                state = 17;
-                                left = 0;                                           
+                                state = 17;    
                                 outputLine += ' ';                         
                             } else if(outputLine === 'return') {                                
-                                state = 111;
-                                left = 0;                                           
+                                state = 111;                                         
                                 outputLine += ' ';                         
                             } else if(outputLine === 'typeof') {                                                               
-                                state = 132;
-                                left = 0;                                           
+                                state = 132;                                        
                                 outputLine += ' ';
                             } else if(outputLine === 'switch') {                                                               
-                                state = 118;                                    
-                                left = 0;                                                                        
+                                state = 118;                                                                                                         
                             }
                         break;
                         case 7:                         
                             if(outputLine === 'default') {                                
-                                state = 16;                                    
-                                left = 0;                                                                           
+                                state = 16;                                                                        
                             } else if(outputLine === 'finally') {                                
-                                state = 37;                                    
-                                left = 0;                                                                        
+                                state = 37;                                                                      
                             }
                         break;
                         default:                                                     
@@ -688,14 +667,12 @@
                                     } else {
                                         error('Unexpected function. Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                                     }                                              
-                                }                                        
-                                left = 0;                                                                                                                                                                         
+                                }                                                                                                                                                                           
                             } else if(outputLine === 'Infinity') {                                
                                 state = 74;
                                 left = 1;                                                                                                    
                             } else if(outputLine === 'continue') {                                
-                                state = 29;
-                                left = 0;                                           
+                                state = 29;           
                                 outputLine += ' ';
                             } else if(outputLine === 'instanceof') {                                
                                 state = 75;
