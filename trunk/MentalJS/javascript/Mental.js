@@ -14,7 +14,7 @@
                     error("MentalJS requires ES5. Please upgrade your browser.");
             }                            
             var parseTreeOutput = '', converted, that = this,                                         
-                pos = 0, chr, scoping = '$',
+                pos = 0, chr, scoping = '$', 
                 result, replaceScoping = new RegExp('['+scoping+']'),
                 allowedProperties = /^(?:length|prototype)$/,                                                             
                 attributeWhitelist = /^(?:alt|title)$/i,                                               
@@ -33,7 +33,7 @@
                     };           
                 }                    
                 function execute(code) {
-                	var result,
+					var result,
                     M = {
                         O: function(obj) {
                             var keys = Object.keys(obj), key;
@@ -42,10 +42,10 @@
                                     continue;
                                 }
                                 if(/^[$](?:toString|valueOf|constructor|hasOwnProperty)[$]$/.test(key)) {
-                                    Object.defineProperty(obj,key.replace(new RegExp('^'+replaceScoping.source,'i'),'').replace(new RegExp(replaceScoping.source+'$','i'),''), {enumerable: false});
+                                    Object.defineProperty(obj,key.replace(new RegExp(replaceScoping.source+'$','i'),''), {enumerable: false});
                                     Object.defineProperty(obj,key,{value:obj[key],enumerable: false, writable: false, configurable: true});
                                 } else {
-                                    Object.defineProperty(obj,key.replace(new RegExp('^'+replaceScoping.source,'i'),'').replace(new RegExp(replaceScoping.source+'$','i'),''), {enumerable: true});
+                                    Object.defineProperty(obj,key.replace(new RegExp(replaceScoping.source+'$','i'),''), {enumerable: true});
                                     Object.defineProperty(obj,key,{value:obj[key],enumerable: false});
                                 }                                                                                                                       
                             }
@@ -57,27 +57,27 @@
                                    return null;
                                 }                        
                                 if((/[^\d]/.test(exp) || exp === '') && !allowedProperties.test(exp)) {                                                        
-                                    return scoping + exp + scoping;
+                                    return exp + scoping;
                                 } else {                                    
                                     return +exp;
                                 }
                         },
                         A: function(args) {
                             args = [].slice.call(args,0);
-                            args.$callee$=arguments.callee.caller;
+                            args.callee$=arguments.callee.caller;
                             return args;
                         }                
                     };
                     function createSandboxedNode(node) {
                         Object.defineProperties(node, {
-                            '$innerText$': {configurable:true, get:function(){return this.innerText;},set:function(innerText){
+                            'innerText$': {configurable:true, get:function(){return this.innerText;},set:function(innerText){
                                     if(this.tagName.toLowerCase()==='style'){
                                         /*todo css parsing*/return false;
                                      }
                                      this.innerText = innerText;
                                     }
                             },
-                            '$innerHTML$': {configurable:true, get:function(){return this.innerHTML;}, set:function(innerHTML){
+                            'innerHTML$': {configurable:true, get:function(){return this.innerHTML;}, set:function(innerHTML){
                                 if(this.tagName.toLowerCase()==='style'){
                                     /*todo css parsing*/return false;
                                  }
@@ -118,33 +118,33 @@
                                 }                                                                                                                                                                                            
                                 return this.innerHTML = (new XMLSerializer()).serializeToString(doc.body); 
                              }},
-                            '$textContent$': {configurable:true, get:function(){return this.textContent;},set:function(textContent){if(this.tagName.toLowerCase()==='style'){/*todo css parsing*/return false;};this.textContent = textContent;}},
-                            '$style$': {configurable:true, get:function(){ 
+                            'textContent$': {configurable:true, get:function(){return this.textContent;},set:function(textContent){if(this.tagName.toLowerCase()==='style'){/*todo css parsing*/return false;};this.textContent = textContent;}},
+                            'style$': {configurable:true, get:function(){ 
                                     var style = this.style;
                                     Object.defineProperties(style,{ 
-                                        '$color$' : {configurable:true, get:function(){return style.color;}, set:function(color){style.color = color;}},
-                                        '$backgroundColor$' : {configurable:true, get:function(){return style.backgroundColor;}, set:function(backgroundColor){style.backgroundColor = backgroundColor;}}  
+                                        'color$' : {configurable:true, get:function(){return style.color;}, set:function(color){style.color = color;}},
+                                        'backgroundColor$' : {configurable:true, get:function(){return style.backgroundColor;}, set:function(backgroundColor){style.backgroundColor = backgroundColor;}}  
                                     });
                                     return style;
                                 }
                              },
-                            '$appendChild$': {configurable:true, writable:false, value:function(){
+                            'appendChild$': {configurable:true, writable:false, value:function(){
                                 if(this.tagName && this.tagName.toLowerCase()==='style'){
                                     /*todo css parsing*/return false;
                                  };
                                 return this.appendChild.apply(this, arguments);}
                              },
-                            '$firstChild$': {configurable:true, get:function(){return this.firstChild}},
-                            '$lastChild$': {configurable:true, get:function(){return this.lastChild}},
-                            '$nextSibling$': {configurable:true, get:function(){return this.nextSibling}},
-                            '$parentNode$': {configurable:true, get:function(){return this.parentNode}},
-                            '$insertBefore$': {configurable:true, writable:false, value:function(){return this.insertBefore.apply(this, arguments);}},
-                            '$insertAfter$': {configurable:true, writable:false, value:function(){return this.insertAfter.apply(this, arguments);}},
-                            '$cloneNode$': {configurable:true, writable:false, value:function(){return this.cloneNode.apply(this, arguments);}},
-                            '$removeChild$': {configurable:true, writable:false, value:function(){return this.removeChild.apply(this, arguments);}},
-                            '$getAttribute$': {configurable:true, writable:false, value:function(name){if(attributeWhitelist.test(name)){return this.getAttribute(name)}}},
-                            '$setAttribute$': {configurable:true, writable:false, value:function(name, value){if(attributeWhitelist.test(name)){return this.setAttribute(name, value+'')}}},
-                            '$getElementsByTagName$': {configurable:true, writable:false, value:function(){return this.getElementsByTagName.apply(this, arguments);}}                               
+                            'firstChild$': {configurable:true, get:function(){return this.firstChild}},
+                            'lastChild$': {configurable:true, get:function(){return this.lastChild}},
+                            'nextSibling$': {configurable:true, get:function(){return this.nextSibling}},
+                            'parentNode$': {configurable:true, get:function(){return this.parentNode}},
+                            'insertBefore$': {configurable:true, writable:false, value:function(){return this.insertBefore.apply(this, arguments);}},
+                            'insertAfter$': {configurable:true, writable:false, value:function(){return this.insertAfter.apply(this, arguments);}},
+                            'cloneNode$': {configurable:true, writable:false, value:function(){return this.cloneNode.apply(this, arguments);}},
+                            'removeChild$': {configurable:true, writable:false, value:function(){return this.removeChild.apply(this, arguments);}},
+                            'getAttribute$': {configurable:true, writable:false, value:function(name){if(attributeWhitelist.test(name)){return this.getAttribute(name)}}},
+                            'setAttribute$': {configurable:true, writable:false, value:function(name, value){if(attributeWhitelist.test(name)){return this.setAttribute(name, value+'')}}},
+                            'getElementsByTagName$': {configurable:true, writable:false, value:function(){return this.getElementsByTagName.apply(this, arguments);}}                               
                         });
                         return node;
                     };                        
@@ -153,9 +153,9 @@
                         for(var i=0;i<list.length;i++) {
                             var prop = list[i];
                             if(noprototype) {
-                                Object.defineProperty(obj,scoping+prop+scoping, {value:obj[prop], configurable:true, enumerable:false, writable: false});                               
+                                Object.defineProperty(obj,prop+scoping, {value:obj[prop], configurable:true, enumerable:false, writable: false});                               
                             } else {                                     
-                                Object.defineProperty(obj.prototype,scoping+prop+scoping, {configurable:true, enumerable:false, value:(function(obj, prop){ 
+                                Object.defineProperty(obj.prototype,prop+scoping, {configurable:true, enumerable:false, value:(function(obj, prop){ 
                                 function func() {
                                     if(!this[prop]) {
                                         return false;
@@ -178,9 +178,9 @@
                         for(var i=0;i<list.length;i++) {
                             var prop = list[i];  
                             if(transObj) {                              
-                                Object.defineProperty(transObj,scoping+prop+scoping, {value:obj[prop], configurable:true, enumerable:false, writable: false});
+                                Object.defineProperty(transObj,prop+scoping, {value:obj[prop], configurable:true, enumerable:false, writable: false});
                             } else {
-                                Object.defineProperty(obj,scoping+prop+scoping, {value:obj[prop], configurable:true, enumerable:false, writable: false});                               
+                                Object.defineProperty(obj,prop+scoping, {value:obj[prop], configurable:true, enumerable:false, writable: false});                               
                             }
                         }           
                     };                                                 
@@ -197,44 +197,44 @@
                         }
                         return converted;        
                     };
-                    FUNCTION.$constructor$ = FUNCTION;                                                                                                                                          
-                    $Function$ = FUNCTION;                                                                                                                                                        
-                    Boolean.$constructor$ = $Function$;
-                    Boolean.prototype.$constructor$ = Boolean;                                       
-                    $Boolean$ = Boolean;                                                            
-                    Function.prototype.$constructor$ = $Function$;
+                    FUNCTION.constructor$ = FUNCTION;                                                                                                                                          
+                    Function$ = FUNCTION;                                                                                                                                                        
+                    Boolean.constructor$ = Function$;
+                    Boolean.prototype.constructor$ = Boolean;                                       
+                    Boolean$ = Boolean;                                                            
+                    Function.prototype.constructor$ = Function$;
                     objWhitelist(Function, 'call,apply');                                                            
                     objWhitelist(String,'charAt,charCodeAt,concat,indexOf,lastIndexOf,localeCompare,match,replace,search,slice,split,substr,substring,toLocaleLowerCase,toLocaleString,toLocaleUpperCase,toLowerCase,toUpperCase');
                     String = objWhitelist(String, 'fromCharCode', true);
-                    String.prototype.$constructor$ = String;
-                    String.$constructor$ = $Function$;                                                            
-                    $String$ = String;
+                    String.prototype.constructor$ = String;
+                    String.constructor$ = Function$;                                                            
+                    String$ = String;
                                                                                                       
                     objWhitelist(Array,'sort,join,pop,push,reverse,shift,slice,splice,unshift,concat');                                                                                                                                     
-                    Array.prototype.$constructor$ = Array;
-                    Array.$constructor$ = $Function$;                                                                                     
-                    $Array$ = Array;                                                             
+                    Array.prototype.constructor$ = Array;
+                    Array.constructor$ = Function$;                                                                                     
+                    Array$ = Array;                                                             
                     objWhitelist(RegExp,'compile,exec,test');                    
-                    RegExp.prototype.$constructor$ = RegExp;
-                    Object.defineProperty(RegExp.prototype, '$source$', {configurable:true, get:function(){return this.source}});                        
-                    RegExp.$lastMatch$ = RegExp.lastMatch;                    
-                    RegExp.$lastParen$ = RegExp.lastParen;                    
-                    RegExp.$leftContext$ = RegExp.leftContext;                                                            
-                    RegExp.$constructor$ = $Function$;    
-                    $RegExp$ = RegExp;                     
+                    RegExp.prototype.constructor$ = RegExp;
+                    Object.defineProperty(RegExp.prototype, 'source$', {configurable:true, get:function(){return this.source}});                        
+                    RegExp.lastMatch$ = RegExp.lastMatch;                    
+                    RegExp.lastParen$ = RegExp.lastParen;                    
+                    RegExp.leftContext$ = RegExp.leftContext;                                                            
+                    RegExp.constructor$ = Function$;    
+                    RegExp$ = RegExp;                     
                     objWhitelist(Number,'toExponential,toFixed,toPrecision');                    
                     constWhitelist(Number, 'MAX_VALUE,MIN_VALUE,NaN,NEGATIVE_INFINITY,POSITIVE_INFINITY');                                                          
-                    Number.$constructor$ = $Function$;
-                    Number.prototype.$constructor$ = Number;
-                    $Number$ = Number;                                                         
+                    Number.constructor$ = Function$;
+                    Number.prototype.constructor$ = Number;
+                    Number$ = Number;                                                         
                     objWhitelist(Date,'getDate,getDay,getFullYear,getHours,getMilliseconds,getMinutes,getMonth,getSeconds,getTime,getTimezoneOffset,getUTCDate,getUTCDay,getUTCFullYear,getUTCHours,getUTCMilliseconds,getUTCMinutes,getUTCMonth,getUTCSeconds,getYear,setDate,setFullYear,setHours,setMilliseconds,setMinutes,setMonth,setSeconds,setTime,setUTCDate,setUTCFullYear,setUTCHours,setUTCMilliseconds,setUTCMinutes,setUTCMonth,setUTCSeconds,setYear,toDateString,toGMTString,toLocaleDateString,toLocaleString,toLocaleTimeString,toTimeString,toUTCString');                    
-                    Date.prototype.$constructor$ = Date;
-                    Date.$constructor$ = $Function$;                    
-                    $Date$ = Date;                         
+                    Date.prototype.constructor$ = Date;
+                    Date.constructor$ = Function$;                    
+                    Date$ = Date;                         
                     objWhitelist(Math,'abs,acos,asin,atan,atan2,ceil,cos,exp,floor,log,max,min,pow,random,round,sin,sqrt,tan', true);
                     constWhitelist(Math, 'E,LN10,LN2,LOG10E,LOG2E,PI,SQRT1_2,SQRT2');                                                                                                                                          
-                    Math.$constructor$ = Object;
-                    $Math$ = Math;                    
+                    Math.constructor$ = Object;
+                    Math$ = Math;                    
                     constWhitelist(window,'decodeURI,decodeURIComponent,encodeURI,encodeURIComponent,escape,isFinite,isNaN,parseFloat,parseInt,unescape', window);                                        
                     function CLEAR_INTERVAL(id){                
                         id = +id;
@@ -243,7 +243,7 @@
                         }
                         return clearInterval(id);
                     };                    
-                    $clearInterval$ = CLEAR_INTERVAL;                      
+                    clearInterval$ = CLEAR_INTERVAL;                      
                     var CLEAR_TIMEOUT = function(id){               
                         id = +id;
                         if (typeof setTimeoutIDS[id] === 'undefined') {
@@ -251,31 +251,31 @@
                         }
                         return clearTimeout(id);
                     };                    
-                    $clearTimeout$ = CLEAR_TIMEOUT;                                        
+                    clearTimeout$ = CLEAR_TIMEOUT;                                        
                     var SET_TIMEOUT = function(func, time){             
                         time = +time;                
                         if (typeof func !== 'function') {
-                            func = $Function$(func);
+                            func = Function$(func);
                         }
                         var id = +setTimeout(func, time);
                         setTimeoutIDS[id] = true;
                         return id;                
                     };                     
-                    $setTimeout$ = SET_TIMEOUT;                                          
+                    setTimeout$ = SET_TIMEOUT;                                          
                     var SET_INTERVAL = function(func, time){                
                         time = +time;                
                         if (typeof func !== 'function') {
-                            func = $Function$(func);
+                            func = Function$(func);
                         }
                         var id = +setInterval(func, time);
                         setIntervalIDS[id] = true;
                         return id;                
                     };                    
-                    $setInterval$ = SET_INTERVAL;                                         
+                    setInterval$ = SET_INTERVAL;                                         
                     var ALERT = function(str) {             
                         alert(str);
                     };                      
-                    $alert$ = ALERT;                    
+                    alert$ = ALERT;                    
                     var EVAL = function(str) {                      
                         var js = MentalJS(), converted;                                            
                         if(typeof str != 'function') {                           
@@ -291,14 +291,14 @@
                             return eval(str)
                         }                                                                                   
                     };                   
-                    $eval$ = EVAL;                                
-                    Object.$constructor$ = $Function$;                                        
-                    Object.prototype.$constructor$ = Object;                    
-                    Object.prototype.$hasOwnProperty$ = Object.prototype.hasOwnProperty;
+                    eval$ = EVAL;                                
+                    Object.constructor$ = Function$;                                        
+                    Object.prototype.constructor$ = Object;                    
+                    Object.prototype.hasOwnProperty$ = Object.prototype.hasOwnProperty;
                     objWhitelist(Object, 'valueOf');
                     objWhitelist(Object, 'toString');                                                                                                                                                                   
-                    $Object$ = Object;
-                    Object.defineProperty(Object.prototype, '$prototype$', {
+                    Object$ = Object;
+                    Object.defineProperty(Object.prototype, 'prototype$', {
                         configurable:true,
                         get:function(){
                           return this.prototype;  
@@ -307,7 +307,7 @@
                           this.prototype = obj;  
                         }
                     });
-                    Object.defineProperty(Object.prototype, '$length$', {
+                    Object.defineProperty(Object.prototype, 'length$', {
                         configurable:true,
                         get:function(){
                           return this.length;  
@@ -318,37 +318,37 @@
                     });                                                 
                     if(that.global) {                              
                         Object.defineProperties(this, {
-                           '$undefined$': {configurable: true, writable: false, value: void 1},
-                           '$document$': {configurable: true, writable: false, value: document},
-                           '$Object$': {configurable: true, writable: false, value: Object},
-                           '$eval$': {configurable: true, writable: false, value: EVAL},
-                           '$alert$': {configurable: true, writable: false, value: ALERT},
-                           '$setInterval$': {configurable: true, writable: false, value: SET_INTERVAL},
-                           '$setTimeout$': {configurable: true, writable: false, value: SET_TIMEOUT},
-                           '$clearInterval$': {configurable: true, writable: false, value: CLEAR_INTERVAL},
-                           '$clearTimeout$': {configurable: true, writable: false, value: CLEAR_TIMEOUT},
-                           '$Math$': {configurable: true, writable: false, value: Math},
-                           '$Date$': {configurable: true, writable: false, value: Date},
-                           '$Number$': {configurable: true, writable: false, value: Number},
-                           '$RegExp$': {configurable: true, writable: false, value: RegExp},
-                           '$Array$': {configurable: true, writable: false, value: Array},
-                           '$String$': {configurable: true, writable: false, value: String},
-                           '$Boolean$': {configurable: true, writable: false, value: Boolean},
-                           '$Function$': {configurable: true, writable: false, value: FUNCTION},
-                           '$decodeURI$': {configurable: true, writable: false, value: decodeURI},
-                           '$decodeURIComponent$': {configurable: true, writable: false, value: decodeURIComponent},
-                           '$encodeURI$': {configurable: true, writable: false, value: encodeURI},
-                           '$encodeURIComponent$': {configurable: true, writable: false, value: encodeURIComponent},
-                           '$escape$': {configurable: true, writable: false, value: escape},
-                           '$isFinite$': {configurable: true, writable: false, value: isFinite},
-                           '$isNaN$': {configurable: true, writable: false, value: isNaN},
-                           '$parseFloat$': {configurable: true, writable: false, value: parseFloat},
-                           '$parseInt$': {configurable: true, writable: false, value: parseInt},
-                           '$unescape$': {configurable: true, writable: false, value: unescape},                               
-                           '$location$': {configurable: true, writable: false, value: {}},
-                           '$navigator$': {configurable: true, writable: false, value: {}},
-                           '$removeEventListener$': {configurable: true, writable: false, value: function(){ return window.removeEventListener.apply(document, arguments); }},
-                           '$addEventListener$': {configurable: true, writable: false, value: function(){
+                           'undefined$': {configurable: true, writable: false, value: void 1},
+                           'document$': {configurable: true, writable: false, value: document},
+                           'Object$': {configurable: true, writable: false, value: Object},
+                           'eval$': {configurable: true, writable: false, value: EVAL},
+                           'alert$': {configurable: true, writable: false, value: ALERT},
+                           'setInterval$': {configurable: true, writable: false, value: SET_INTERVAL},
+                           'setTimeout$': {configurable: true, writable: false, value: SET_TIMEOUT},
+                           'clearInterval$': {configurable: true, writable: false, value: CLEAR_INTERVAL},
+                           'clearTimeout$': {configurable: true, writable: false, value: CLEAR_TIMEOUT},
+                           'Math$': {configurable: true, writable: false, value: Math},
+                           'Date$': {configurable: true, writable: false, value: Date},
+                           'Number$': {configurable: true, writable: false, value: Number},
+                           'RegExp$': {configurable: true, writable: false, value: RegExp},
+                           'Array$': {configurable: true, writable: false, value: Array},
+                           'String$': {configurable: true, writable: false, value: String},
+                           'Boolean$': {configurable: true, writable: false, value: Boolean},
+                           'Function$': {configurable: true, writable: false, value: FUNCTION},
+                           'decodeURI$': {configurable: true, writable: false, value: decodeURI},
+                           'decodeURIComponent$': {configurable: true, writable: false, value: decodeURIComponent},
+                           'encodeURI$': {configurable: true, writable: false, value: encodeURI},
+                           'encodeURIComponent$': {configurable: true, writable: false, value: encodeURIComponent},
+                           'escape$': {configurable: true, writable: false, value: escape},
+                           'isFinite$': {configurable: true, writable: false, value: isFinite},
+                           'isNaN$': {configurable: true, writable: false, value: isNaN},
+                           'parseFloat$': {configurable: true, writable: false, value: parseFloat},
+                           'parseInt$': {configurable: true, writable: false, value: parseInt},
+                           'unescape$': {configurable: true, writable: false, value: unescape},                               
+                           'location$': {configurable: true, writable: false, value: {}},
+                           'navigator$': {configurable: true, writable: false, value: {}},
+                           'removeEventListener$': {configurable: true, writable: false, value: function(){ return window.removeEventListener.apply(document, arguments); }},
+                           'addEventListener$': {configurable: true, writable: false, value: function(){
                                     if(typeof arguments[1] != 'function') {
                                         var js = Mental(),
                                             converted = Function.apply(window, arguments) + '',                                             
@@ -361,67 +361,67 @@
                              }                                 
                         });
                         
-                        Object.defineProperties(this.$location$, {
+                        Object.defineProperties(this.location$, {
                             'toString': {configurable: true, value:function(){ return 'http://sandboxed'; }},
                             'valueOf': {configurable: true, value:function(){ return 'http://sandboxed'; }},
-                            '$href$': {configurable: true, get:function(){return 'http://sandboxed'}},
-                            '$replace$': {configurable: true, get:function(){return function(){}}},
-                            '$reload$': {configurable: true, get:function(){return function(){}}},
-                            '$assign$': {configurable: true, get:function(){return function(){}}},                                
-                            '$hash$': {configurable: true, set:function(hash){ location.hash=hash;},get:function(){return location.hash}},
-                            '$host$': {configurable: true, get:function(){return 'sandboxed'}},
-                            '$hostname$': {configurable: true, get:function(){return 'sandboxed'}},
-                            '$pathname$': {configurable: true, get:function(){return '/'}},
-                            '$port$': {configurable: true, get:function(){return ''}},
-                            '$protocol$': {configurable: true, get:function(){return 'http:'}},
-                            '$search$': {configurable: true, get:function(){return ''}}
+                            'href$': {configurable: true, get:function(){return 'http://sandboxed'}},
+                            'replace$': {configurable: true, get:function(){return function(){}}},
+                            'reload$': {configurable: true, get:function(){return function(){}}},
+                            'assign$': {configurable: true, get:function(){return function(){}}},                                
+                            'hash$': {configurable: true, set:function(hash){ location.hash=hash;},get:function(){return location.hash}},
+                            'host$': {configurable: true, get:function(){return 'sandboxed'}},
+                            'hostname$': {configurable: true, get:function(){return 'sandboxed'}},
+                            'pathname$': {configurable: true, get:function(){return '/'}},
+                            'port$': {configurable: true, get:function(){return ''}},
+                            'protocol$': {configurable: true, get:function(){return 'http:'}},
+                            'search$': {configurable: true, get:function(){return ''}}
                         });
-                         Object.defineProperties(this.$navigator$, {                                
-                            '$appCodeName$': {configurable: true, get:function(){return navigator.appCodeName}},
-                            '$appName$': {configurable: true, get:function(){return navigator.appName}},
-                            '$appVersion$': {configurable: true, get:function(){return navigator.appVersion}},
-                            '$language$': {configurable: true, get:function(){return navigator.language}},
-                            '$onLine$': {configurable: true, get:function(){return navigator.onLine}},
-                            '$oscpu$': {configurable: true, get:function(){return navigator.oscpu}},
-                            '$platform$': {configurable: true, get:function(){return navigator.platform}},
-                            '$product$': {configurable: true, get:function(){return navigator.product}},
-                            '$productSub$': {configurable: true, get:function(){return navigator.productSub}},
-                            '$userAgent$': {configurable: true, get:function(){return navigator.userAgent}},
-                            '$vendor$': {configurable: true, get:function(){return navigator.vendor}},
-                            '$vendorSub$': {configurable: true, get:function(){return navigator.vendorSub}}                               
+                         Object.defineProperties(this.navigator$, {                                
+                            'appCodeName$': {configurable: true, get:function(){return navigator.appCodeName}},
+                            'appName$': {configurable: true, get:function(){return navigator.appName}},
+                            'appVersion$': {configurable: true, get:function(){return navigator.appVersion}},
+                            'language$': {configurable: true, get:function(){return navigator.language}},
+                            'onLine$': {configurable: true, get:function(){return navigator.onLine}},
+                            'oscpu$': {configurable: true, get:function(){return navigator.oscpu}},
+                            'platform$': {configurable: true, get:function(){return navigator.platform}},
+                            'product$': {configurable: true, get:function(){return navigator.product}},
+                            'productSub$': {configurable: true, get:function(){return navigator.productSub}},
+                            'userAgent$': {configurable: true, get:function(){return navigator.userAgent}},
+                            'vendor$': {configurable: true, get:function(){return navigator.vendor}},
+                            'vendorSub$': {configurable: true, get:function(){return navigator.vendorSub}}                               
                         }); 
                         Object.defineProperties(document.documentElement, {
-                            '$contains$': {enumerable:false,configurable: true, writable: false, value: function(){return document.documentElement.contains.apply(document.documentElement, arguments)}},
-                            '$compareDocumentPosition$': {enumerable:false,configurable: true, writable: false, value: function(){return document.documentElement.compareDocumentPosition.apply(document.documentElement, arguments)}}
+                            'contains$': {enumerable:false,configurable: true, writable: false, value: function(){return document.documentElement.contains.apply(document.documentElement, arguments)}},
+                            'compareDocumentPosition$': {enumerable:false,configurable: true, writable: false, value: function(){return document.documentElement.compareDocumentPosition.apply(document.documentElement, arguments)}}
                         });  
                         
                         createSandboxedNode(Element.prototype); 
                         createSandboxedNode(DocumentFragment.prototype);                            
                         
                         Object.defineProperties(HTMLScriptElement.prototype, {
-                            '$innerText$': {configurable:true, get:function(){return this.innerText;},set:function(innerText){ var js = MentalJS();this.innerText = js.parse({options:{eval:false},code:innerText+''});}},
-                            '$textContent$': {configurable:true, get:function(){return this.textContent;},set:function(textContent){ var js = MentalJS();this.textContent = js.parse({options:{eval:false},code:textContent+''});}},
-                            '$text$': {configurable:true, get:function(){return this.text;},set:function(text){ var js = MentalJS();this.text = js.parse({options:{eval:false},code:text+''});}},
-                            '$appendChild$': {configurable:true, writable:false, value:function(){var js = MentalJS();return this.appendChild(document.createTextNode(js.parse({options:{eval:false},code:arguments[0].nodeValue+''})));}}
+                            'innerText$': {configurable:true, get:function(){return this.innerText;},set:function(innerText){ var js = MentalJS();this.innerText = js.parse({options:{eval:false},code:innerText+''});}},
+                            'textContent$': {configurable:true, get:function(){return this.textContent;},set:function(textContent){ var js = MentalJS();this.textContent = js.parse({options:{eval:false},code:textContent+''});}},
+                            'text$': {configurable:true, get:function(){return this.text;},set:function(text){ var js = MentalJS();this.text = js.parse({options:{eval:false},code:text+''});}},
+                            'appendChild$': {configurable:true, writable:false, value:function(){var js = MentalJS();return this.appendChild(document.createTextNode(js.parse({options:{eval:false},code:arguments[0].nodeValue+''})));}}
                         });                                                         
                                                                           
                         Object.defineProperties(document, {
-                            '$compatMode$': {enumerable:false, configurable: true, writable: false, value: document.compatMode},
-                            '$head$': {enumerable:false, configurable: true, writable: false, value: document.head},
-                            '$defaultView$': {enumerable:false, configurable: true, writable: false, value: window},
-                            '$documentElement$': {enumerable:false, configurable: true, writable: false, value: document.documentElement},                                
-                            '$readyState$': {enumerable:false,configurable: true, writable: false, value: document.readyState}, 
-                            '$body$': {enumerable:false,configurable: true, writable: false, value: document.body},                                
-                            '$createTextNode$': {enumerable:false,configurable: true, writable: false, value: function(){return document.createTextNode.apply(document, arguments)}},
-                            '$createComment$': {enumerable:false,configurable: true, writable: false, value: function(){return document.createComment.apply(document, arguments)}},                                
-                            '$createDocumentFragment$': {enumerable:false,configurable: true, writable: false, value: document.createDocumentFragment},
-                            '$getElementById$': {enumerable:false,configurable: true, writable: false, value: function(){return document.getElementById.apply(document, arguments)}},
-                            '$getElementsByTagName$': {enumerable:false,configurable: true, writable: false, value: function(){return document.getElementsByTagName.apply(document, arguments)}},
-                            '$querySelector$': {enumerable:false,configurable: true, writable: false, value: function(){return document.querySelector.apply(document, arguments)}},
-                            '$querySelectorAll$': {enumerable:false,configurable: true, writable: false, value: function(){return document.querySelectorAll.apply(document, arguments)}},
-                            '$createElement$': {enumerable:false,configurable: true, writable: false, value: function(){return document.createElement.apply(document, arguments)}},
-                            '$removeEventListener$': {enumerable:false,configurable: true, writable: false, value: function(){ return document.removeEventListener.apply(document, arguments); }}, 
-                            '$addEventListener$': {enumerable:false,configurable: true, writable: false, value: function(){
+                            'compatMode$': {enumerable:false, configurable: true, writable: false, value: document.compatMode},
+                            'head$': {enumerable:false, configurable: true, writable: false, value: document.head},
+                            'defaultView$': {enumerable:false, configurable: true, writable: false, value: window},
+                            'documentElement$': {enumerable:false, configurable: true, writable: false, value: document.documentElement},                                
+                            'readyState$': {enumerable:false,configurable: true, writable: false, value: document.readyState}, 
+                            'body$': {enumerable:false,configurable: true, writable: false, value: document.body},                                
+                            'createTextNode$': {enumerable:false,configurable: true, writable: false, value: function(){return document.createTextNode.apply(document, arguments)}},
+                            'createComment$': {enumerable:false,configurable: true, writable: false, value: function(){return document.createComment.apply(document, arguments)}},                                
+                            'createDocumentFragment$': {enumerable:false,configurable: true, writable: false, value: document.createDocumentFragment},
+                            'getElementById$': {enumerable:false,configurable: true, writable: false, value: function(){return document.getElementById.apply(document, arguments)}},
+                            'getElementsByTagName$': {enumerable:false,configurable: true, writable: false, value: function(){return document.getElementsByTagName.apply(document, arguments)}},
+                            'querySelector$': {enumerable:false,configurable: true, writable: false, value: function(){return document.querySelector.apply(document, arguments)}},
+                            'querySelectorAll$': {enumerable:false,configurable: true, writable: false, value: function(){return document.querySelectorAll.apply(document, arguments)}},
+                            'createElement$': {enumerable:false,configurable: true, writable: false, value: function(){return document.createElement.apply(document, arguments)}},
+                            'removeEventListener$': {enumerable:false,configurable: true, writable: false, value: function(){ return document.removeEventListener.apply(document, arguments); }}, 
+                            'addEventListener$': {enumerable:false,configurable: true, writable: false, value: function(){
                                     if(typeof arguments[1] != 'function') {
                                         var js = Mental(),
                                             converted = Function.apply(window, arguments) + '',                                             
@@ -434,7 +434,7 @@
                              }                                
                         });
                                                                                                                                                                                                                                                                                                                         
-                        window[scoping+'window'+scoping] = this;                                                                       
+                        window['window'+scoping] = this;                                                                       
                     }                   
                     result = eval(code);                                                                  
                     if(that.result) {
@@ -445,7 +445,7 @@
             
         	function sandbox(code) {        			
         		this.code = code; 													
-    			var scoping = '$', pos = 0, chr, parentState, parentStates = {}, msg, state = 89, left = 0, output = '', outputLine = '', 					
+    			var parentState, parentStates = {}, msg, state = 89, left = 0, output = '', outputLine = '', 					
     			next, next2, next3, cached = -1,  												
     			len = code.length, parseTree = that.parseTree,
     			lookupSquare = 1, lookupCurly = 1, lookupParen = 1, ternaryCount = 0, isTernary = {}, caseCount = 0, isCase = {}, isVar = {},
@@ -749,12 +749,12 @@
 
                         //97-99,103,105-106,109,112-113,117-118,120,122                                                                                                                                                                                                                                                                                                                                    
                         if(iLen===1||iLen>10) {                                                                                                                                          
-                            outputLine=scoping+outputLine+scoping;               
+                            outputLine=outputLine+scoping;               
                             identifierStates();               
                             return false;
                         } else {                            
                             if(!keyword(iLen)) {                                                                                                                                
-                                outputLine=scoping+outputLine+scoping;
+                                outputLine=outputLine+scoping;
                                 identifierStates(); 
                                 return false;
                             }                                                                                                                
@@ -809,7 +809,7 @@
                         }
                         outputLine+=code.charAt(pos++);                                                                        
                     }
-                    outputLine=scoping+outputLine+scoping;
+                    outputLine=outputLine+scoping;
                     identifierStates();
                     identifierAsi();                         		                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
     		    }				    					
@@ -1249,7 +1249,7 @@
                     }                                       
                     outputLine += '{';
                     if(state === 61 || state === 59) {
-                        outputLine += 'var $arguments$=M.A(arguments);';
+                        outputLine += 'var arguments$=M.A(arguments);';
                     }                           
                     pos++;
                     index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
@@ -1406,10 +1406,7 @@
                     states = {escaping: 0, complete: 0};
                     states[chr] = 1;                        
                     outputLine += code.charAt(pos);
-                    pos++;
-                    if(state === 102) {
-                        outputLine += scoping;  
-                    }
+                    pos++;                    
                     while(pos < len) {                               
                         chr = code.charCodeAt(pos);                                                                                          
                         if(chr === 0x27 && !states.escaping && states[0x27]) {
