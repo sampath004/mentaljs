@@ -14,7 +14,7 @@
                     error("MentalJS requires ES5. Please upgrade your browser.");
             }                            
             var parseTreeOutput = '', converted, that = this,                                         
-                pos = 0, chr, scoping = '$', 
+                pos = 0, chr, scoping = '$', index,
                 result, replaceScoping = new RegExp('['+scoping+']'),
                 allowedProperties = /^(?:length|prototype)$/,                                                             
                 attributeWhitelist = /^(?:alt|title)$/i,                                               
@@ -118,7 +118,7 @@
                                 }                                                                                                                                                                                            
                                 return this.innerHTML = (new XMLSerializer()).serializeToString(doc.body); 
                              }},
-                            'textContent$': {configurable:true, get:function(){return this.textContent;},set:function(textContent){if(this.tagName.toLowerCase()==='style'){/*todo css parsing*/return false;};this.textContent = textContent;}},
+                            'textContent$': {configurable:true, get:function(){return this.textContent;},set:function(textContent){if(this.tagName.toLowerCase()==='style'){/*todo css parsing*/return false;}this.textContent = textContent;}},
                             'style$': {configurable:true, get:function(){ 
                                     var style = this.style;
                                     Object.defineProperties(style,{ 
@@ -131,23 +131,23 @@
                             'appendChild$': {configurable:true, writable:false, value:function(){
                                 if(this.tagName && this.tagName.toLowerCase()==='style'){
                                     /*todo css parsing*/return false;
-                                 };
+                                 }
                                 return this.appendChild.apply(this, arguments);}
                              },
-                            'firstChild$': {configurable:true, get:function(){return this.firstChild}},
-                            'lastChild$': {configurable:true, get:function(){return this.lastChild}},
-                            'nextSibling$': {configurable:true, get:function(){return this.nextSibling}},
-                            'parentNode$': {configurable:true, get:function(){return this.parentNode}},
+                            'firstChild$': {configurable:true, get:function(){return this.firstChild;}},
+                            'lastChild$': {configurable:true, get:function(){return this.lastChild;}},
+                            'nextSibling$': {configurable:true, get:function(){return this.nextSibling;}},
+                            'parentNode$': {configurable:true, get:function(){return this.parentNode;}},
                             'insertBefore$': {configurable:true, writable:false, value:function(){return this.insertBefore.apply(this, arguments);}},
                             'insertAfter$': {configurable:true, writable:false, value:function(){return this.insertAfter.apply(this, arguments);}},
                             'cloneNode$': {configurable:true, writable:false, value:function(){return this.cloneNode.apply(this, arguments);}},
                             'removeChild$': {configurable:true, writable:false, value:function(){return this.removeChild.apply(this, arguments);}},
-                            'getAttribute$': {configurable:true, writable:false, value:function(name){if(attributeWhitelist.test(name)){return this.getAttribute(name)}}},
-                            'setAttribute$': {configurable:true, writable:false, value:function(name, value){if(attributeWhitelist.test(name)){return this.setAttribute(name, value+'')}}},
+                            'getAttribute$': {configurable:true, writable:false, value:function(name){if(attributeWhitelist.test(name)){return this.getAttribute(name);}}},
+                            'setAttribute$': {configurable:true, writable:false, value:function(name, value){if(attributeWhitelist.test(name)){return this.setAttribute(name, value+'');}}},
                             'getElementsByTagName$': {configurable:true, writable:false, value:function(){return this.getElementsByTagName.apply(this, arguments);}}                               
                         });
                         return node;
-                    };                        
+                    }                        
                     function objWhitelist(obj, list, noprototype) {             
                         list = list.split(',');
                         for(var i=0;i<list.length;i++) {
@@ -166,13 +166,13 @@
                                 }
                                 func.valueOf = function() {
                                     return 'function '+prop+'() {\n [jsreg code] \n}';
-                                }
+                                };
                                 return func;
                             })(obj, prop)});                                                                                       
                             }
                         }
                         return obj;
-                    };
+                    }
                     function constWhitelist(obj, list, transObj) {
                         list = list.split(',');
                         for(var i=0;i<list.length;i++) {
@@ -187,7 +187,7 @@
                     function FUNCTION(){                                                                                                                                                                                 
                         var converted = Function.apply(window, arguments) + '',                                             
                             js = MentalJS();                                                                   
-                        if(typeof str != 'function') {                           
+                        if(typeof str !== 'function') {                           
                             converted = eval(js.parse({options:{eval:false},code:'('+converted+')'}));                                                                                                                                                                   
                         } else {
                             converted = eval(converted);
@@ -196,7 +196,7 @@
                             that.functionCode(converted);
                         }
                         return converted;        
-                    };
+                    }
                     FUNCTION.constructor$ = FUNCTION;                                                                                                                                          
                     Function$ = FUNCTION;                                                                                                                                                        
                     Boolean.constructor$ = Function$;
@@ -242,7 +242,7 @@
                             return null;
                         }
                         return clearInterval(id);
-                    };                    
+                    }                    
                     clearInterval$ = CLEAR_INTERVAL;                      
                     var CLEAR_TIMEOUT = function(id){               
                         id = +id;
@@ -278,7 +278,7 @@
                     alert$ = ALERT;                    
                     var EVAL = function(str) {                      
                         var js = MentalJS(), converted;                                            
-                        if(typeof str != 'function') {                           
+                        if(typeof str !== 'function') {                           
                             return eval(js.parse({options:{eval:false},code:str, converted: function(converted){
                                 if(that.evalCode) {
                                     that.evalCode(converted);
@@ -288,7 +288,7 @@
                             if(that.evalCode) {
                                 that.evalCode(str);
                             }
-                            return eval(str)
+                            return eval(str);
                         }                                                                                   
                     };                   
                     eval$ = EVAL;                                
@@ -349,7 +349,7 @@
                            'navigator$': {configurable: true, writable: false, value: {}},
                            'removeEventListener$': {configurable: true, writable: false, value: function(){ return window.removeEventListener.apply(document, arguments); }},
                            'addEventListener$': {configurable: true, writable: false, value: function(){
-                                    if(typeof arguments[1] != 'function') {
+                                    if(typeof arguments[1] !== 'function') {
                                         var js = Mental(),
                                             converted = Function.apply(window, arguments) + '',                                             
                                         js = MentalJS();                                                                                                                                    
@@ -364,8 +364,8 @@
                         Object.defineProperties(this.location$, {
                             'toString': {configurable: true, value:function(){ return 'http://sandboxed'; }},
                             'valueOf': {configurable: true, value:function(){ return 'http://sandboxed'; }},
-                            'href$': {configurable: true, get:function(){return 'http://sandboxed'}},
-                            'replace$': {configurable: true, get:function(){return function(){}}},
+                            'href$': {configurable: true, get:function(){return 'http://sandboxed';}},
+                            'replace$': {configurable: true, get:function(){return function(){};}},
                             'reload$': {configurable: true, get:function(){return function(){}}},
                             'assign$': {configurable: true, get:function(){return function(){}}},                                
                             'hash$': {configurable: true, set:function(hash){ location.hash=hash;},get:function(){return location.hash}},
@@ -546,7 +546,7 @@
                 }
                 function keyword(iLen) {
                     state = -1;
-                    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
+                    index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
                     switch(iLen) {
                         case 2:                         
                             if(outputLine === 'do') {                                                              
@@ -821,10 +821,10 @@
                     }
     			}
     			function semicolon() {
-    			    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen),
-    			        parentState = parentStates[index],
-    			        parenIndex = lookupParen-1;
-    			        index2 = parseFloat(''+lookupSquare+lookupCurly+parenIndex);                                    
+    			    var parentState = parentStates[index],
+    			        parenIndex = lookupParen-1,
+    			        index2 = parseFloat(''+lookupSquare+lookupCurly+parenIndex);
+    			        index = parseFloat(''+lookupSquare+lookupCurly+lookupParen)                                    
                     if(isFor[index2] && !isForIn[index2]) {
                         state = 45;
                         outputLine += ';';
@@ -1083,7 +1083,7 @@
                     }
     			}
     			function arrayOrAccessorOpen() {
-    			    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
+    			    index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
     			    if(!left) {
                         state = 1;                
                     } else {
@@ -1102,8 +1102,8 @@
     			}
     			function arrayOrAccessorClose() {
     			    lookupSquare--;
-    			    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen)           
-                    parentState = parentStates[index];                                    
+    			    index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);           
+                    var parentState = parentStates[index];                                    
                     if(parentState === 1) {
                         state = 2;
                         left = 1;
@@ -1120,7 +1120,7 @@
                     parentStates[index] = null; 
     			}
     			function parenOpen() {
-    			    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
+    			    index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
     			    if(lastState === 50) {
                         state = 51;                                                        
                     } else if(lastState === 40) {
@@ -1158,7 +1158,7 @@
                     lookupParen++;
     			}
     			function parenClose() {
-    			    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
+    			    index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
     			    isVar[index] = null;                
                     lookupParen--; 
                     index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);                     
@@ -1258,7 +1258,8 @@
                     lookupCurly++;
     			}
     			function curlyClose() {
-    			    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen), curlyIndex;
+    				var curlyIndex;
+    			    index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
     			    isVar[index] = null;
                     lookupCurly--;
                     index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
@@ -1320,7 +1321,7 @@
                     pos++;  
     			}
     			function ternaryOpen() {
-    			    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
+    			    index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
     			    state = 125;
                     outputLine += '?';                          
                     left = 0;
@@ -1333,7 +1334,8 @@
                     ternaryCount++; 
     			}
     			function comma() {
-    			    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
+    			    var parentState;
+    			    index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
     			    parentState = parentStates[index];                                                                                                                                                                                                                                                                                                                                                                                               
                     if(lastState === 48) {
                         state = 49;                                                
@@ -1367,7 +1369,8 @@
                     left = 0;
     			}
     			function colon() {
-    			    var index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
+    			    var parentState;
+    			    index = parseFloat(''+lookupSquare+lookupCurly+lookupParen);
     			    parentState = parentStates[index];                               
                     if(isTernary[index]) {
                         state = 126;
