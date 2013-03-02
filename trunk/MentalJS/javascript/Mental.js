@@ -38,7 +38,7 @@
                         O: function(obj) {
                             var keys = Object.keys(obj), key;
                             for(key in obj) {
-                                if(!/^[$].+[$]$/.test(key)) {
+                                if(!/.+[$]$/.test(key)) {
                                     continue;
                                 }
                                 if(/^[$](?:toString|valueOf|constructor|hasOwnProperty)[$]$/.test(key)) {
