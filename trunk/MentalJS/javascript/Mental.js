@@ -6,7 +6,6 @@
     exports.parse = function(){
       var js = MentalJS();        
     };
-    
     MentalJS = function() {        
         function Mental() {
             this.parse = function(obj) {                
@@ -184,9 +183,18 @@
                             }
                         }           
                     };                                                 
-                    function FUNCTION(){                                                                                                                                                                                 
-                        var converted = Function.apply(window, arguments) + '',                                             
-                            js = MentalJS();                                                                   
+                    function FUNCTION(){  
+                    	var args = arguments, converted,
+                    		js = MentalJS()
+                    	try {
+	                    	for(var i=0;i<args.length;i++) {
+	                    		js.parse('(function(){'+args[i]+'});');
+	                    	}    
+                    	} catch(e){
+                    		return e.msg;
+                    	}                                                                                                                                                                           
+                        converted = Function.apply(window, arguments) + '';   
+                                                                                            
                         if(typeof str !== 'function') {                           
                             converted = eval(js.parse({options:{eval:false},code:'('+converted+')'}));                                                                                                                                                                   
                         } else {
