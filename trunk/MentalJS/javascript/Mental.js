@@ -1804,7 +1804,7 @@
                             newLine();
                             continue;                  
                         } else {
-                            identifier(1);
+                            nonKeyword();
                         } 
                     }																				
     				checkRules();
