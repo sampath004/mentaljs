@@ -682,7 +682,7 @@
                     } 
                 }
     		    function identifier() {
-    		        var first = chr, last, iLen, notKeyword = false;   		        				            		           		        				                                                                                                                                                                                                                                                                                                                                                                                     
+    		        var iLen, notKeyword = false;   		        				            		           		        				                                                                                                                                                                                                                                                                                                                                                                                     
                         while(pos < len) {                                
                             chr = code.charCodeAt(pos);                                                                                                               
                             if(chr > 0x60 && chr < 0x7b) {
@@ -702,13 +702,9 @@
                             } else {                                                                                  
                               break;
                             }
-                            outputLine+=code.charAt(pos++);
-                            last = chr;                                                                        
+                            outputLine+=code.charAt(pos++);                                                                                                    
                         }                                                                           
-                        iLen = outputLine.length; 
-                        //97,103-104,106-109,111-113,117,120-122
-
-                        //97-99,103,105-106,109,112-113,117-118,120,122                                                                                                                                                                                                                                                                                                                                    
+                        iLen = outputLine.length;                                                                                                                                                                                                                                                                                                                                                            
                         if(iLen===1||iLen>10) {                                                                                                                                          
                             outputLine=outputLine+scoping;               
                             identifierStates();               
@@ -1659,20 +1655,16 @@
     			function checkRules() {
     			    if(state === 89) {                          
                         error("No state defined for char:" +String.fromCharCode(chr) + ', left: '+left+', last state: '+rulesLookup[lastState]+',output:'+output);
-                    }
-                    
+                    }                    
                     if(!rules[state]) {
                         error("State does not exist in the rules:" +rulesLookup[state]);
-                    }                                                                      
-                    
+                    }                                                                                          
                     if(!rules[state][lastState] && newLineFlag) {                                                                                   
                         asi();                                              
-                    }                                                
-                     
+                    }                                                                     
                     if(!rules[state][lastState]) {                                                                                          
                         error("Unexpected " + rulesLookup[state] + '. Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
-                    } 
-                    
+                    }                     
                     if(parseTreeFlag){                          
                         parseTreeOutput = parseTreeOutput + '<'+rulesLookup[state]+'>' + outputLine + '</'+rulesLookup[state]+'>';
                     }
