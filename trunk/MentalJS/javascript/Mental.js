@@ -70,20 +70,24 @@
                     function createSandboxedNode(node) {
                         Object.defineProperties(node, {
                             'innerText$': {configurable:true, get:function(){return this.innerText;},set:function(innerText){
-                                    if(this.tagName.toLowerCase()==='style'){
-                                        /*todo css parsing*/return false;
+                                    if(this.tagName.toLowerCase()==='style' || this.tagName.toLowerCase()==='script'){
+                                        /*todo css parsing*/
+                                        /*todo script sandboxing*/
+                                       return false;
                                      }
                                      this.innerText = innerText;
                                     }
                             },
                             'innerHTML$': {configurable:true, get:function(){return this.innerHTML;}, set:function(innerHTML){
-                                if(this.tagName.toLowerCase()==='style'){
-                                    /*todo css parsing*/return false;
+                                if(this.tagName.toLowerCase()==='style'|| this.tagName.toLowerCase()==='script'){
+                                    /*todo css parsing*/
+                                    /*todo script sandboxing*/
+                                   return false;
                                  }
                                 var doc, elements, element, i, j, tags, attrs;
                                 doc = document.implementation.createHTMLDocument('');
                                 doc.body.innerHTML = innerHTML;                                    
-                                tags = doc.body.getElementsByTagName('*'); 
+                                tags = doc.getElementsByTagName('*'); 
                                                                    
                                 for(i = 0; i < tags.length;i+=1) {
                                     element = tags[i];                                        
@@ -91,7 +95,7 @@
                                        doc.body.removeChild(element);
                                        continue; 
                                     }                                        
-                                    if(element.tagName.toLowerCase() === 'style') {
+                                    if(element.tagName.toLowerCase() === 'style'||element.tagName.toLowerCase() === 'script') {
                                         while ( element.firstChild ) {
                                             element.removeChild( element.firstChild );
                                         }
@@ -117,7 +121,16 @@
                                 }                                                                                                                                                                                            
                                 return this.innerHTML = (new XMLSerializer()).serializeToString(doc.body); 
                              }},
-                            'textContent$': {configurable:true, get:function(){return this.textContent;},set:function(textContent){if(this.tagName.toLowerCase()==='style'){/*todo css parsing*/return false;}this.textContent = textContent;}},
+                            'textContent$': {configurable:true, get:function(){return this.textContent;},
+                                                set:function(textContent){
+                                                        if(this.tagName.toLowerCase()==='style'||this.tagName.toLowerCase()==='script'){
+                                                            /*todo css parsing*/
+                                                            /*todo script sandboxing*/
+                                                           return false;
+                                                        }
+                                                        this.textContent = textContent;
+                                                }
+                                           },
                             'style$': {configurable:true, get:function(){ 
                                     var style = this.style;
                                     Object.defineProperties(style,{ 
@@ -128,8 +141,10 @@
                                 }
                              },
                             'appendChild$': {configurable:true, writable:false, value:function(){
-                                if(this.tagName && this.tagName.toLowerCase()==='style'){
-                                    /*todo css parsing*/return false;
+                                if(this.tagName && this.tagName.toLowerCase()==='style'|| this.tagName.toLowerCase()==='script'){
+                                    /*todo css parsing*/
+                                    /*todo script sandboxing*/
+                                   return false;
                                  }
                                 return this.appendChild.apply(this, arguments);}
                              },
@@ -424,7 +439,13 @@
                             'getElementsByTagName$': {enumerable:false,configurable: true, writable: false, value: function(){return document.getElementsByTagName.apply(document, arguments)}},
                             'querySelector$': {enumerable:false,configurable: true, writable: false, value: function(){return document.querySelector.apply(document, arguments)}},
                             'querySelectorAll$': {enumerable:false,configurable: true, writable: false, value: function(){return document.querySelectorAll.apply(document, arguments)}},
-                            'createElement$': {enumerable:false,configurable: true, writable: false, value: function(){return document.createElement.apply(document, arguments)}},
+                            'createElement$': {enumerable:false,configurable: true, writable: false, value: function(tag){
+                                    if(/^(?:style|script)$/i.test(tag)) {
+                                        return false;//todo script/style parsing
+                                    }
+                                    return document.createElement.call(document, tag);
+                                }
+                             },
                             'removeEventListener$': {enumerable:false,configurable: true, writable: false, value: function(){ return document.removeEventListener.apply(document, arguments); }}, 
                             'addEventListener$': {enumerable:false,configurable: true, writable: false, value: function(){
                                     if(typeof arguments[1] != 'function') {
