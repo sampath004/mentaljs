@@ -185,24 +185,25 @@
                     };                                                 
                     function FUNCTION(){  
                     	var args = arguments, converted,
-                    		js = MentalJS()
-                    	try {
-	                    	for(var i=0;i<args.length;i++) {
-	                    		js.parse('(function(){'+args[i]+'});');
-	                    	}    
-                    	} catch(e){
-                    		return e.msg;
-                    	}                                                                                                                                                                           
-                        converted = Function.apply(window, arguments) + '';   
-                                                                                            
-                        if(typeof str !== 'function') {                           
-                            converted = eval(js.parse({options:{eval:false},code:'('+converted+')'}));                                                                                                                                                                   
-                        } else {
-                            converted = eval(converted);
-                        }
-                        if(that.functionCode) {
-                            that.functionCode(converted);
-                        }
+                    		js = MentalJS(), i, funct, functArgs = [];
+                    	if(args.length > 1) {                    		
+                    		funct = '(function anonymous(';
+                    		for(i=0;i<args.length-1;i++) {
+                    			args[i] = args[i]+'';
+                    			args[i] = args[i].replace(/[^\w]/ig,function(c){
+                    				if(c.charCodeAt(0) < 0x80) {
+                    					return'';
+                    				}
+                    			});
+                    			functArgs.push(args[i]);
+                    		}
+                    		funct += functArgs.join(',');
+                    		funct += '){'+args[args.length-1]+'})';
+                    		converted = js.parse(funct);
+                    	} else {
+                    		funct = '(function anonymous(){'+args[0]+'})';
+                    		converted = js.parse(funct);
+                    	}                    	                    	
                         return converted;        
                     }
                     FUNCTION.constructor$ = FUNCTION;                                                                                                                                          
@@ -358,11 +359,7 @@
                            'removeEventListener$': {configurable: true, writable: false, value: function(){ return window.removeEventListener.apply(document, arguments); }},
                            'addEventListener$': {configurable: true, writable: false, value: function(){
                                     if(typeof arguments[1] !== 'function') {
-                                        var js = Mental(),
-                                            converted = Function.apply(window, arguments) + '',                                             
-                                        js = MentalJS();                                                                                                                                    
-                                        converted = eval(js.parse({options:{eval:false},code:'('+converted+')'}));    
-                                        arguments[1] = converted;
+                                        error("Expected function in event listener");
                                     }
                                     return window.addEventListener.apply(window, arguments);
                                 }
@@ -431,11 +428,7 @@
                             'removeEventListener$': {enumerable:false,configurable: true, writable: false, value: function(){ return document.removeEventListener.apply(document, arguments); }}, 
                             'addEventListener$': {enumerable:false,configurable: true, writable: false, value: function(){
                                     if(typeof arguments[1] != 'function') {
-                                        var js = Mental(),
-                                            converted = Function.apply(window, arguments) + '',                                             
-                                        js = MentalJS();                                                                                                                                    
-                                        converted = eval(js.parse({options:{eval:false},code:'('+converted+')'}));    
-                                        arguments[1] = converted;
+                                        error("Expected function in event listener")
                                     }
                                     return document.addEventListener.apply(document, arguments);
                                 }
@@ -460,24 +453,7 @@
     			isFor = {}, isForIn = {},  isIf = {}, isObjectLiteral = {},																
     			lastState = 89, newLineFlag = 0,															 																																				
     			parseTreeFlag = !!that.parseTree, completeFlag = !!that.complete,
-    			convertedFlag = !!that.converted,  
-    			browserCheckSyntaxFlag = !!that.options.browserCheckSyntax, foundKeyword = 0;												    
-    			function checkSyntax(code){                                        
-                    try {
-                        throw new Error();
-                    }
-                    catch (e) {
-                        var relativeLineNumber = e.lineNumber;
-                    }
-                    try {
-                        code = new Function(code);
-                    }
-                    catch (e) {                                
-                        msg = e;
-                        pos = (e.lineNumber - relativeLineNumber - 1);                
-                        error(e, code);
-                    }
-                };
+    			convertedFlag = !!that.converted, foundKeyword = 0;												        			
                 function asi(useOutput) {
                     var parenIndex = lookupParen-1,
                         index1 = parseFloat(''+lookupSquare+lookupCurly+parenIndex), index2 = parseFloat(''+lookupSquare+lookupCurly+lookupParen);                            
@@ -1705,10 +1681,7 @@
                     if(lookupSquare === 1 && lookupCurly === 1 && lookupParen === 1) {
                         parentStates = {};
                     }                                        
-    			}																				
-    			if(browserCheckSyntaxFlag) {
-    			   checkSyntax(code);
-    			}								
+    			}																				    											
     			while(pos < len) {					    						                                               
                     state = 89;                    															
     				if(cached >= 0) {
@@ -1848,14 +1821,11 @@
                 }					
                 if(convertedFlag) {                    
                 	that.converted(output);
-                }                    
-                if(browserCheckSyntaxFlag) {      
-                    checkSyntax(output);                 
-                }                      													
+                }                                                        													
     			return output;
     		};	
             
-            this.options = {eval:true, stealth: true, browserCheckSyntax: true};
+            this.options = {eval:true, stealth: true};
             
             if(typeof obj === 'string') {
                 return execute(sandbox(obj));
