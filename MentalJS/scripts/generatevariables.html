@@ -38,7 +38,7 @@ for(index=0;index<validVariablesStart.length;index++) {
 	chr = validVariablesStart[index];
 	if(/\-/.test(chr)) {
 		range = chr.split('-');
-		code.push('(c>='+range[0]+'&&c<='+range[1]+')');
+		code.push('c>'+(range[0]-1)+'&&c<'+(range[1]+1)+'');
 	} else {
 		code.push('c==='+chr);
 	}
@@ -50,7 +50,7 @@ for(index=0;index<validVariablesPart.length;index++) {
 	chr = validVariablesPart[index];
 	if(/\-/.test(chr)) {
 		range = chr.split('-');
-		code.push('(c>='+range[0]+'&&c<='+range[1]+')');
+		code.push('c>'+(range[0]-1)+'&&c<'+(range[1]+1));
 	} else {
 		code.push('c==='+chr);
 	}
