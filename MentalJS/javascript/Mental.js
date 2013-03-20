@@ -15,8 +15,11 @@
             var parseTreeOutput = '', converted, that = this,                                         
                 pos = 0, chr, scoping = '$', index,
                 result, replaceScoping = new RegExp('['+scoping+']'),
-                allowedProperties = /^(?:length|prototype)$/,                                                             
-                attributeWhitelist = /^(?:alt|title)$/i,                                               
+                allowedProperties = /^(?:prototype)$/,                                                             
+                attributeWhitelist = /^(?:type|accesskey|align|alink|alt|background|bgcolor|border|cellpadding|cellspacing|class|color|cols|colspan|coords|dir|face|height|href|hspace|id|ismap|lang|marginheight|marginwidth|multiple|name|nohref|noresize|noshade|nowrap|ref|rel|rev|rows|rowspan|scrolling|shape|span|src|summary|tabindex|target|title|usemap|valign|value|vlink|vspace|width)$/i,
+                urlBasedAttributes = /^(?:href|src|action)$/i,                                                               
+                allowedTagsRegEx = /^(?:head|title|body|form|select|optgroup|option|input|textarea|button|label|fieldset|legend|ul|ol|dl|directory|menu|nav|li|div|p|heading|quote|pre|br|hr|a|img|image|map|area|table|caption|th|section|tr|td|iframe)$/i,
+                allowedCSSProperties = ["azimuth","background","backgroundAttachment","backgroundColor","backgroundImage","backgroundPosition","backgroundRepeat","border","borderCollapse","borderColor","borderSpacing","borderStyle","borderTop","borderRight","borderBottom","borderLeft","borderTopColor","borderRightColor","borderBottomColor","borderLeftColor","borderTopStyle","borderRightStyle","borderBottomStyle","borderLeftStyle","borderTopWidth","borderRightWidth","borderBottomWidth","borderLeftWidth","borderWidth","bottom","captionSide","clear","clip","color","content","counterIncrement","counterReset","cue","cueAfter","cueBefore","cursor","direction","display","elevation","emptyCells","float","font","fontFamily","fontSize","fontSizeAdjust","fontStretch","fontStyle","fontVariant","fontWeight","height","left","letterSpacing","lineHeight","listStyle","listStyleImage","listStylePosition","listStyleType","margin","marginTop","marginRight","marginBottom","marginLeft","markerOffset","marks","maxHeight","maxWidth","minHeight","minWidth","orphans","outline","outlineColor","outlineStyle","outlineWidth","overflow","padding","paddingTop","paddingRight","paddingBottom","paddingLeft","page","pageBreakAfter","pageBreakBefore","pageBreakInside","pause","pauseAfter","pauseBefore","pitch","pitchRange","playDuring","position","quotes","richness","right","size","speak","speakHeader","speakNumeral","speakPunctuation","speechRate","stress","tableLayout","textAlign","textDecoration","textIndent","textShadow","textTransform","top","unicodeBidi","verticalAlign","visibility","voiceFamily","volume","whiteSpace","widows","width","wordSpacing","zIndex"],
                 setTimeoutIDS = {},
                 setIntervalIDS = {};            
                                                                       
@@ -67,85 +70,58 @@
                             return args;
                         }                
                     };
+                    function defineStyle(obj, property) {
+                        Object.defineProperty(obj, property, {configurable:true, get:function(){
+                            return this[property];
+                        },
+                        set:function(value){
+                            this[property] = value;
+                        }});
+                    }                                       
                     function createSandboxedNode(node) {
                         Object.defineProperties(node, {
-                            'innerText$': {configurable:true, get:function(){return this.innerText;},set:function(innerText){
-                                    if(this.tagName.toLowerCase()==='style' || this.tagName.toLowerCase()==='script'){
-                                        /*todo css parsing*/
-                                        /*todo script sandboxing*/
-                                       return false;
-                                     }
+                            'innerText$': {configurable:true, get:function(){return this.innerText;},set:function(innerText){                                    
                                      this.innerText = innerText;
                                     }
                             },
-                            'innerHTML$': {configurable:true, get:function(){return this.innerHTML;}, set:function(innerHTML){
-                                if(this.tagName.toLowerCase()==='style'|| this.tagName.toLowerCase()==='script'){
-                                    /*todo css parsing*/
-                                    /*todo script sandboxing*/
-                                   return false;
-                                 }
-                                var doc, elements, element, i, j, tags, attrs;
-                                doc = document.implementation.createHTMLDocument('');
-                                doc.body.innerHTML = innerHTML;                                    
-                                tags = doc.getElementsByTagName('*'); 
-                                                                   
-                                for(i = 0; i < tags.length;i+=1) {
-                                    element = tags[i];                                        
-                                    if(!(element.attributes instanceof NamedNodeMap)) {
-                                       doc.body.removeChild(element);
-                                       continue; 
-                                    }                                        
-                                    if(element.tagName.toLowerCase() === 'style'||element.tagName.toLowerCase() === 'script') {
-                                        while ( element.firstChild ) {
-                                            element.removeChild( element.firstChild );
-                                        }
-                                    }                                         
-                                    attrs = [];                                        
-                                    for(j=0;j<element.attributes.length;j+=1) {                                            
-                                        if(attributeWhitelist.test(element.attributes[j].name)) {
-                                            attrs.push({name:element.attributes[j].name,value:element.attributes[j].value});
-                                        }                                                                                                                                                                                                                                                                     
+                            'innerHTML$': {configurable:true, get:function(){return this.innerHTML;}, set:function(innerHTML){                                
+                                var node = (new DOMParser).parseFromString(innerHTML, 'text/html').body,                                
+                                    ni = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT, null, false),                
+                                    elementNode, anchor = document.createElement('a');                                
+                                while(elementNode=ni.nextNode()) {                                                                                                          
+                                    if(!allowedTagsRegEx.test(elementNode.nodeName)) {                                        
+                                        elementNode.parentNode.removeChild(elementNode);
                                     } 
-                                    for (j=element.attributes.length; --j>=0;) {
-                                        element.removeAttributeNode(element.attributes[j]);
-                                    }
-                                    
-                                    for(j=0;j<attrs.length;j++) {
-                                       element.setAttribute(attrs[j].name, attrs[j].value);                                                                                                                                       
-                                    }
-                                    if(element.firstChild && element.firstChild.nodeType === 3) {
-                                       element.firstChild.nodeValue = ' ';
-                                    } else {                                        
-                                        element.appendChild(doc.createTextNode(' '));
-                                    }                                                                                                                                                                                                                                              
-                                }                                                                                                                                                                                            
-                                return this.innerHTML = (new XMLSerializer()).serializeToString(doc.body); 
+                                    for(var i=elementNode.attributes.length-1;i>-1;i--) {
+                                        if(urlBasedAttributes.test(elementNode.attributes[i].name)) {
+                                            anchor.href=elementNode.attributes[i].value;                                            
+                                            if(!(anchor.protocol === 'http:' || anchor.protocol === 'https:')) {                                               
+                                              elementNode.setAttribute(elementNode.attributes[i].name, '#');
+                                            }
+                                            continue;
+                                        }
+                                        if(!attributeWhitelist.test(elementNode.attributes[i].name)) {
+                                            elementNode.removeAttribute(elementNode.attributes[i].name);
+                                        }                                        
+                                    }                                                                                                   
+                                }                                                  
+                                anchor = null;                                              
+                                this.innerHTML = node.innerHTML;                                                                
                              }},
                             'textContent$': {configurable:true, get:function(){return this.textContent;},
-                                                set:function(textContent){
-                                                        if(this.tagName.toLowerCase()==='style'||this.tagName.toLowerCase()==='script'){
-                                                            /*todo css parsing*/
-                                                            /*todo script sandboxing*/
-                                                           return false;
-                                                        }
+                                                set:function(textContent){                                                        
                                                         this.textContent = textContent;
                                                 }
                                            },
                             'style$': {configurable:true, get:function(){ 
-                                    var style = this.style;
-                                    Object.defineProperties(style,{ 
-                                        'color$' : {configurable:true, get:function(){return style.color;}, set:function(color){style.color = color;}},
-                                        'backgroundColor$' : {configurable:true, get:function(){return style.backgroundColor;}, set:function(backgroundColor){style.backgroundColor = backgroundColor;}}  
-                                    });
+                                    var style = this.style, i;
+                                    for(i=0;i<allowedCSSProperties.length;i++) {
+                                        defineStyle(style, allowedCSSProperties[i]);
+                                    }                                    
                                     return style;
                                 }
                              },
-                            'appendChild$': {configurable:true, writable:false, value:function(){
-                                if(this.tagName && this.tagName.toLowerCase()==='style'|| this.tagName.toLowerCase()==='script'){
-                                    /*todo css parsing*/
-                                    /*todo script sandboxing*/
-                                   return false;
-                                 }
+                            'appendChild$': {configurable:true, writable:false, value:function(){                                
                                 return this.appendChild.apply(this, arguments);}
                              },
                             'firstChild$': {configurable:true, get:function(){return this.firstChild;}},
@@ -157,7 +133,23 @@
                             'cloneNode$': {configurable:true, writable:false, value:function(){return this.cloneNode.apply(this, arguments);}},
                             'removeChild$': {configurable:true, writable:false, value:function(){return this.removeChild.apply(this, arguments);}},
                             'getAttribute$': {configurable:true, writable:false, value:function(name){if(attributeWhitelist.test(name)){return this.getAttribute(name);}}},
-                            'setAttribute$': {configurable:true, writable:false, value:function(name, value){if(attributeWhitelist.test(name)){return this.setAttribute(name, value+'');}}},
+                            'setAttribute$': {configurable:true, writable:false, value:function(name, value){
+                                    var anchor;
+                                    if(attributeWhitelist.test(name)){                                        
+                                        if(urlBasedAttributes.test(name)) {
+                                           anchor = document.createElement('a');
+                                           anchor.href = value;
+                                           if(anchor.protocol === 'http:' || anchor.protocol === 'https:') {
+                                               value = anchor.href+'';
+                                           } else {
+                                               value = '#';
+                                           }
+                                           anchor = null;    
+                                        }                                        
+                                        return this.setAttribute(name, value+'');
+                                    }
+                                }
+                             },
                             'getElementsByTagName$': {configurable:true, writable:false, value:function(){return this.getElementsByTagName.apply(this, arguments);}}                               
                         });
                         return node;
@@ -317,7 +309,10 @@
                     };                   
                     eval$ = EVAL;                                
                     Object.constructor$ = Function$;                                        
-                    Object.prototype.constructor$ = Object;                    
+                    //Object.prototype.constructor$ = Object;                    
+                    Object.defineProperty(Object.prototype, 'constructor$', {configurable: true, get:function(){
+                        return this.constructor;
+                    }});
                     Object.prototype.hasOwnProperty$ = Object.prototype.hasOwnProperty;
                     objWhitelist(Object, 'valueOf');
                     objWhitelist(Object, 'toString');                                                                                                                                                                   
@@ -413,16 +408,18 @@
                         Object.defineProperties(document.documentElement, {
                             'contains$': {enumerable:false,configurable: true, writable: false, value: function(){return document.documentElement.contains.apply(document.documentElement, arguments)}},
                             'compareDocumentPosition$': {enumerable:false,configurable: true, writable: false, value: function(){return document.documentElement.compareDocumentPosition.apply(document.documentElement, arguments)}}
-                        });  
-                        
-                        createSandboxedNode(Element.prototype); 
-                        createSandboxedNode(DocumentFragment.prototype);                            
-                        
+                        });                          
+                        createSandboxedNode(Element.prototype);
+                        createSandboxedNode(DocumentFragment.prototype);                                                                                                    
                         Object.defineProperties(HTMLScriptElement.prototype, {
                             'innerText$': {configurable:true, get:function(){return this.innerText;},set:function(innerText){ var js = MentalJS();this.innerText = js.parse({options:{eval:false},code:innerText+''});}},
                             'textContent$': {configurable:true, get:function(){return this.textContent;},set:function(textContent){ var js = MentalJS();this.textContent = js.parse({options:{eval:false},code:textContent+''});}},
-                            'text$': {configurable:true, get:function(){return this.text;},set:function(text){ var js = MentalJS();this.text = js.parse({options:{eval:false},code:text+''});}},
-                            'appendChild$': {configurable:true, writable:false, value:function(){var js = MentalJS();return this.appendChild(document.createTextNode(js.parse({options:{eval:false},code:arguments[0].nodeValue+''})));}}
+                            'text$': {configurable:true, get:function(){return this.text;},set:function(text){ var js = MentalJS();this.text = js.parse({options:{eval:false},code:text+''});}}                           
+                        });
+                        Object.defineProperties(HTMLStyleElement.prototype, {
+                            'innerText$': {configurable:true, get:function(){return this.innerText;},set:function(innerText){ this.innerText = innerText; }},
+                            'textContent$': {configurable:true, get:function(){return this.textContent;},set:function(textContent){this.textContent=textConent;}},
+                            'text$': {configurable:true, get:function(){return this.text;},set:function(text){ this.text=text; }}                           
                         });                                                         
                                                                           
                         Object.defineProperties(document, {
@@ -440,8 +437,8 @@
                             'querySelector$': {enumerable:false,configurable: true, writable: false, value: function(){return document.querySelector.apply(document, arguments)}},
                             'querySelectorAll$': {enumerable:false,configurable: true, writable: false, value: function(){return document.querySelectorAll.apply(document, arguments)}},
                             'createElement$': {enumerable:false,configurable: true, writable: false, value: function(tag){
-                                    if(/^(?:style|script)$/i.test(tag)) {
-                                        return false;//todo script/style parsing
+                                    if(!allowedTagsRegEx.test(tag)) {
+                                        return false;
                                     }
                                     return document.createElement.call(document, tag);
                                 }
@@ -457,8 +454,8 @@
                         });
                                                                                                                                                                                                                                                                                                                         
                         window['window'+scoping] = this;                                                                       
-                    }                   
-                    result = eval(code);                                                                  
+                    }                                       
+                    result = eval(code);                                                                                     
                     if(that.result) {
                         that.result(result);
                     }
