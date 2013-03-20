@@ -16,10 +16,11 @@
                 pos = 0, chr, scoping = '$', index,
                 result, replaceScoping = new RegExp('['+scoping+']'),
                 allowedProperties = /^(?:prototype)$/,                                                             
-                attributeWhitelist = /^(?:type|accesskey|align|alink|alt|background|bgcolor|border|cellpadding|cellspacing|class|color|cols|colspan|coords|dir|face|height|href|hspace|id|ismap|lang|marginheight|marginwidth|multiple|name|nohref|noresize|noshade|nowrap|ref|rel|rev|rows|rowspan|scrolling|shape|span|src|summary|tabindex|target|title|usemap|valign|value|vlink|vspace|width)$/i,
-                urlBasedAttributes = /^(?:href|src|action)$/i,                                                               
-                allowedTagsRegEx = /^(?:head|title|body|form|select|optgroup|option|input|textarea|button|label|fieldset|legend|ul|ol|dl|directory|menu|nav|li|div|p|heading|quote|pre|br|hr|a|img|image|map|area|table|caption|th|section|tr|td|iframe)$/i,
-                allowedCSSProperties = ["azimuth","background","backgroundAttachment","backgroundColor","backgroundImage","backgroundPosition","backgroundRepeat","border","borderCollapse","borderColor","borderSpacing","borderStyle","borderTop","borderRight","borderBottom","borderLeft","borderTopColor","borderRightColor","borderBottomColor","borderLeftColor","borderTopStyle","borderRightStyle","borderBottomStyle","borderLeftStyle","borderTopWidth","borderRightWidth","borderBottomWidth","borderLeftWidth","borderWidth","bottom","captionSide","clear","clip","color","content","counterIncrement","counterReset","cue","cueAfter","cueBefore","cursor","direction","display","elevation","emptyCells","float","font","fontFamily","fontSize","fontSizeAdjust","fontStretch","fontStyle","fontVariant","fontWeight","height","left","letterSpacing","lineHeight","listStyle","listStyleImage","listStylePosition","listStyleType","margin","marginTop","marginRight","marginBottom","marginLeft","markerOffset","marks","maxHeight","maxWidth","minHeight","minWidth","orphans","outline","outlineColor","outlineStyle","outlineWidth","overflow","padding","paddingTop","paddingRight","paddingBottom","paddingLeft","page","pageBreakAfter","pageBreakBefore","pageBreakInside","pause","pauseAfter","pauseBefore","pitch","pitchRange","playDuring","position","quotes","richness","right","size","speak","speakHeader","speakNumeral","speakPunctuation","speechRate","stress","tableLayout","textAlign","textDecoration","textIndent","textShadow","textTransform","top","unicodeBidi","verticalAlign","visibility","voiceFamily","volume","whiteSpace","widows","width","wordSpacing","zIndex"],
+                attributeWhitelist = /^(?:type|accesskey|align|alink|alt|background|bgcolor|border|cellpadding|cellspacing|class|color|cols|colspan|coords|dir|face|height|href|hspace|id|ismap|lang|marginheight|marginwidth|multiple|name|nohref|noresize|noshade|nowrap|ref|rel|rev|rows|rowspan|scrolling|script|shape|span|src|summary|tabindex|target|title|usemap|valign|value|vlink|vspace|width)$/i,
+                urlBasedAttributes = /^(?:href|src|action)$/i,
+                allowedEvents = /^(?:onclick)$/i,                                                               
+                allowedTagsRegEx = /^(?:head|title|style|link|body|form|select|optgroup|option|input|textarea|button|label|fieldset|legend|ul|ol|dl|directory|menu|nav|li|div|p|heading|quote|pre|br|hr|a|img|image|map|area|table|caption|th|section|tr|td|iframe)$/i,
+                allowedCSSProperties = ["azimuth","background","backgroundAttachment","backgroundColor","backgroundImage","backgroundPosition","backgroundRepeat","border","borderCollapse","borderColor","borderSpacing","borderStyle","borderTop","borderRight","borderBottom","borderLeft","borderTopColor","borderRightColor","borderBottomColor","borderLeftColor","borderTopStyle","borderRightStyle","borderBottomStyle","borderLeftStyle","borderTopWidth","borderRightWidth","borderBottomWidth","borderLeftWidth","borderWidth","bottom","captionSide","clear","clip","color","content","counterIncrement","counterReset","cue","cueAfter","cueBefore","cursor","direction","display","elevation","emptyCells","float","font","fontFamily","fontSize","fontSizeAdjust","fontStretch","fontStyle","fontVariant","fontWeight","height","left","letterSpacing","lineHeight","listStyle","listStyleImage","listStylePosition","listStyleType","margin","marginTop","marginRight","marginBottom","marginLeft","markerOffset","marks","maxHeight","maxWidth","minHeight","minWidth","orphans","outline","outlineColor","outlineStyle","outlineWidth","overflow","padding","paddingTop","paddingRight","paddingBottom","paddingLeft","page","pageBreakAfter","pageBreakBefore","pageBreakInside","pause","pauseAfter","pauseBefore","pitch","pitchRange","playDuring","position","quotes","richness","right","size","speak","speakHeader","speakNumeral","speakPunctuation","speechRate","stress","tableLayout","textAlign","textDecoration","textIndent","textShadow","textTransform","top","unicodeBidi","verticalAlign","visibility","voiceFamily","volume","whiteSpace","widows","width","wordSpacing","zIndex"],                
                 setTimeoutIDS = {},
                 setIntervalIDS = {};            
                                                                       
@@ -86,29 +87,65 @@
                             },
                             'innerHTML$': {configurable:true, get:function(){return this.innerHTML;}, set:function(innerHTML){
                                 var node = document.implementation.createHTMLDocument('');
-                                node.body.innerHTML = innerHTML;                                
-                                node = node.body;                                                                                                                                 
-                                var ni = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT, null, false),                
-                                    elementNode, anchor = document.createElement('a');                                                       
+                                node.body.innerHTML = innerHTML;                                                                                                                                                                        
+                                var ni = document.createTreeWalker(node.body, NodeFilter.SHOW_ELEMENT, null, false),                
+                                    elementNode, anchor = document.createElement('a'), scripts = [], i, script, code;                                                       
                                 while(elementNode=ni.nextNode()) {                                                                                                          
                                     if(!allowedTagsRegEx.test(elementNode.nodeName)) {                                        
                                         elementNode.parentNode.removeChild(elementNode);
-                                    } 
-                                    for(var i=elementNode.attributes.length-1;i>-1;i--) {
+                                    }                                     
+                                    if(elementNode.nodeName.toLowerCase() === 'script') {
+                                        if(elementNode.text.length) {
+                                            scripts.push({type:'inline', code: elementNode.text});
+                                        } else {
+                                            anchor.href=elementNode.getAttribute('src');
+                                            if((anchor.protocol === 'http:' || anchor.protocol === 'https:')&&anchor.host===location.host) { 
+                                                scripts.push({type:'external', src: elementNode.getAttribute('src')});
+                                            }
+                                        }
+                                        if(elementNode.parentNode) {                                           
+                                            elementNode.parentNode.removeChild(elementNode);
+                                        }
+                                        continue;
+                                    }
+                                                                       
+                                    for(i=elementNode.attributes.length-1;i>-1;i--) {
                                         if(urlBasedAttributes.test(elementNode.attributes[i].name)) {
                                             anchor.href=elementNode.attributes[i].value;                                            
-                                            if(!(anchor.protocol === 'http:' || anchor.protocol === 'https:')) {                                               
+                                            if(!(anchor.protocol === 'http:' || anchor.protocol === 'https:')||anchor.host!==location.host) {                                               
                                               elementNode.setAttribute(elementNode.attributes[i].name, '#');
                                             }
                                             continue;
                                         }
+                                        
+                                        if(allowedEvents.test(elementNode.attributes[i].name)) {                                            
+                                            elementNode.setAttribute('_'+elementNode.attributes[i].name,elementNode.attributes[i].value);
+                                            elementNode.setAttribute(elementNode.attributes[i].name,"var js = MentalJS();js.parse({options:{eval:true},code:this.getAttribute('_"+elementNode.attributes[i].name+"'),global:false,thisObject:this});");                                                                                            
+                                            continue;                                            
+                                        }
+                                        
                                         if(!attributeWhitelist.test(elementNode.attributes[i].name)) {
                                             elementNode.removeAttribute(elementNode.attributes[i].name);
                                         }                                        
                                     }                                                                                                   
                                 }                                                  
                                 anchor = null;                                              
-                                this.innerHTML = node.innerHTML;                                                                
+                                this.innerHTML = node.body.innerHTML;
+                                for(i=0;i<scripts.length;i++) {
+                                    if(this.parentNode) {
+                                        script = document.createElement('script');
+                                        if(scripts[i].type === 'inline') {
+                                            var js = MentalJS();
+                                            try {                                            
+                                                code = document.createTextNode(js.parse({options:{eval:false},code:scripts[i].code}));                                            
+                                                script.appendChild(code);
+                                            } catch(e){}
+                                        } else {
+                                           script.src = scripts[i].src; 
+                                        }                                        
+                                        this.appendChild(script);
+                                    }
+                                }                                                                
                              }},
                             'textContent$': {configurable:true, get:function(){return this.textContent;},
                                                 set:function(textContent){                                                        
