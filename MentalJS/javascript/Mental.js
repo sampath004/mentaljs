@@ -71,7 +71,7 @@
                         }                
                     };
                     function defineStyle(obj, property) {
-                        Object.defineProperty(obj, property, {configurable:true, get:function(){
+                        Object.defineProperty(obj, property+'$', {configurable:true, get:function(){
                             return this[property];
                         },
                         set:function(value){
@@ -84,10 +84,12 @@
                                      this.innerText = innerText;
                                     }
                             },
-                            'innerHTML$': {configurable:true, get:function(){return this.innerHTML;}, set:function(innerHTML){                                
-                                var node = (new DOMParser).parseFromString(innerHTML, 'text/html').body,                                
-                                    ni = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT, null, false),                
-                                    elementNode, anchor = document.createElement('a');                                
+                            'innerHTML$': {configurable:true, get:function(){return this.innerHTML;}, set:function(innerHTML){
+                                var node = document.implementation.createHTMLDocument('');
+                                node.body.innerHTML = innerHTML;                                
+                                node = node.body;                                                                                                                                 
+                                var ni = document.createTreeWalker(node, NodeFilter.SHOW_ELEMENT, null, false),                
+                                    elementNode, anchor = document.createElement('a');                                                       
                                 while(elementNode=ni.nextNode()) {                                                                                                          
                                     if(!allowedTagsRegEx.test(elementNode.nodeName)) {                                        
                                         elementNode.parentNode.removeChild(elementNode);
