@@ -88,9 +88,9 @@
                             'innerHTML$': {configurable:true, get:function(){return this.innerHTML;}, set:function(innerHTML){
                                 var node = document.implementation.createHTMLDocument('');
                                 node.body.innerHTML = innerHTML;                                                                                                                                                                        
-                                var ni = document.createTreeWalker(node.body, NodeFilter.SHOW_ELEMENT, null, false),                
+                                var ni = document.createNodeIterator (node.body, NodeFilter.SHOW_ELEMENT, null, false),                
                                     elementNode, anchor = document.createElement('a'), scripts = [], i, script, code;                                                       
-                                while(elementNode=ni.nextNode()) {                                                                                                          
+                                while(elementNode=ni.nextNode()) {                                                                                                                                             
                                     if(!allowedTagsRegEx.test(elementNode.nodeName)) {                                        
                                         elementNode.parentNode.removeChild(elementNode);
                                     }                                     
@@ -109,21 +109,19 @@
                                         continue;
                                     }
                                                                        
-                                    for(i=elementNode.attributes.length-1;i>-1;i--) {
+                                    for(i=elementNode.attributes.length-1;i>-1;i--) {                                        
                                         if(urlBasedAttributes.test(elementNode.attributes[i].name)) {
                                             anchor.href=elementNode.attributes[i].value;                                            
                                             if(!(anchor.protocol === 'http:' || anchor.protocol === 'https:')||anchor.host!==location.host) {                                               
                                               elementNode.setAttribute(elementNode.attributes[i].name, '#');
                                             }
                                             continue;
-                                        }
-                                        
-                                        if(allowedEvents.test(elementNode.attributes[i].name)) {                                            
-                                            elementNode.setAttribute('_'+elementNode.attributes[i].name,elementNode.attributes[i].value);
-                                            elementNode.setAttribute(elementNode.attributes[i].name,"var js = MentalJS();js.parse({options:{eval:true},code:this.getAttribute('_"+elementNode.attributes[i].name+"'),global:false,thisObject:this});");                                                                                            
+                                        }                                            
+                                        if(allowedEvents.test(elementNode.attributes[i].name)) {                                                                                        
+                                            var js = MentalJS();                                            
+                                            elementNode.setAttribute(elementNode.attributes[i].name,js.parse({options:{eval:false},code:elementNode.attributes[i].value,global:false,thisObject:elementNode}));                                                                                            
                                             continue;                                            
-                                        }
-                                        
+                                        }                                                                            
                                         if(!attributeWhitelist.test(elementNode.attributes[i].name)) {
                                             elementNode.removeAttribute(elementNode.attributes[i].name);
                                         }                                        
