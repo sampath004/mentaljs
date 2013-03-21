@@ -16,7 +16,7 @@
                 pos = 0, chr, scoping = '$', index,
                 result, replaceScoping = new RegExp('['+scoping+']'),
                 allowedProperties = /^(?:prototype)$/,                                                             
-                attributeWhitelist = /^(?:type|accesskey|align|alink|alt|background|bgcolor|border|cellpadding|cellspacing|class|color|cols|colspan|coords|dir|face|height|href|hspace|id|ismap|lang|marginheight|marginwidth|multiple|name|nohref|noresize|noshade|nowrap|ref|rel|rev|rows|rowspan|scrolling|script|shape|span|src|summary|tabindex|target|title|usemap|valign|value|vlink|vspace|width)$/i,
+                attributeWhitelist = /^(?:style|type|accesskey|align|alink|alt|background|bgcolor|border|cellpadding|cellspacing|class|color|cols|colspan|coords|dir|face|height|href|hspace|id|ismap|lang|marginheight|marginwidth|multiple|name|nohref|noresize|noshade|nowrap|ref|rel|rev|rows|rowspan|scrolling|script|shape|span|src|summary|tabindex|target|title|usemap|valign|value|vlink|vspace|width)$/i,
                 urlBasedAttributes = /^(?:href|src|action)$/i,
                 allowedEvents = /^(?:onclick)$/i,                                                               
                 allowedTagsRegEx = /^(?:h[1-6]|head|title|style|link|body|form|select|optgroup|option|input|textarea|button|label|fieldset|legend|ul|ol|dl|directory|menu|nav|li|div|p|heading|quote|pre|br|hr|a|img|image|map|area|table|code|caption|th|section|tr|td|tbody|iframe)$/i,
