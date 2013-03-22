@@ -99,7 +99,7 @@
                                             scripts.push({type:'inline', code: elementNode.text});
                                         } else {
                                             anchor.href=elementNode.getAttribute('src');
-                                            if((anchor.protocol === 'http:' || anchor.protocol === 'https:')&&anchor.host===location.host) { 
+                                            if((anchor.protocol === 'http:' || anchor.protocol === 'https:')&&anchor.host.replace(/:\d+$/,'')===location.host.replace(/:\d+$/,'')) { 
                                                 scripts.push({type:'external', src: elementNode.getAttribute('src')});
                                             }
                                         }
@@ -112,7 +112,7 @@
                                     for(i=elementNode.attributes.length-1;i>-1;i--) {                                        
                                         if(urlBasedAttributes.test(elementNode.attributes[i].name)) {
                                             anchor.href=elementNode.attributes[i].value;                                            
-                                            if(!(anchor.protocol === 'http:' || anchor.protocol === 'https:')||anchor.host!==location.host) {                                               
+                                            if(!(anchor.protocol === 'http:' || anchor.protocol === 'https:')||anchor.host.replace(/:\d+$/,'')!==location.host.replace(/:\d+$/,'')) {                                               
                                               elementNode.setAttribute(elementNode.attributes[i].name, '#');
                                             }
                                             continue;
