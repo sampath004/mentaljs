@@ -894,6 +894,7 @@
                         }                                                                                                                   
                     }
                     cached = -1;
+                    newLineFlag = 1;
     			}
     			function multiComment() {
     			    pos=code.indexOf('*/',pos);
