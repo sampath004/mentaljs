@@ -897,6 +897,7 @@
                     newLineFlag = 1;
     			}
     			function multiComment() {
+    			    pos+=2;
     			    pos=code.indexOf('*/',pos);
                     if(pos >= 0) {
                         pos+=2;                                    
