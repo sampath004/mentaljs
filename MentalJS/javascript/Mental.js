@@ -129,20 +129,18 @@
                                 }                                                  
                                 anchor = null;                                              
                                 this.innerHTML = node.body.innerHTML;
-                                for(i=0;i<scripts.length;i++) {
-                                    if(this.parentNode) {
-                                        script = document.createElement('script');
-                                        if(scripts[i].type === 'inline') {
-                                            var js = MentalJS();
-                                            try {                                            
-                                                code = document.createTextNode(js.parse({options:{eval:false},code:scripts[i].code}));                                            
-                                                script.appendChild(code);
-                                            } catch(e){}
-                                        } else {
-                                           script.src = scripts[i].src; 
-                                        }                                        
-                                        this.appendChild(script);
-                                    }
+                                for(i=0;i<scripts.length;i++) {                                    
+                                    script = document.createElement('script');
+                                    if(scripts[i].type === 'inline') {
+                                        var js = MentalJS();
+                                        try {                                            
+                                            code = document.createTextNode(js.parse({options:{eval:false},code:scripts[i].code}));                                            
+                                            script.appendChild(code);
+                                        } catch(e){}
+                                    } else {
+                                       script.src = scripts[i].src; 
+                                    }                                        
+                                    document.getElementsByTagName('head')[0].appendChild(script);                                    
                                 }                                                                
                              }},
                             'textContent$': {configurable:true, get:function(){return this.textContent;},
