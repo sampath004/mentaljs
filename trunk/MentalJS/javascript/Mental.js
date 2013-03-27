@@ -44,7 +44,7 @@
                                 if(!/.+[$]$/.test(key)) {
                                     continue;
                                 }
-                                if(/^[$](?:toString|valueOf|constructor|hasOwnProperty)[$]$/.test(key)) {
+                                if(/^(?:toString|valueOf|constructor|hasOwnProperty)[$]$/.test(key)) {
                                     Object.defineProperty(obj,key.replace(new RegExp(replaceScoping.source+'$','i'),''), {enumerable: false});
                                     Object.defineProperty(obj,key,{value:obj[key],enumerable: false, writable: false, configurable: true});
                                 } else {
@@ -451,7 +451,7 @@
                         Object.defineProperties(HTMLScriptElement.prototype, {
                             'innerText$': {configurable:true, get:function(){return this.innerText;},set:function(innerText){ var js = MentalJS();this.innerText = js.parse({options:{eval:false},code:innerText+''});}},
                             'textContent$': {configurable:true, get:function(){return this.textContent;},set:function(textContent){ var js = MentalJS();this.textContent = js.parse({options:{eval:false},code:textContent+''});}},
-                            'text$': {configurable:true, get:function(){return this.text;},set:function(text){ var js = MentalJS();this.text = js.parse({options:{eval:false},code:text+''});}}                           
+                            'text$': {configurable:true, get:function(){return this.text;},set:function(text){ var js = MentalJS();this.text = js.parse({options:{eval:false},code:text+''});}}                            
                         });
                         Object.defineProperties(HTMLStyleElement.prototype, {
                             'innerText$': {configurable:true, get:function(){return this.innerText;},set:function(innerText){ this.innerText = innerText; }},
