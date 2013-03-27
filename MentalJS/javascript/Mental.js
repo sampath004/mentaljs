@@ -158,8 +158,17 @@
                                     return style;
                                 }
                              },
-                            'appendChild$': {configurable:true, writable:false, value:function(){                                
-                                return this.appendChild.apply(this, arguments);}
+                            'appendChild$': {configurable:true, writable:false, value:function(node){
+                                    var js, script;
+                                    if(node.tagName && node.tagName.toUpperCase() === 'SCRIPT') {
+                                       js = MentalJS();
+                                       code = document.createTextNode(js.parse({options:{eval:false},code:node.textContent}));
+                                       script = document.createElement('script');
+                                       script.appendChild(code);                                       
+                                       return this.appendChild(script); 
+                                    }                                
+                                    return this.appendChild(node);
+                                }
                              },
                             'firstChild$': {configurable:true, get:function(){return this.firstChild;}},
                             'lastChild$': {configurable:true, get:function(){return this.lastChild;}},
@@ -449,9 +458,9 @@
                         createSandboxedNode(Element.prototype);
                         createSandboxedNode(DocumentFragment.prototype);                                                                                                    
                         Object.defineProperties(HTMLScriptElement.prototype, {
-                            'innerText$': {configurable:true, get:function(){return this.innerText;},set:function(innerText){ var js = MentalJS();this.innerText = js.parse({options:{eval:false},code:innerText+''});}},
-                            'textContent$': {configurable:true, get:function(){return this.textContent;},set:function(textContent){ var js = MentalJS();this.textContent = js.parse({options:{eval:false},code:textContent+''});}},
-                            'text$': {configurable:true, get:function(){return this.text;},set:function(text){ var js = MentalJS();this.text = js.parse({options:{eval:false},code:text+''});}}                            
+                            'innerText$': {configurable:true, get:function(){return this.innerText;},set:function(){ }},
+                            'textContent$': {configurable:true, get:function(){return this.textContent;},set:function(){ }},
+                            'text$': {configurable:true, get:function(){return this.text;},set:function(){ }}                            
                         });
                         Object.defineProperties(HTMLStyleElement.prototype, {
                             'innerText$': {configurable:true, get:function(){return this.innerText;},set:function(innerText){ this.innerText = innerText; }},
