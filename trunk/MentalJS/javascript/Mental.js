@@ -1793,7 +1793,7 @@
     					ternaryOpen();												
     				} else if(chr === 0x2c) {			
     					comma();						
-    				} else if(chr === 0x2e) {
+    				} else if(chr === 0x2e && left) {
     					period();
     				} else if(chr === 0x3a) {
     					colon();																								
