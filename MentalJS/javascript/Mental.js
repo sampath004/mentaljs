@@ -989,7 +989,7 @@
                                     states.e2 = 2;
                                 }                               
                             } else if(chr === 0x30) {
-                                if(states.zeroFirst) {
+                                if(states.zeroFirst && !states.dot) {
                                     pos++;
                                     continue;                               
                                 }
@@ -1018,6 +1018,9 @@
                                     break;
                                 }
                                 states.dot = 1;
+                                if(states.zeroFirst) {
+                                    states.output = states.output + '0';
+                                }
                             } else {
                                 cached = chr;
                                 break;
