@@ -515,7 +515,7 @@
     			isFor = {}, isForIn = {},  isIf = {}, isObjectLiteral = {},																
     			lastState = 89, newLineFlag = 0,															 																																				
     			parseTreeFlag = !!that.parseTree, completeFlag = !!that.complete,
-    			convertedFlag = !!that.converted, foundKeyword = 0;												        			
+    			convertedFlag = !!that.converted, foundKeyword = 0, commentSkip = 0;												        			
                 function asi(useOutput) {
                     var parenIndex = lookupParen-1,
                         index1 = parseFloat(''+lookupSquare+lookupCurly+parenIndex), index2 = parseFloat(''+lookupSquare+lookupCurly+lookupParen);                            
@@ -895,6 +895,17 @@
                     } else {
                         error('Unexpected + Cannot follow '+rulesLookup[lastState]+'.Output:'+output);
                     }                    
+    			}
+    			function nonStandardComment() {    			        			                    
+                    while(pos < len) {                                   
+                        chr = code.charCodeAt(pos++);
+                        if(chr===10||chr===13||chr===8232||chr==8233) {
+                            break;
+                        }                                                                                                                   
+                    }
+                    cached = -1;
+                    newLineFlag = 1;
+                    commentSkip = 1;                    
     			}
     			function singleComment() {					    
                     pos+=2;                 
@@ -1610,7 +1621,7 @@
     			    next = code.charCodeAt(pos+1);
                     next2 = code.charCodeAt(pos+2);
                     next3 = code.charCodeAt(pos+3);
-                    cached = -1;
+                    cached = -1;                                                            
                     if(next === 0x3e && next2 === 0x3e && next3 === 0x3d) {
                         state = 153;
                         outputLine += '>>>=';
@@ -1647,7 +1658,14 @@
     			}
     			function lessThan() {
     			    next = code.charCodeAt(pos+1);
-                    next2 = code.charCodeAt(pos+2);
+                    next2 = code.charCodeAt(pos+2);                                        
+                    if(!left) {                                                
+                        next3 = code.charCodeAt(pos+3);
+                        if(next === 0x21 && next2 === 0x2d && next3 === 0x2d) {
+                            pos+=4;
+                            return nonStandardComment();
+                        }
+                    }
                     cached = -1; 
                     if(next === 0x3c && next2 === 0x3d) {
                         state = 80;
@@ -1693,6 +1711,13 @@
     			function minus() {
     			    next = code.charCodeAt(pos+1);
     			    cached = -1;
+    			    if(!left) {
+    			        next2 = code.charCodeAt(pos+2);
+        			    if(next === 0x2d && next2 === 0x3e) {
+                            pos+=3;
+                            return nonStandardComment();
+                        }
+                    }
                     if(next === 0x2d && left) {
                         state = 108;
                         outputLine += '--';
@@ -1856,6 +1881,10 @@
                         } else {
                             nonKeyword();
                         } 
+                    }
+                    if(commentSkip) {
+                        commentSkip = 0;
+                        continue;
                     }																				
     				checkRules();
                     output+=outputLine;
