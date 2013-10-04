@@ -32,7 +32,7 @@
 		clear:both;
 	}							
 </style>
-<script src="http://businessinfo.co.uk/labs/MentalJS/javascript/Mental.js" type="text/javascript"></script>		
+<script src="javascript/Mental.js" type="text/javascript"></script>		
 <script>
 function runTest() {	
 	var pos = 0, tests = ['/lo\\[/;log($placeholder$);;/lo/;','/lo\\/;log($placeholder$);;/lo/;',
@@ -198,13 +198,13 @@ function runTest() {
 }
 function loadjQuery() {
 	var xhr = new XMLHttpRequest;
-	xhr.open('GET', 'http://businessinfo.co.uk/labs/MentalJS/javascript/jquery-1.8.2.js', false);
+	xhr.open('GET', 'javascript/jquery-1.8.2.js', false);
 	xhr.send();
 	document.getElementById('code').value = xhr.responseText;
 }
 function inception() {
 	var xhr = new XMLHttpRequest;
-	xhr.open('GET', 'http://businessinfo.co.uk/labs/MentalJS/javascript/Mental.js', false);
+	xhr.open('GET', 'javascript/Mental.js', false);
 	xhr.send();
 	document.getElementById('code').value = 'function Error(){return {};};Object.defineProperty=function(){};Object.create=function(obj){return obj;};' + xhr.responseText + 'eval("js=MentalJS();alert(js.parse(\'1+1\'))");';
 }
@@ -255,7 +255,7 @@ function exec(runProfile) {
 		});										
 	} catch(e){	
 		if(!e.msg) {
-			document.getElementById('result').value = e;
+			document.getElementById('result').value = e + '\n' + e.stack;
 		} else {
 			document.getElementById('result').value = e.msg + '\nat:'+e.pos+'\nchr:'+e.chr+'\nState:' + e.state+'\nText:'+ e.text;
 		}
@@ -264,7 +264,7 @@ function exec(runProfile) {
 </script>
 </head>	
 <body>
-	<img src="http://businessinfo.co.uk/labs/MentalJS/images/logo.png" alt="Mental JS" />	
+	<img src="images/logo.png" alt="Mental JS" />	
 	<form>
 		<fieldset>
 		<legend>MentalJS Parser</legend>				
@@ -311,6 +311,6 @@ function exec(runProfile) {
 		</div>				
 		</fieldset>					
 		</form>			
-	
+	<div id="x"></div>
 </body>
 </html>
