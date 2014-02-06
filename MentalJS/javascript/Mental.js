@@ -171,11 +171,16 @@
                                 }
                              },
                             'appendChild$': {configurable:true, writable:false, value:function(node){
-                                    var js, script;
-                                    if(node.tagName && node.tagName.toUpperCase() === 'SCRIPT') {
+                                    var js, script;                                    
+                                    if(this.tagName && this.tagName.toUpperCase() == 'SCRIPT') {
+                                        while(this.firstChild) {
+                                            this.removeChild(this.firstChild);
+                                        }
+                                    }                                    
+                                    if(this.tagName && this.tagName.toUpperCase() === 'SCRIPT') {                                                                              
                                        js = MentalJS();
                                        code = document.createTextNode(js.parse({options:{eval:false},code:node.textContent}));
-                                       script = document.createElement('script');
+                                       script = document.createElement('script');                                       
                                        script.appendChild(code);                                       
                                        return this.appendChild(script); 
                                     }                                
