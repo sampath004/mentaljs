@@ -15,7 +15,6 @@
             var parseTreeOutput = '', converted, that = this,                                         
                 pos = 0, chr, scoping = '$', index,
                 result, replaceScoping = new RegExp('['+scoping+']'),
-                allowedProperties = /^(?:prototype)$/,                                                             
                 attributeWhitelist = /^(?:style|type|accesskey|align|alink|alt|background|bgcolor|border|cellpadding|cellspacing|class|color|cols|colspan|coords|dir|face|height|href|hspace|id|ismap|lang|marginheight|marginwidth|multiple|name|nohref|noresize|noshade|nowrap|ref|rel|rev|rows|rowspan|scrolling|size|script|shape|span|src|summary|tabindex|target|title|usemap|valign|value|vlink|vspace|width)$/i,
                 urlBasedAttributes = /^(?:href|src|action)$/i,
                 allowedEvents = /^(?:onclick)$/i,                                                               
@@ -59,7 +58,7 @@
                                 if(typeof exp === 'undefined') {
                                    return null;
                                 }                        
-                                if((/[^\d]/.test(exp) || exp === '') && !allowedProperties.test(exp)) {                                                        
+                                if((/[^\d]/.test(exp) || exp === '')) {
                                     return exp + scoping;
                                 } else {                                    
                                     return +exp;
@@ -394,7 +393,7 @@
                         set:function(len){
                           this.length = len;  
                         }
-                    });                                                 
+                    });
                     if(that.global) {                              
                         Object.defineProperties(this, {
                            'undefined$': {configurable: true, writable: false, value: void 1},
