@@ -14,16 +14,16 @@ var MentalJSTestEnv = {
 
 		var self = this;
 		this.runV8Test = jQuery.proxy(function (jsFile) {
-			window['$assertEquals$'] =  function (expected, actual, title) {
+			window['assertEquals$'] =  function (expected, actual, title) {
 				equal(actual, expected, title);
 			};
-			window['$assertTrue$'] = function (value, title) {
+			window['assertTrue$'] = function (value, title) {
 				ok(value, title);
 			};
-			window['$assertFalse$'] = function (value, title) {				
+			window['assertFalse$'] = function (value, title) {
 				ok(!value, title);
 			};
-			window['$assertThrows$'] = function (code, title) {
+			window['assertThrows$'] = function (code, title) {
 				raises(function () {					
 					self.MJS.parse({code:code, thisObject:window, global: true});
 				}, title);
