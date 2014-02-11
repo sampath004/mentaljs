@@ -135,7 +135,7 @@
                                         elementsToRemove[i].parentNode.removeChild(elementsToRemove[i]);
                                     } catch(e){};
                                     try {
-                                        html.body.removeChild(elementsToRemove[i]);
+                                        node.body.removeChild(elementsToRemove[i]);
                                     } catch(e){};                                                                   
                                 }
                                                                                
