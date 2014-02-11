@@ -185,6 +185,8 @@
                                     return this.appendChild(node);
                                 }
                              },
+                            'tagName$': {configurable:true, get:function(){return this.tagName;}},
+                            'nodeType$': {configurable:true, get:function(){return this.nodeType;}},
                             'childNodes$': {configurable:true, get:function(){return this.childNodes;}},
                             'firstChild$': {configurable:true, get:function(){return this.firstChild;}},
                             'lastChild$': {configurable:true, get:function(){return this.lastChild;}},
@@ -483,6 +485,7 @@
                         });                                                         
                                                                           
                         Object.defineProperties(document, {
+                            'nodeType$': {enumerable:false, configurable: true, writable: false, value: document.nodeType},
                             'compatMode$': {enumerable:false, configurable: true, writable: false, value: document.compatMode},
                             'head$': {enumerable:false, configurable: true, writable: false, value: document.head},
                             'defaultView$': {enumerable:false, configurable: true, writable: false, value: window},
